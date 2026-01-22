@@ -11,7 +11,15 @@
         "axios": "^1.11.0",
         "concurrently": "^9.0.1",
         "laravel-vite-plugin": "^2.0.0",
-        "tailwindcss": "^4.0.0",
+        "tailwindcss": "^4.1.18",
         "vite": "^7.0.7"
+    },
+    "dependencies": {
+        "@nuxt/ui": "^4.3.0",
+        "@sentry/vue": "^10.36.0",
+        "@vitejs/plugin-vue": "^6.0.3",
+        "pinia": "^3.0.4",
+        "vue": "^3.5.27",
+        "vue-router": "^4.6.4"
     }
 }
