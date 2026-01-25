@@ -18,7 +18,9 @@
         "@nuxt/ui": "^4.3.0",
         "@sentry/vue": "^10.36.0",
         "@vitejs/plugin-vue": "^6.0.3",
+        "laravel-echo": "^2.3.0",
         "pinia": "^3.0.4",
+        "pusher-js": "^8.4.0",
         "vue": "^3.5.27",
         "vue-router": "^4.6.4"
     }
