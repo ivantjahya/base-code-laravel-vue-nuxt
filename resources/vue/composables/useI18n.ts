@@ -1,4 +1,5 @@
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
+import { useMainStore } from '../AppState'
 
 // Define translation type
 type TranslationKey = 
@@ -20,13 +21,12 @@ const translations = ref<Record<'en' | 'id', Translations>>({
   id: {},
 })
 
-const currentLocale = ref<'en' | 'id'>('en')
 const isLoading = ref(false)
-const isLoaded = ref(false)
+const loadedLocales = new Set<string>()
 
 // Load translations from Laravel API
 async function loadTranslations(locale: 'en' | 'id') {
-  if (translations.value[locale] && Object.keys(translations.value[locale]).length > 0) {
+  if (loadedLocales.has(locale)) {
     return // Already loaded
   }
 
@@ -38,13 +38,14 @@ async function loadTranslations(locale: 'en' | 'id') {
     }
     const data = await response.json()
     translations.value[locale] = data
+    loadedLocales.add(locale)
   } catch (error) {
     console.error(`Error loading translations for ${locale}:`, error)
     // Fallback translations if API fails
     translations.value[locale] = getFallbackTranslations(locale)
+    loadedLocales.add(locale)
   } finally {
     isLoading.value = false
-    isLoaded.value = true
   }
 }
 
@@ -53,7 +54,9 @@ function getFallbackTranslations(locale: 'en' | 'id'): Translations {
   if (locale === 'en') {
     return {
       'page.login': 'Login',
+      'page.logout': 'Logout',
       'page.dashboard': 'Dashboard',
+      'text.dropdown.select-language': 'Select language',
       'text.login-pg.welcome': 'Welcome',
       'text.login-pg.welcome-msg': 'Welcome to Venditore Plus - please login first before accessing the website.',
       'text.login-pg.new-supplier-msg': 'Are you a new supplier?',
@@ -65,7 +68,9 @@ function getFallbackTranslations(locale: 'en' | 'id'): Translations {
   } else {
     return {
       'page.login': 'Login',
+      'page.logout': 'Logout',
       'page.dashboard': 'Beranda',
+      'text.dropdown.select-language': 'Pilih bahasa',
       'text.login-pg.welcome': 'Selamat datang',
       'text.login-pg.welcome-msg': 'Selamat datang di Venditore Plus - silakan login terlebih dahulu sebelum mengakses situs web.',
       'text.login-pg.new-supplier-msg': 'Apakah Anda mitra baru?',
@@ -78,8 +83,10 @@ function getFallbackTranslations(locale: 'en' | 'id'): Translations {
 }
 
 export function useI18n() {
+  const mainStore = useMainStore()
+
   const t = (key: TranslationKey): string => {
-    const locale = currentLocale.value
+    const locale = mainStore.locale
     const localeTranslations = translations.value[locale]
     
     if (!localeTranslations || Object.keys(localeTranslations).length === 0) {
@@ -91,20 +98,18 @@ export function useI18n() {
   }
 
   const setLocale = async (locale: 'en' | 'id') => {
-    currentLocale.value = locale
+    mainStore.setLocale(locale)
     await loadTranslations(locale)
   }
 
-  const locale = computed(() => currentLocale.value)
-
-  // Initialize with default locale
-  if (!isLoaded.value) {
-    loadTranslations(currentLocale.value)
-  }
+  // Load translations when locale changes
+  watch(() => mainStore.locale, (newLocale) => {
+    loadTranslations(newLocale)
+  }, { immediate: true })
 
   return {
     t,
-    locale,
+    locale: computed(() => mainStore.locale),
     setLocale,
     isLoading: computed(() => isLoading.value),
   }

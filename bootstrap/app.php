@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\ApiOrWebAuth;
 use App\Http\Middleware\RedirectIfAuthenticated;
+use App\Http\Middleware\SetLocale;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Application;
@@ -20,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'guest' => RedirectIfAuthenticated::class,
             'api_or_web_auth' => ApiOrWebAuth::class,
+            'locale' => SetLocale::class,
         ]);
 
         $middleware->group('api', [
@@ -27,6 +29,15 @@ return Application::configure(basePath: dirname(__DIR__))
             AddQueuedCookiesToResponse::class,
             StartSession::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            SetLocale::class,
+        ]);
+
+        $middleware->group('web', [
+            EncryptCookies::class,
+            AddQueuedCookiesToResponse::class,
+            StartSession::class,
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            SetLocale::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

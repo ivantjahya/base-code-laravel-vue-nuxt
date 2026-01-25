@@ -5,13 +5,14 @@ export const useWebApiStore = defineStore('webapi', {
     state: () => ({
         /** WEB for API requests */
         postLogin: '/post-login',
+        postLogout: '/post-logout',
     }),
 });
 
 export const useApiStore = defineStore('api', {
     state: () => ({
         /** API request */
-        postTokenLogout: '/api/post-token-revoke',
+        postTokenLogout: '/api/v1/post-token-revoke',
         appConst: '/api/v1/post-app-const',
     }),
 });
@@ -25,12 +26,17 @@ export const useMainStore = defineStore('main', {
         userName: '',
         userId: '',
         notificationList: [],
+        locale: (localStorage.getItem('locale') || 'en') as 'en' | 'id',
     }),
 
     actions: {
+        setLocale(newLocale: 'en' | 'id') {
+            this.locale = newLocale;
+            localStorage.setItem('locale', newLocale);
+        },
+
         init() {
             const api = useApiStore();
-            const toast = useToast();
 
             /** Get Constant */
             axios

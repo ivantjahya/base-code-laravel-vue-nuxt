@@ -1,0 +1,46 @@
+pipeline {
+    agent any
+
+    environment {
+        ENV_KEY = credentials('venditore-plus-env-key')
+        REGISTRY_CREDS = credentials('docker-app-images-registry')
+        GIT_SHA_INFO = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+    }
+
+    stages {
+        stage('Docker Login, Reset Directory Permissions, Clear Workspace and Checkout') {
+            steps {
+                sh 'docker login -u $REGISTRY_CREDS_USR -p $REGISTRY_CREDS_PSW '+REGISTRY_PREFIX+REGISTRY
+                sh 'docker buildx use default'
+                sh 'docker buildx stop buildkit-venditore-plus-dev || true'
+                sh 'docker buildx rm -f --all-inactive'
+                sh 'docker buildx prune -f'
+            }
+        }
+        stage('Build Container') {
+            steps {
+                sh 'ls -lah'
+                sh 'docker buildx create --use --config /home/jenkins/agent/buildkit.toml --name buildkit-venditore-plus-dev'
+                sh 'docker buildx build -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG . --push --build-arg ENV_KEY=$ENV_KEY --build-arg APP_VERSION_HASH=$GIT_SHA_INFO --build-arg ENV_TYPE=staging'
+                sh 'docker buildx prune -f'
+                sh 'docker buildx use default'
+                sh 'docker buildx stop buildkit-venditore-plus-dev || true'
+                sh 'docker buildx rm -f --all-inactive'
+            }
+        }
+        stage('Deploy via SSH') {
+            steps {
+                sshagent(credentials : ['jenkins-cicd-deploy']) {
+                    sh 'ssh -o StrictHostKeyChecking=no -p 2254 $SERVER_USER@$SERVER_HOST $DEPLOY_SCRIPT'
+                }
+            }
+        }
+        stage('Cleanup') {
+            steps {
+                script {
+                    sh 'docker system prune -f || true'
+                }
+            }
+        }
+    }
+}
