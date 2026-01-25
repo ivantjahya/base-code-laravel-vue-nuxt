@@ -16,6 +16,7 @@ return [
     'page' => [
         'exploreNuxt' => 'Explore Nuxt',
         'login' => 'Login',
+        'logout' => 'Logout',
         'dashboard' => 'Dashboard',
     ],
 
@@ -31,6 +32,9 @@ return [
     ],
 
     'text' => [
+        'dropdown' => [
+            'select-language' => 'Select language',
+        ],
         'login-pg' => [
             'welcome' => 'Welcome',
             'welcome-msg' => 'Welcome to Venditore Plus - please login first before accessing the website.',
@@ -43,5 +47,22 @@ return [
         'username' => 'Username',
         'password' => 'Password',
         'username-placeholder' => 'Enter username',
+    ],
+
+    'auth' => [
+        'login-success' => [
+            'title' => 'Login successful',
+            'message' => 'Welcome back!',
+        ],
+        'logout-success' => [
+            'title' => 'Logout successful',
+            'message' => 'You have been logged out.',
+        ],
+        'validation' => [
+            'username-required' => 'Username is required',
+            'password-required' => 'Password is required',
+            'username-incorrect' => 'Username is incorrect',
+            'password-incorrect' => 'Password is incorrect',
+        ],
     ],
 ];

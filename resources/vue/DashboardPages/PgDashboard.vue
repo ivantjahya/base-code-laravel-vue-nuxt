@@ -1,3 +1,36 @@
+<script setup>
+import { ref } from 'vue'
+import { useI18n } from '../composables/useI18n'
+
+const { t } = useI18n()
+
+const count = ref(0)
+const name = ref('')
+const isLoggingOut = ref(false)
+
+const increment = () => {
+  count.value++
+}
+
+const decrement = () => {
+  count.value--
+}
+
+const reset = () => {
+  count.value = 0
+}
+
+const postLogout = async () => {
+  isLoggingOut.value = true
+  try {
+    window.location.href = '/get-logout'
+  } catch (error) {
+    console.error('Logout failed:', error)
+    isLoggingOut.value = false
+  }
+}
+</script>
+
 <template>
   <div class="container mx-auto p-6">
     <h1 class="text-3xl font-bold mb-4">Welcome to Dashboard Page</h1>
@@ -39,24 +72,19 @@
         <UBadge color="red">Error</UBadge>
       </div>
     </UCard>
+
+    <div class="mt-6 flex justify-end">
+      <UButton
+        type="button"
+        color="gray"
+        size="lg"
+        block
+        :loading="isLoggingOut"
+        class="bg-gray-800 hover:bg-gray-900 text-white"
+        @click="postLogout"
+      >
+        {{ t('page.logout') }}
+      </UButton>
+    </div>
   </div>
 </template>
-
-<script setup>
-import { ref } from 'vue'
-
-const count = ref(0)
-const name = ref('')
-
-const increment = () => {
-  count.value++
-}
-
-const decrement = () => {
-  count.value--
-}
-
-const reset = () => {
-  count.value = 0
-}
-</script>

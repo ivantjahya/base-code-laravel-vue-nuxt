@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Interfaces\InterfaceClass;
 use App\Models\PassportAuthCode;
 use App\Models\PassportClient;
 use App\Models\PassportRefreshToken;
@@ -33,5 +34,9 @@ class AuthServiceProvider extends ServiceProvider
         Passport::useRefreshTokenModel(PassportRefreshToken::class);
         Passport::useAuthCodeModel(PassportAuthCode::class);
         Passport::useClientModel(PassportClient::class);
+
+        // Set token expiration times
+        Passport::tokensExpireIn(InterfaceClass::getPassportTokenLifetime());
+        Passport::refreshTokensExpireIn(InterfaceClass::getPassportRefreshTokenLifetime());
     }
 }

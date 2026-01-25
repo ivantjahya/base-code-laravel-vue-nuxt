@@ -39,8 +39,6 @@ class AuthController extends Controller
      */
     public function postLogin(Request $request): HttpJsonResponse
     {
-        Log::debug('Computer Access Login Request', ['remoteIp' => $request->ip()]);
-
         /** Validate request */
         $validate = Validator::make($request->all(), [
             'username' => ['required', 'string'],
@@ -56,7 +54,7 @@ class AuthController extends Controller
         if (is_null($user)) {
             Log::warning('Username failed to login, incorrect username', ['username' => $validated['username']]);
             throw ValidationException::withMessages([
-                'username' => 'Username is incorrect',
+                'username' => __('app.auth.validation.username-incorrect'),
             ]);
         }
 
@@ -64,7 +62,7 @@ class AuthController extends Controller
         if (! Hash::check($validated['password'], $user?->password)) {
             Log::warning('Username failed to login, incorrect password', ['username' => $validated['username']]);
             throw ValidationException::withMessages([
-                'username' => 'Password is incorrect',
+                'username' => __('app.auth.validation.password-incorrect'),
             ]);
         }
 
@@ -79,9 +77,15 @@ class AuthController extends Controller
         Log::notice('User logged in', ['remoteIp' => $request->ip(), 'username' => $user?->username, 'name' => $user?->name]);
 
         /** Send user to dashboard */
-        (string) $title = 'Login success';
-        (string) $message = 'Welcome back';
-        (string) $route = route('menu-page');
+        (string) $title = __('app.auth.login-success.title');
+        (string) $message = __('app.auth.login-success.message');
+        (string) $route = route('dashboard');
+
+        Log::debug('Login response', [
+            'title' => $title,
+            'message' => $message,
+            'locale' => app()->getLocale(),
+        ]);
 
         return $this->jsonSuccess($title, $message, $route);
     }
@@ -118,8 +122,8 @@ class AuthController extends Controller
         $this->checkAuthLogout($request);
 
         /** Send user to route */
-        (string) $title = 'Logout success';
-        (string) $message = 'Thank you';
+        (string) $title = __('app.auth.logout-success.title');
+        (string) $message = __('app.text.logout-success.message');
         (string) $route = route('login');
 
         return $this->jsonSuccess($title, $message, $route);

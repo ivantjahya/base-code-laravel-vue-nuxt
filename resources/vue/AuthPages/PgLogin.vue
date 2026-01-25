@@ -1,3 +1,92 @@
+<script setup lang="ts">
+import axios from 'axios';
+import { ref, computed } from 'vue'
+import { useI18n } from '../composables/useI18n'
+import { useToast } from '../composables/useToast'
+import { useWebApiStore } from '../AppState'
+import { useWebStore } from '../AppRouter'
+
+const web = useWebStore();
+const webapi = useWebApiStore();
+
+// i18n
+const { t, locale, setLocale } = useI18n()
+
+// Toast
+const { showSuccess, showError } = useToast()
+
+// Import logos using Vite asset imports
+const yogyaLogo = new URL('@/images/logo-yogya-group-white.png', import.meta.url).href
+const venditorePlusLogoLogin = new URL('@/images/logo-venditore-plus-login.png', import.meta.url).href
+const venditorePlusLogo = new URL('@/images/logo-venditore-plus.png', import.meta.url).href
+const bgLogin = new URL('@/images/bg-login.png', import.meta.url).href
+
+// Locale options
+const localeOptions = [
+  { label: 'English', id: 'en' },
+  { label: 'Indonesia', id: 'id' },
+]
+
+// Form state
+const username = ref('')
+const password = ref('')
+const showPassword = ref(false)
+const loading = ref(false)
+const selectedLocale = ref(locale.value)
+
+const onChangeLocale = (value: any) => {
+  const newLocale = value?.id || value
+  if (newLocale === 'en' || newLocale === 'id') {
+    setLocale(newLocale)
+    selectedLocale.value = newLocale
+  }
+}
+
+// Handle login
+const postLoginData = async () => {
+  loading.value = true
+
+  axios
+    .post(webapi.postLogin, {
+        username: username.value,
+        password: password.value,
+    })
+    .then((response) => {
+        clearData();
+        console.log('Login successful:', response.data);
+        
+        // Show success toast
+        showSuccess(
+          response.data.title || 'Login Successful',
+          response.data.message || 'You have successfully logged in.'
+        );
+    })
+    .then(() => {
+        window.location.href = web.dashboard;
+    })
+    .catch((error) => {
+        loading.value = false;
+        console.log('Login error:', error);
+        
+        // Show error toast
+        showError(
+          error.response?.data?.title || 'Login Failed',
+          error.response?.data?.message || 'Invalid username or password. Please try again.'
+        );
+    });
+}
+
+const clearData = () => {
+    username.value = '';
+    password.value = '';
+};
+
+</script>
+
+<style scoped>
+/* Additional custom styles if needed */
+</style>
+
 <template>
   <div class="min-h-screen flex">
     <!-- Left Side -->
@@ -29,10 +118,29 @@
           value-key="id"
           value-attribute="id"
           option-attribute="label"
-          size="sm"
-          class="w-24"
-          @update:model-value="onChangeLocale"
-        />
+          size="xs"
+          @update:modelValue="onChangeLocale"
+          :popper="{
+            placement: 'bottom-start',
+            modifiers: [{ name: 'flip', enabled: false }]
+          }"
+        >
+          <!-- Customize the trigger button -->
+          <template #default="{ open }">
+            <UButton
+              color="white"
+              icon="i-heroicons-globe-alt"
+              size="sm"
+              :class="[
+                'transition-all duration-500 ease-in-out overflow-hidden whitespace-nowrap px-0',
+                open ? 'w-22' : 'w-10'
+              ]"
+            >
+              <span v-if="!open">{{ selectedLocale }}</span>
+              <span v-if="open" class="ml-2">{{ localeOptions.find((item) => item.id === selectedLocale)?.label }}</span>
+            </UButton>
+          </template>
+        </USelectMenu>
       </div>
 
       <div class="w-full max-w-md">
@@ -76,6 +184,7 @@
               placeholder="••••••••"
               size="lg"
               class="w-full"
+              @keyup.enter="postLoginData"
             >
               <template #trailing>
                 <UButton
@@ -114,62 +223,3 @@
     </div>
   </div>
 </template>
-
-<script setup>
-import { ref, computed } from 'vue'
-import { useI18n } from '../composables/useI18n'
-
-// i18n
-const { t, locale, setLocale } = useI18n()
-
-// Import logos using Vite asset imports
-const yogyaLogo = new URL('@/images/logo-yogya-group-white.png', import.meta.url).href
-const venditorePlusLogoLogin = new URL('@/images/logo-venditore-plus-login.png', import.meta.url).href
-const venditorePlusLogo = new URL('@/images/logo-venditore-plus.png', import.meta.url).href
-const bgLogin = new URL('@/images/bg-login.png', import.meta.url).href
-
-// Locale options
-const localeOptions = [
-  { label: 'English', id: 'en' },
-  { label: 'Indonesia', id: 'id' },
-]
-
-// Form state
-const username = ref('')
-const password = ref('')
-const showPassword = ref(false)
-const loading = ref(false)
-const selectedLocale = ref(locale.value)
-
-const onChangeLocale = (value) => {
-  const newLocale = value?.id || value
-  if (newLocale === 'en' || newLocale === 'id') {
-    setLocale(newLocale)
-    selectedLocale.value = newLocale
-  }
-}
-
-// Handle login
-const postLoginData = async () => {
-  loading.value = true
-  
-  try {
-    // TODO: Implement your login logic here
-    console.log('Login attempt:', { username: username.value, password: password.value })
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    // Handle successful login
-    // window.location.href = '/dashboard'
-  } catch (error) {
-    console.error('Login error:', error)
-  } finally {
-    loading.value = false
-  }
-}
-</script>
-
-<style scoped>
-/* Additional custom styles if needed */
-</style>

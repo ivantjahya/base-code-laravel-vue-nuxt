@@ -37,6 +37,9 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('api-secure', function (Request $request) {
             return Limit::perMinute(10)->by($request->user()?->id ?: $request->ip());
         });
+        RateLimiter::for('api-translation-secure', function (Request $request) {
+            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+        });
 
         /**
          * Custom policies
