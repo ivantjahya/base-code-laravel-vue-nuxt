@@ -17,7 +17,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        if (app()->environment('production')) {
+        if (app()->environment('production') || app()->environment('staging')) {
             URL::forceScheme('https');
         }
     }
@@ -27,7 +27,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if (app()->environment('production')) {
+        if (app()->environment('production') || app()->environment('staging')) {
             URL::forceScheme('https');
         }
 
