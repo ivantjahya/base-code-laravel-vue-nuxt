@@ -16,8 +16,6 @@ class UserSite extends Model
      * site_id: uuid
      * created_at: timestamp
      * updated_at: timestamp, nullable
-     * created_by: uuid, nullable
-     * updated_by: uuid, nullable
      */
 
     /**
@@ -38,7 +36,5 @@ class UserSite extends Model
     protected $fillable = [
         'user_id',
         'site_id',
-        'created_by',
-        'updated_by',
     ];
 }

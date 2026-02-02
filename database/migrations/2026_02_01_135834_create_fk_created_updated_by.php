@@ -29,12 +29,6 @@ return new class extends Migration
                 $table->foreign('updated_by')->references('id')->on('users')->nullOnDelete();
             });
         }
-        if (Schema::hasTable('profile_menus')) {
-            Schema::table('profile_menus', function (Blueprint $table) {
-                $table->foreign('created_by')->references('id')->on('users')->nullOnDelete();
-                $table->foreign('updated_by')->references('id')->on('users')->nullOnDelete();
-            });
-        }
         if (Schema::hasTable('approval_po_flows')) {
             Schema::table('approval_po_flows', function (Blueprint $table) {
                 $table->foreign('created_by')->references('id')->on('users')->nullOnDelete();
@@ -43,12 +37,6 @@ return new class extends Migration
         }
         if (Schema::hasTable('users')) {
             Schema::table('users', function (Blueprint $table) {
-                $table->foreign('created_by')->references('id')->on('users')->nullOnDelete();
-                $table->foreign('updated_by')->references('id')->on('users')->nullOnDelete();
-            });
-        }
-        if (Schema::hasTable('user_sites')) {
-            Schema::table('user_sites', function (Blueprint $table) {
                 $table->foreign('created_by')->references('id')->on('users')->nullOnDelete();
                 $table->foreign('updated_by')->references('id')->on('users')->nullOnDelete();
             });

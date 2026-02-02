@@ -17,8 +17,6 @@ return new class extends Migration
                 $table->uuid('site_id');
                 $table->timestamp('created_at')->useCurrent();
                 $table->timestamp('updated_at')->nullable();
-                $table->uuid('created_by')->nullable();
-                $table->uuid('updated_by')->nullable();
 
                 $table->unique(['user_id', 'site_id']);
 

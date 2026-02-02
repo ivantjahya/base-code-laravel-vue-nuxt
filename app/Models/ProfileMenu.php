@@ -16,8 +16,6 @@ class ProfileMenu extends Model
      * menu_id: uuid
      * created_at: timestamp
      * updated_at: timestamp
-     * created_by: uuid
-     * updated_by: uuid
      */
 
     /**
@@ -28,7 +26,5 @@ class ProfileMenu extends Model
     protected $fillable = [
         'profile_id',
         'menu_id',
-        'created_by',
-        'updated_by',
     ];
 }

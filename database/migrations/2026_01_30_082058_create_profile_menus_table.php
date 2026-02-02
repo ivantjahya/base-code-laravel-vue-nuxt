@@ -17,8 +17,6 @@ return new class extends Migration
                 $table->uuid('menu_id');
                 $table->timestamp('created_at')->useCurrent();
                 $table->timestamp('updated_at')->nullable();
-                $table->uuid('created_by')->nullable();
-                $table->uuid('updated_by')->nullable();
 
                 $table->unique(['profile_id', 'menu_id']);
 
