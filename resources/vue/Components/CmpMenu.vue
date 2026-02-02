@@ -45,13 +45,13 @@ const menuItems = ref([
     route: '/finance',
     active: false,
     children: [
-      { label: 'Payment Check', icon: null, route: '/finance/payment-check', active: false },
-      { label: 'Invoice Putus', icon: null, route: '/finance/invoice-putus', active: false },
-      { label: 'Invoice Consignment', icon: null, route: '/finance/invoice-consignment', active: false },
-      { label: 'PO Kontra Bon', icon: null, route: '/finance/po-kontra-bon', active: false },
-      { label: 'Coretax Return Data', icon: null, route: '/finance/coretax-return', active: false },
-      { label: 'Payment Report', icon: null, route: '/finance/payment-report', active: false },
-      { label: 'Billing', icon: null, route: '/finance/billing', active: false }
+      { label: 'Payment Check', icon: null, route: '/payment-check', active: false },
+      { label: 'Invoice Putus', icon: null, route: '/invoice-putus', active: false },
+      { label: 'Invoice Consignment', icon: null, route: '/invoice-consignment', active: false },
+      { label: 'PO Kontra Bon', icon: null, route: '/po-kontra-bon', active: false },
+      { label: 'Coretax Return Data', icon: null, route: '/coretax-return', active: false },
+      { label: 'Payment Report', icon: null, route: '/payment-report', active: false },
+      { label: 'Billing', icon: null, route: '/billing', active: false }
     ]
   },
   {
