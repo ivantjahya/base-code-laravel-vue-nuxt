@@ -1,5 +1,5 @@
 const landingPage = '/';
-const dashboard = '/dashboard';
+const home = '/home';
 const exploreNuxt = '/explore-nuxt';
 
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
@@ -12,14 +12,14 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('./AuthPages/PgLogin.vue'),
     },
     {
-        path: dashboard,
-        name: 'dashboard',
-        component: () => import('./DashboardPages/PgDashboard.vue'),
+        path: home,
+        name: 'home',
+        component: () => import('./HomePages/PgHome.vue'),
     },
     {
         path: exploreNuxt,
         name: 'exploreNuxt',
-        component: () => import('./DashboardPages/PgExploreNuxt.vue'),
+        component: () => import('./HomePages/PgExploreNuxt.vue'),
     },
 ];
 
@@ -32,7 +32,7 @@ export const useWebStore = defineStore('web', {
     state: () => ({
         /** Define route here because if not defined and get from XHR it will be race condition */
         landingPage: landingPage,
-        dashboard: dashboard,
+        home: home,
         exploreNuxt: exploreNuxt,
     }),
 });

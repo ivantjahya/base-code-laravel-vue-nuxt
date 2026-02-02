@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
-class DashController extends Controller
+class HomeController extends Controller
 {
     /**
      * GET request for explore nuxt page
@@ -23,15 +23,15 @@ class DashController extends Controller
     }
 
     /**
-     * GET request for dashboard page
+     * GET request for home page
      */
-    public function dashboardPage(Request $request): View
+    public function homePage(Request $request): View
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('Computer access dashboard page', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
+        Log::debug('Computer access home page', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
 
         return view('base-components.base-vue', [
-            'title' => __('app.page.dashboard'),
+            'title' => __('app.page.home'),
         ]);
     }
 }

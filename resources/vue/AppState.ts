@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { defineStore } from 'pinia';
 
+export type ColorMode = 'light' | 'dark' | 'system';
+
 export const useWebApiStore = defineStore('webapi', {
     state: () => ({
         /** WEB for API requests */
@@ -27,7 +29,24 @@ export const useMainStore = defineStore('main', {
         userId: '',
         notificationList: [],
         locale: (localStorage.getItem('locale') || 'en') as 'en' | 'id',
+        mode: (localStorage.getItem('colorMode') || 'system') as ColorMode,
     }),
+
+    getters: {
+        /**
+         * Get the actual color mode (resolving 'system' to 'light' or 'dark')
+         */
+        actualMode: (state): 'light' | 'dark' => {
+            if (state.mode === 'system') {
+                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            return state.mode;
+        },
+
+        isDark(): boolean {
+            return this.actualMode === 'dark';
+        },
+    },
 
     actions: {
         setLocale(newLocale: 'en' | 'id') {
@@ -35,8 +54,54 @@ export const useMainStore = defineStore('main', {
             localStorage.setItem('locale', newLocale);
         },
 
+        setMode(newMode: ColorMode) {
+            this.mode = newMode;
+            localStorage.setItem('colorMode', newMode);
+            this.applyMode();
+        },
+
+        setLight() {
+            this.setMode('light');
+        },
+
+        setDark() {
+            this.setMode('dark');
+        },
+
+        setSystem() {
+            this.setMode('system');
+        },
+
+        toggle() {
+            if (this.actualMode === 'light') {
+                this.setDark();
+            } else {
+                this.setLight();
+            }
+        },
+
+        applyMode() {
+            const actualMode = this.actualMode;
+            
+            if (actualMode === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        },
+
         init() {
             const api = useApiStore();
+
+            // Apply initial mode
+            this.applyMode();
+
+            // Listen for system preference changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                if (this.mode === 'system') {
+                    this.applyMode();
+                }
+            });
 
             /** Get Constant */
             axios

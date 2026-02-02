@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\DashController;
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
 /** Route for login redirect */
@@ -26,9 +26,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/post-logout', [AuthController::class, 'postLogout'])->name('post-logout');
     Route::get('/get-logout', [AuthController::class, 'getLogout'])->name('get-logout');
 
-    /** Dashboard */
-    Route::get('/dashboard', [DashController::class, 'dashboardPage'])->name('dashboard');
+    /** Home */
+    Route::get('/home', [HomeController::class, 'homePage'])->name('home');
 });
 
 /** Route for explore nuxt component */
-Route::get('/explore-nuxt', [DashController::class, 'exploreNuxtPage'])->name('explore-nuxt');
+Route::get('/explore-nuxt', [HomeController::class, 'exploreNuxtPage'])->name('explore-nuxt');

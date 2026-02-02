@@ -7,7 +7,7 @@
     <meta name="cypress" content="Cypress Testing">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <link rel="icon" type="image/png" href="{{ Vite::asset('resources/images/logo-venditore-plus.png') }}"/>
+    <link rel="icon" type="image/png" href="{{ Vite::asset('resources/images/icon-venditore-plus.webp') }}"/>
 
     <title>@yield('title') | {{ config('app.name') }}</title>
     </head>

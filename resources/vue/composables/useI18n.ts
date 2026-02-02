@@ -4,11 +4,15 @@ import { useMainStore } from '../AppState'
 // Define translation type
 type TranslationKey = 
   | 'page.login'
-  | 'page.dashboard'
+  | 'page.home'
   | 'text.login-pg.welcome'
   | 'text.login-pg.welcome-msg'
   | 'text.login-pg.new-supplier-msg'
   | 'text.login-pg.register'
+  | 'text.dropdown.select-language'
+  | 'text.dropdown.logout'
+  | 'text.home-pg.welcome'
+  | 'text.home-pg.welcome-msg'
   | 'form.username'
   | 'form.password'
   | 'form.username-placeholder'
@@ -55,29 +59,37 @@ function getFallbackTranslations(locale: 'en' | 'id'): Translations {
     return {
       'page.login': 'Login',
       'page.logout': 'Logout',
-      'page.dashboard': 'Dashboard',
+      'page.home': 'Home',
       'text.dropdown.select-language': 'Select language',
       'text.login-pg.welcome': 'Welcome',
       'text.login-pg.welcome-msg': 'Welcome to Venditore Plus - please login first before accessing the website.',
       'text.login-pg.new-supplier-msg': 'Are you a new supplier?',
       'text.login-pg.register': 'Register',
+      'text.dropdown.logout': 'Logout',
+      'text.home-pg.welcome': 'Welcome to ',
+      'text.home-pg.welcome-msg': 'Your gateway to becoming a Yogya supplier. Register your products, manage your partnership, and grow your business with Yogya Supermarket.',
       'form.username': 'Username',
       'form.password': 'Password',
       'form.username-placeholder': 'Enter username',
+      'form.search': 'Search',
     }
   } else {
     return {
       'page.login': 'Login',
       'page.logout': 'Logout',
-      'page.dashboard': 'Beranda',
+      'page.home': 'Beranda',
       'text.dropdown.select-language': 'Pilih bahasa',
       'text.login-pg.welcome': 'Selamat datang',
       'text.login-pg.welcome-msg': 'Selamat datang di Venditore Plus - silakan login terlebih dahulu sebelum mengakses situs web.',
       'text.login-pg.new-supplier-msg': 'Apakah Anda mitra baru?',
       'text.login-pg.register': 'Daftar',
+      'text.dropdown.logout': 'Keluar',
+      'text.home-pg.welcome': 'Selamat datang di ',
+      'text.home-pg.welcome-msg': 'Gerbang Anda untuk menjadi mitra Yogya. Daftarkan produk Anda, kelola kemitraan Anda, dan kembangkan bisnis Anda dengan Yogya Supermarket.',
       'form.username': 'Nama Pengguna',
       'form.password': 'Kata Sandi',
       'form.username-placeholder': 'Masukkan nama pengguna',
+      'form.search': 'Cari',
     }
   }
 }
