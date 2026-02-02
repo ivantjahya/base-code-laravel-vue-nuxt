@@ -17,7 +17,7 @@ return [
         'exploreNuxt' => 'Explore Nuxt',
         'login' => 'Login',
         'logout' => 'Logout',
-        'dashboard' => 'Dashboard',
+        'home' => 'Home',
     ],
 
     'token' => [
@@ -41,12 +41,17 @@ return [
             'new-supplier-msg' => 'Are you a new supplier?',
             'register' => 'Register',
         ],
+        'home-pg' => [
+            'welcome' => 'Welcome to ',
+            'welcome-msg' => 'Your gateway to becoming a Yogya supplier. Register your products, manage your partnership, and grow your business with Yogya Supermarket.',
+        ],
     ],
 
     'form' => [
         'username' => 'Username',
         'password' => 'Password',
         'username-placeholder' => 'Enter username',
+        'search' => 'Search',
     ],
 
     'auth' => [

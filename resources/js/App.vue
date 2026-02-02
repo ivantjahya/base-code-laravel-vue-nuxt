@@ -3,7 +3,7 @@ import CmpToast from '../vue/Components/CmpToast.vue'
 </script>
 
 <template>
-  <UApp>
+  <UApp :toaster="{ position: 'top-right' }">
     <router-view />
     <CmpToast />
   </UApp>

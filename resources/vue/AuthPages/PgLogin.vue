@@ -1,38 +1,32 @@
 <script setup lang="ts">
 import axios from 'axios';
-import { ref, computed } from 'vue'
-import { useI18n } from '../composables/useI18n'
-import { useToast } from '../composables/useToast'
-import { useWebApiStore } from '../AppState'
-import { useWebStore } from '../AppRouter'
+import { ref, computed } from 'vue';
+import { useI18n } from '../composables/useI18n';
+import { localeOptions } from '../composables/useLocale';
+import { useWebApiStore } from '../AppState';
+import { useWebStore } from '../AppRouter';
+
+import CmpToast from '../Components/CmpToast.vue';
 
 const web = useWebStore();
 const webapi = useWebApiStore();
 
 // i18n
-const { t, locale, setLocale } = useI18n()
-
-// Toast
-const { showSuccess, showError } = useToast()
+const { t, locale, setLocale } = useI18n();
 
 // Import logos using Vite asset imports
-const yogyaLogo = new URL('@/images/logo-yogya-group-white.png', import.meta.url).href
-const venditorePlusLogoLogin = new URL('@/images/logo-venditore-plus-login.png', import.meta.url).href
-const venditorePlusLogo = new URL('@/images/logo-venditore-plus.png', import.meta.url).href
-const bgLogin = new URL('@/images/bg-login.png', import.meta.url).href
-
-// Locale options
-const localeOptions = [
-  { label: 'English', id: 'en' },
-  { label: 'Indonesia', id: 'id' },
-]
+const yogyaLogo = new URL('@/images/logo-yogya-group-white.webp', import.meta.url).href
+const venditorePlusLogoLogin = new URL('@/images/logo-venditore-plus-login.webp', import.meta.url).href
+const venditorePlusLogo = new URL('@/images/icon-venditore-plus.webp', import.meta.url).href
+const bgLogin = new URL('@/images/bg-login.webp', import.meta.url).href
 
 // Form state
-const username = ref('')
-const password = ref('')
-const showPassword = ref(false)
-const loading = ref(false)
-const selectedLocale = ref(locale.value)
+const username = ref('');
+const password = ref('');
+const showPassword = ref(false);
+const loading = ref(false);
+const selectedLocale = ref(locale.value);
+const toastchild = ref<InstanceType<typeof CmpToast> | null>(null);
 
 const onChangeLocale = (value: any) => {
   const newLocale = value?.id || value
@@ -53,26 +47,23 @@ const postLoginData = async () => {
     })
     .then((response) => {
         clearData();
-        console.log('Login successful:', response.data);
-        
-        // Show success toast
-        showSuccess(
-          response.data.title || 'Login Successful',
-          response.data.message || 'You have successfully logged in.'
-        );
+        toastchild.value?.toastDisplay({
+            type: 'success',
+            summary: response.data.title,
+            detail: response.data.message,
+        });
     })
     .then(() => {
-        window.location.href = web.dashboard;
+        window.location.href = web.home;
     })
     .catch((error) => {
         loading.value = false;
-        console.log('Login error:', error);
-        
-        // Show error toast
-        showError(
-          error.response?.data?.title || 'Login Failed',
-          error.response?.data?.message || 'Invalid username or password. Please try again.'
-        );
+        toastchild.value?.toastDisplay({
+            type: 'error',
+            summary: error.response.data.title,
+            detail: error.response.data.message,
+            response: error,
+        });
     });
 }
 
@@ -88,6 +79,7 @@ const clearData = () => {
 </style>
 
 <template>
+  <CmpToast ref="toastchild" />
   <div class="min-h-screen flex">
     <!-- Left Side -->
     <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-gray-700 to-gray-900 relative overflow-hidden">
@@ -109,7 +101,7 @@ const clearData = () => {
     </div>
 
     <!-- Right Side - Login Form -->
-    <div class="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white relative">
+    <div class="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white dark:bg-gray-900 relative">
       <!-- Language Selector -->
       <div class="absolute top-4 right-4">
         <USelectMenu
@@ -148,9 +140,9 @@ const clearData = () => {
         <div class="mb-8">
           <div class="flex items-center gap-2 mb-2">
             <img :src="venditorePlusLogo" alt="Venditore+" class="h-8 mr-2" />
-            <h1 class="text-3xl font-bold text-gray-800">{{ t('text.login-pg.welcome') }}!</h1>
+            <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">{{ t('text.login-pg.welcome') }}!</h1>
           </div>
-          <p class="text-gray-600 text-sm">
+          <p class="text-gray-600 dark:text-gray-400 text-sm">
             {{ t('text.login-pg.welcome-msg') }}
           </p>
         </div>
@@ -158,11 +150,11 @@ const clearData = () => {
         <!-- Login Form -->
         <div class="space-y-6">
           <!-- Divider -->
-          <div class="border-t border-gray-200"></div>
+          <div class="border-t border-gray-200 dark:border-gray-700"></div>
 
           <!-- Username Field -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {{ t('form.username') }}
             </label>
             <UInput
@@ -175,7 +167,7 @@ const clearData = () => {
 
           <!-- Password Field -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {{ t('form.password') }}
             </label>
             <UInput
@@ -213,7 +205,7 @@ const clearData = () => {
         </div>
 
         <!-- Register Link -->
-        <div class="mt-6 text-center text-sm text-gray-600">
+        <div class="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
           {{ t('text.login-pg.new-supplier-msg') }}
           <a href="/register" class="text-orange-500 hover:text-orange-600 font-medium">
             {{ t('text.login-pg.register') }}

@@ -1,37 +1,21 @@
 <script setup>
-import { ref } from 'vue'
-import { useI18n } from '../composables/useI18n'
-import { useCmpToast } from '../composables/useCmpToast.ts'
+import { ref } from 'vue';
+import { useI18n } from '../composables/useI18n';
 
-const { t, locale, setLocale } = useI18n()
-const count = ref(0)
-const name = ref('')
-const { toastDisplay } = useCmpToast()
+const { t, locale, setLocale } = useI18n();
+const count = ref(0);
+const name = ref('');
 
 const increment = () => {
-  count.value++
-  toastDisplay({
-    type: 'success',
-    title: 'Counter Incremented',
-    description: `The counter is now at ${count.value}.`,
-    color: 'primary',
-    icon: 'i-heroicons-plus-circle',
-  })
+  count.value++;
 }
 
 const decrement = () => {
-  count.value--
-  toastDisplay({
-    type: 'success',
-    title: 'Counter Decremented',
-    description: `The counter is now at ${count.value}.`,
-    color: 'warning',
-    icon: 'i-heroicons-minus-circle',
-  })
+  count.value--;  
 }
 
 const reset = () => {
-  count.value = 0
+  count.value = 0;
 }
 
 const isExpanded = ref(false)
@@ -52,7 +36,7 @@ const onChangeLocale = (value) => {
 
 <template>
   <div class="container mx-auto p-6">
-    <h1 class="text-3xl font-bold mb-4">Welcome to Dashboard Page</h1>
+    <h1 class="text-3xl font-bold mb-4">Welcome to Home Page</h1>
     <p class="text-gray-600 mb-4">This is a Vue component page rendered via Laravel route using Nuxt UI.</p>
     
     <UCard class="mb-4">

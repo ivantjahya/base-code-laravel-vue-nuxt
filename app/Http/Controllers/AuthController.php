@@ -76,10 +76,10 @@ class AuthController extends Controller
 
         Log::notice('User logged in', ['remoteIp' => $request->ip(), 'username' => $user?->username, 'name' => $user?->name]);
 
-        /** Send user to dashboard */
+        /** Send user to home */
         (string) $title = __('app.auth.login-success.title');
         (string) $message = __('app.auth.login-success.message');
-        (string) $route = route('dashboard');
+        (string) $route = route('home');
 
         Log::debug('Login response', [
             'title' => $title,

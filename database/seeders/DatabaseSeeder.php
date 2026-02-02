@@ -16,7 +16,14 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             PassportInitSeeder::class,
-            LocalUserSeeder::class,
+            /** For master data */
+            AccessControlSeeder::class,
+            MenuSeeder::class,
+            StatusSeeder::class,
+            ProfileSeeder::class,
+            UserSeeder::class,
+            /** For local testing */
+            LocalDataSeeder::class,
         ]);
     }
 }

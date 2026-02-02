@@ -4,6 +4,13 @@ import AppComponent from '../js/App.vue';
 import ui from '@nuxt/ui/vue-plugin';
 import axios from 'axios';
 import { useMainStore } from './AppState';
+import Swal from 'sweetalert2';
+
+declare module '@vue/runtime-core' {
+    export interface ComponentCustomProperties {
+        $swal: typeof import('sweetalert2').default;
+    }
+}
 
 const pinia: Pinia = createPinia();
 
@@ -15,6 +22,9 @@ const MainApp: App<Element> = createApp(AppComponent)
     .use(router)
     .use(pinia)
     .use(ui);
+
+// Add SweetAlert2 as global property
+MainApp.config.globalProperties.$swal = Swal;
 
 // Setup axios interceptor AFTER pinia is initialized
 axios.interceptors.request.use((config) => {
@@ -38,5 +48,9 @@ Sentry.init({
 });
 
 router.isReady().then(() => {
+    // Initialize color mode
+    const colorModeStore = useMainStore(pinia);
+    colorModeStore.init();
+    
     MainApp.mount('#app');
 });

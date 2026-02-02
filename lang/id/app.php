@@ -17,7 +17,7 @@ return [
         'exploreNuxt' => 'Explore Nuxt',
         'login' => 'Login',
         'logout' => 'Logout',
-        'dashboard' => 'Beranda',
+        'home' => 'Beranda',
     ],
 
     'token' => [
@@ -41,12 +41,17 @@ return [
             'new-supplier-msg' => 'Apakah Anda mitra baru?',
             'register' => 'Daftar',
         ],
+        'home-pg' => [
+            'welcome' => 'Selamat datang di ',
+            'welcome-msg' => 'Gerbang Anda untuk menjadi mitra Yogya. Daftarkan produk Anda, kelola kemitraan Anda, dan kembangkan bisnis Anda dengan Yogya Supermarket.',
+        ],
     ],
 
     'form' => [
         'username' => 'Nama Pengguna',
         'password' => 'Kata Sandi',
         'username-placeholder' => 'Masukkan nama pengguna',
+        'search' => 'Cari',
     ],
 
     'auth' => [

@@ -1,70 +1,212 @@
 <script setup lang="ts">
-import { useToast } from '../composables/useToast'
+import { AxiosError } from 'axios';
 
-const { state, remove } = useToast()
+// eslint-disable-next-line no-undef
+const toast = useToast();
 
-const getColorClasses = (color?: string) => {
-  switch (color) {
-    case 'green':
-      return 'bg-green-50 border-green-500 text-green-900'
-    case 'red':
-      return 'bg-red-50 border-red-500 text-red-900'
-    case 'yellow':
-      return 'bg-yellow-50 border-yellow-500 text-yellow-900'
-    case 'blue':
-      return 'bg-blue-50 border-blue-500 text-blue-900'
-    case 'gray':
-      return 'bg-gray-50 border-gray-500 text-gray-900'
-    default:
-      return 'bg-white border-gray-300 text-gray-900'
-  }
-}
+export type ToastDisplay = {
+    // Accept legacy shapes and raw Axios errors at runtime
+    toastDisplay: (detailData: toastData | unknown) => void;
+};
+
+type ToastType = 'success' | 'info' | 'warning' | 'warn' | 'error' | undefined;
+
+type toastData = {
+    type: ToastType;
+    title?: string;
+    summary?: string; // tolerate AppAxios' key
+    detail?: string;
+    response?: unknown;
+    icon?: string | undefined;
+};
+
+const normalizeToastType = (s: ToastType): 'success' | 'info' | 'warning' | 'error' | undefined => {
+    if (s === 'warn') return 'warning';
+    return s as 'success' | 'info' | 'warning' | 'error' | undefined;
+};
+
+const isAxiosErrorLike = (val: unknown): val is AxiosError => {
+    const o = val as Record<string, unknown> | null;
+    return !!o && typeof o === 'object' && ('isAxiosError' in o || 'response' in o);
+};
+
+// Main entry point used across the app
+const toastDisplay = (input: toastData | unknown) => {
+    // If a raw Axios error was passed directly
+    if (isAxiosErrorLike(input)) {
+        handleAxiosError(input as AxiosError);
+        return;
+    }
+
+    const detailData = input as toastData;
+
+    // If type is error and an Axios error is provided under response, use error handler
+    if (
+        detailData.type === 'error' &&
+        detailData.response &&
+        isAxiosErrorLike(detailData.response)
+    ) {
+        handleAxiosError(detailData.response as AxiosError);
+        return;
+    }
+
+    const color = normalizeToastType(detailData.type);
+    const title = detailData.title ?? detailData.summary ?? 'Info';
+    const description = detailData.detail ?? '';
+
+    toast.add({
+        color,
+        title,
+        description,
+        icon: detailData.icon ?? 'i-lucide-bell-ring',
+    });
+};
+
+type ErrorPayload = {
+    title?: string;
+    message?: string;
+    errors?: Record<string, string[] | string>;
+};
+
+const handleAxiosError = (error: AxiosError) => {
+    const status = error.response?.status;
+    // Prefer response.data; if absent, use response object itself as payload
+    const resp = error.response as unknown;
+    let payload: unknown;
+    if (resp && typeof resp === 'object' && 'data' in (resp as Record<string, unknown>)) {
+        payload = (resp as Record<string, unknown>).data as unknown;
+    } else {
+        payload = resp;
+    }
+
+    // Unwrap payload to the innermost { message, errors } if it is nested under .response.data
+    let data: Partial<ErrorPayload> | undefined;
+    if (typeof payload === 'string') {
+        // Try to parse JSON string first; fallback to plain message
+        try {
+            const parsed = JSON.parse(payload) as unknown;
+            if (parsed && typeof parsed === 'object') {
+                const pobj = parsed as Record<string, unknown>;
+                data = {
+                    message:
+                        typeof pobj.message === 'string' ? (pobj.message as string) : undefined,
+                    errors:
+                        (pobj.errors as Record<string, string[] | string> | undefined) ?? undefined,
+                    title: typeof pobj.title === 'string' ? (pobj.title as string) : undefined,
+                };
+            } else {
+                data = { message: payload };
+            }
+        } catch {
+            data = { message: payload };
+        }
+    } else if (payload && typeof payload === 'object') {
+        // If payload is an AxiosError-like with .response.data, use that inner data
+        if ('response' in (payload as Record<string, unknown>)) {
+            const innerResp = (payload as unknown as { response?: { data?: unknown } }).response;
+            if (innerResp && 'data' in innerResp) {
+                payload = innerResp.data as unknown;
+            }
+        }
+
+        const obj = payload as Record<string, unknown>;
+        // If payload itself looks like Laravel validation {message, errors}
+        const message = typeof obj.message === 'string' ? (obj.message as string) : undefined;
+        const errors = obj.errors as Record<string, string[] | string> | undefined;
+        const title = typeof obj.title === 'string' ? (obj.title as string) : undefined;
+        if (message || errors || title) {
+            data = { message, errors, title };
+        } else {
+            data = payload as Partial<ErrorPayload>;
+        }
+    } else {
+        data = undefined;
+    }
+
+    if (typeof error.response === 'undefined') {
+        toast.add({
+            color: 'error',
+            title: 'Unknown Error',
+            description: 'Please contact the administrator',
+            icon: 'i-lucide-ban',
+        });
+        return;
+    }
+
+    // Laravel 422 validation (single consolidated toast)
+    if (status === 422 || (typeof error.message === 'string' && error.message.includes('422'))) {
+        const title = data?.message ?? 'Validation Error';
+        let description = 'The given data was invalid.';
+        if (data?.errors && typeof data.errors === 'object') {
+            const allMessages: string[] = [];
+            Object.values(data.errors).forEach((value) => {
+                const messages = Array.isArray(value) ? value : [String(value)];
+                allMessages.push(...messages);
+            });
+            // Deduplicate and join
+            const unique = Array.from(new Set(allMessages));
+            if (unique.length > 0) description = unique.join('\n');
+        } else if (data?.message) {
+            description = data.message;
+        }
+        toast.add({ color: 'error', title, description, icon: 'i-lucide-ban' });
+        return;
+    }
+
+    if (status === 500) {
+        toast.add({
+            color: 'error',
+            title: 'Server Error',
+            description: 'Please contact the administrator',
+            icon: 'i-lucide-ban',
+        });
+    } else if (status === 401) {
+        toast.add({
+            color: 'error',
+            title: 'Unauthorized',
+            description: 'Action not authorized.',
+            icon: 'i-lucide-ban',
+        });
+    } else if (status === 403) {
+        toast.add({
+            color: 'error',
+            title: 'Forbidden',
+            description: 'Access denied.',
+            icon: 'i-lucide-ban',
+        });
+    } else if (status === 404) {
+        toast.add({
+            color: 'error',
+            title: 'Not Found',
+            description: 'Resource not found.',
+            icon: 'i-lucide-ban',
+        });
+    } else if (!data?.errors) {
+        toast.add({
+            color: 'error',
+            title: data?.title ?? 'Unknown Error',
+            description:
+                data?.message ?? `Please contact the administrator, status code: ${status}`,
+            icon: 'i-lucide-ban',
+        });
+    } else {
+        Object.values(data.errors).forEach((value) => {
+            const objVal = value as Array<string>;
+            toast.add({
+                color: 'error',
+                title: data?.message ?? 'Validation Error',
+                description: objVal.toString(),
+                icon: 'i-lucide-ban',
+            });
+        });
+    }
+};
+
+defineExpose({
+    toastDisplay,
+});
 </script>
 
 <template>
-  <div class="fixed top-4 right-4 z-50 flex flex-col gap-3 max-w-md pointer-events-none">
-    <TransitionGroup name="toast">
-      <div
-        v-for="toast in state.toasts"
-        :key="toast.id"
-        :class="[
-          'flex items-start gap-3 p-4 rounded-lg border-l-4 shadow-lg pointer-events-auto',
-          getColorClasses(toast.color)
-        ]"
-      >
-        <UIcon v-if="toast.icon" :name="toast.icon" class="w-5 h-5 flex-shrink-0 mt-0.5" />
-        <div class="flex-1 min-w-0">
-          <p class="font-semibold text-sm">{{ toast.title }}</p>
-          <p v-if="toast.description" class="text-sm mt-1 opacity-80">{{ toast.description }}</p>
-        </div>
-        <button
-          @click="remove(toast.id)"
-          class="flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity"
-        >
-          <UIcon name="i-heroicons-x-mark" class="w-4 h-4" />
-        </button>
-      </div>
-    </TransitionGroup>
-  </div>
+    <slot />
 </template>
-
-<style scoped>
-.toast-enter-active,
-.toast-leave-active {
-  transition: all 0.3s ease;
-}
-
-.toast-enter-from {
-  opacity: 0;
-  transform: translateX(100%);
-}
-
-.toast-leave-to {
-  opacity: 0;
-  transform: translateX(100%);
-}
-
-.toast-move {
-  transition: transform 0.3s ease;
-}
-</style>

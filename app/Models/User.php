@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -10,19 +11,23 @@ use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+    use HasApiTokens, HasFactory, HasUuids, Notifiable, SoftDeletes;
 
     /**
      * Column info:
      *
-     * id: integer
+     * id: uuid
+     * username: string(50)
      * name: string
-     * username: string
      * password: string
+     * profile_id: uuid
+     * valid_date: date
      * remember_token: string
      * created_at: timestamp
-     * updated_at: timestamp
-     * deleted_at: timestamp
+     * updated_at: timestamp, nullable
+     * created_by: uuid, nullable
+     * updated_by: uuid, nullable
+     * deleted_at: timestamp, nullable
      */
 
     /**
@@ -31,9 +36,14 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
         'username',
+        'name',
         'password',
+        'profile_id',
+        'valid_date',
+        'created_by',
+        'updated_by',
+        'deleted_at',
     ];
 
     /**
