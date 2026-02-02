@@ -52,9 +52,9 @@ const postLoginData = async () => {
             summary: response.data.title,
             detail: response.data.message,
         });
-    })
-    .then(() => {
-        window.location.href = web.home;
+        // Use the redirect URL from backend response if available
+        const redirectUrl = response.data.redirect || web.home;
+        window.location.href = redirectUrl;
     })
     .catch((error) => {
         loading.value = false;
