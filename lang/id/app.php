@@ -48,9 +48,9 @@ return [
     ],
 
     'form' => [
-        'username' => 'Nama Pengguna',
+        'username' => 'ID Pengguna',
         'password' => 'Kata Sandi',
-        'username-placeholder' => 'Masukkan nama pengguna',
+        'username-placeholder' => 'Masukkan ID pengguna',
         'search' => 'Cari',
     ],
 
@@ -64,9 +64,9 @@ return [
             'message' => 'Anda telah berhasil logout.',
         ],
         'validation' => [
-            'username-required' => 'Nama pengguna wajib diisi',
+            'username-required' => 'ID pengguna wajib diisi',
             'password-required' => 'Kata sandi wajib diisi',
-            'username-incorrect' => 'Nama pengguna salah',
+            'username-incorrect' => 'ID pengguna salah',
             'password-incorrect' => 'Kata sandi salah',
         ],
     ],

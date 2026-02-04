@@ -66,12 +66,6 @@ return new class extends Migration
                 $table->dropForeign(['updated_by']);
             });
         }
-        if (Schema::hasTable('profile_menus')) {
-            Schema::table('profile_menus', function (Blueprint $table) {
-                $table->dropForeign(['created_by']);
-                $table->dropForeign(['updated_by']);
-            });
-        }
         if (Schema::hasTable('approval_po_flows')) {
             Schema::table('approval_po_flows', function (Blueprint $table) {
                 $table->dropForeign(['created_by']);
@@ -80,12 +74,6 @@ return new class extends Migration
         }
         if (Schema::hasTable('users')) {
             Schema::table('users', function (Blueprint $table) {
-                $table->dropForeign(['created_by']);
-                $table->dropForeign(['updated_by']);
-            });
-        }
-        if (Schema::hasTable('user_sites')) {
-            Schema::table('user_sites', function (Blueprint $table) {
                 $table->dropForeign(['created_by']);
                 $table->dropForeign(['updated_by']);
             });
