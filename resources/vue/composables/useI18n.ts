@@ -86,9 +86,9 @@ function getFallbackTranslations(locale: 'en' | 'id'): Translations {
       'text.dropdown.logout': 'Keluar',
       'text.home-pg.welcome': 'Selamat datang di ',
       'text.home-pg.welcome-msg': 'Gerbang Anda untuk menjadi mitra Yogya. Daftarkan produk Anda, kelola kemitraan Anda, dan kembangkan bisnis Anda dengan Yogya Supermarket.',
-      'form.username': 'Nama Pengguna',
+      'form.username': 'ID Pengguna',
       'form.password': 'Kata Sandi',
-      'form.username-placeholder': 'Masukkan nama pengguna',
+      'form.username-placeholder': 'Masukkan ID pengguna',
       'form.search': 'Cari',
     }
   }
