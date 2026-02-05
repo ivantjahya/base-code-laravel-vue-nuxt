@@ -22,8 +22,8 @@ import { computed } from 'vue'
 import { useMainStore } from '../AppState'
 
 // Import translation files
-import enTranslations from '../locales/en.json'
-import idTranslations from '../locales/id.json'
+import enTranslations from '../../../lang/en.json'
+import idTranslations from '../../../lang/id.json'
 
 // Define translation type
 type TranslationKey = 

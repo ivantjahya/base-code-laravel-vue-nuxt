@@ -329,11 +329,11 @@ const postFindData = () => {
                 <div class="grid grid-flow-row text-sm">
                   <div class="flex flex-col md:flex-row w-full my-0.5 gap-2">
                     <div class="flex w-full">
-                      <div class="w-full md:w-36 my-auto text-base md:text-sm">{{ t('text.input-field.limit-code') || 'Limit Code' }}</div>
+                      <div class="w-full md:w-36 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.limit-code') || 'Limit Code' }}</div>
                       <div class="flex w-full text-sm">
                           <UInput
                             v-model="limitCode"
-                            :placeholder="t('text.input-field.limit-code') || 'Limit Code'"
+                            :placeholder="t('text.input-field.limit-code-placeholder') || 'Enter limit code'"
                             size="md"
                             class="w-full text-base md:text-sm"
                           />
@@ -341,7 +341,7 @@ const postFindData = () => {
                     </div>
                     <div class="px-2"></div>
                     <div class="flex w-full">
-                      <div class="w-full md:w-36 my-auto text-base md:text-sm">{{ t('text.input-field.start-date') || 'Start Date' }}</div>
+                      <div class="w-full md:w-36 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.start-date') || 'Start Date' }}</div>
                       <div class="flex w-full text-sm">
                         <UPopover v-model:open="startDatePopoverOpen" :popper="{ placement: 'bottom-start' }">
                           <UInput
@@ -363,11 +363,11 @@ const postFindData = () => {
                   </div>
                   <div class="flex flex-col md:flex-row w-full my-0.5 gap-2">
                     <div class="flex w-full">
-                      <div class="w-full md:w-36 my-auto text-base md:text-sm">{{ t('text.input-field.min-amount') || 'Minimum Amount' }}</div>
+                      <div class="w-full md:w-36 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.min-amount') || 'Minimum' }}</div>
                       <div class="flex w-full text-sm">
                           <UInput
                             v-model="minAmount"
-                            :placeholder="t('text.input-field.min-amount') || 'Minimum Amount'"
+                            :placeholder="t('text.input-field.min-amount-placeholder') || 'Enter minimum'"
                             size="md"
                             class="w-full text-base md:text-sm"
                             type="number"
@@ -376,7 +376,7 @@ const postFindData = () => {
                     </div>
                     <div class="px-2"></div>
                     <div class="flex w-full">
-                      <div class="w-full md:w-36 my-auto text-base md:text-sm">{{ t('text.input-field.end-date') || 'End Date' }}</div>
+                      <div class="w-full md:w-36 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.end-date') || 'End Date' }}</div>
                       <div class="flex w-full text-sm">
                         <UPopover v-model:open="endDatePopoverOpen" :popper="{ placement: 'bottom-start' }">
                           <UInput
@@ -398,11 +398,11 @@ const postFindData = () => {
                   </div>
                   <div class="flex flex-col md:flex-row w-full my-0.5 gap-2">
                     <div class="flex w-full">
-                      <div class="w-full md:w-36 my-auto text-base md:text-sm">{{ t('text.input-field.max-amount') || 'Maximum Amount' }}</div>
+                      <div class="w-full md:w-36 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.max-amount') || 'Maximum' }}</div>
                       <div class="flex w-full text-sm">
                           <UInput
                             v-model="maxAmount"
-                            :placeholder="t('text.input-field.max-amount') || 'Maximum Amount'"
+                            :placeholder="t('text.input-field.max-amount-placeholder') || 'Enter maximum'"
                             size="md"
                             class="w-full text-base md:text-sm"
                             type="number"
