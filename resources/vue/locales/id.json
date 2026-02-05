@@ -1,0 +1,94 @@
+{
+  "menu": {
+    "home": "Beranda",
+    "master-data": "Data Master",
+    "new-registration": "Registrasi Baru",
+    "purchase-order": "Pesanan Pembelian (PO)",
+    "consignment": "Konsinyasi",
+    "principal-report": "Laporan Principal",
+    "finance": "Keuangan",
+    "dc-fee": "Biaya DC",
+    "tax-supplier-data": "Data Pajak Supplier"
+  },
+  "page": {
+    "explore-nuxt": "Jelajahi Nuxt",
+    "login": "Masuk",
+    "logout": "Keluar",
+    "home": "Beranda",
+    "limit-management": "Limit",
+    "profile-management": "Profil",
+    "functional-profile-management": "Profil Fungsional",
+    "user-management": "Pengguna",
+    "approval-flow-management": "Alur Persetujuan",
+    "regional-site": "Lokasi Regional",
+    "user-guide-management": "Panduan Pengguna"
+  },
+  "text": {
+    "login-pg": {
+      "welcome": "Selamat datang",
+      "welcome-msg": "Selamat datang di Venditore Plus - silakan login terlebih dahulu sebelum mengakses situs web.",
+      "new-supplier-msg": "Apakah Anda mitra baru?",
+      "register": "Daftar"
+    },
+    "home-pg": {
+      "welcome": "Selamat datang di ",
+      "welcome-msg": "Gerbang Anda untuk menjadi mitra Yogya. Daftarkan produk Anda, kelola kemitraan Anda, dan kembangkan bisnis Anda dengan Yogya Supermarket."
+    },
+    "limit-management-pg": {
+      "list": "Daftar Data Limit"
+    },
+    "button": {
+      "new": "Tambah",
+      "find": "Cari"
+    },
+    "input-field": {
+      "username": "ID Pengguna",
+      "username-placeholder": "Masukkan ID pengguna",
+      "password": "Kata Sandi",
+      "search": "Cari",
+      "more-filters": "Filter Lainnya",
+      "limit-code": "Kode Limit",
+      "min-amount": "Minimum",
+      "max-amount": "Maksimum",
+      "start-date": "Tanggal Mulai",
+      "end-date": "Tanggal Berakhir"
+    },
+    "dropdown": {
+      "select-language": "Pilih bahasa"
+    },
+    "table-column": {
+      "column-no": "No",
+      "column-limit-code": "Kode Limit",
+      "column-minimum-amount": "Minimum",
+      "column-maximum-amount": "Maksimum",
+      "column-start-date": "Tanggal Mulai",
+      "column-end-date": "Tanggal Berakhir"
+    }
+  },
+  "auth": {
+    "login-success": {
+      "title": "Login berhasil",
+      "message": "Selamat datang kembali!"
+    },
+    "logout-success": {
+      "title": "Logout berhasil",
+      "message": "Anda telah berhasil logout."
+    },
+    "validation": {
+      "username-required": "ID pengguna wajib diisi",
+      "password-required": "Kata sandi wajib diisi",
+      "username-incorrect": "ID pengguna salah",
+      "password-incorrect": "Kata sandi salah"
+    }
+  },
+  "token": {
+    "generated": {
+      "title": "Token dihasilkan",
+      "message": "Token dihasilkan, silakan salin token ini dan simpan di tempat yang aman. Token ini hanya ditampilkan sekali dan tidak dapat dipulihkan."
+    },
+    "revoked": {
+      "title": "Token dicabut",
+      "message": "Token dicabut, silakan buat token baru."
+    }
+  }
+}

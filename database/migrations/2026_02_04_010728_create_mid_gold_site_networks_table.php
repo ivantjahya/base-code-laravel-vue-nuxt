@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         if (! Schema::hasTable('mid_gold_site_networks')) {
-        Schema::create('mid_gold_site_networks', function (Blueprint $table) {
+            Schema::create('mid_gold_site_networks', function (Blueprint $table) {
                 $table->id();
                 $table->integer('parent_code');
                 $table->integer('child_code');
@@ -29,6 +29,7 @@ return new class extends Migration
             });
         }
     }
+
     /**
      * Reverse the migrations.
      */
