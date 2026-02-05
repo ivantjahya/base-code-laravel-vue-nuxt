@@ -35,11 +35,24 @@
       "welcome-msg": "Gerbang Anda untuk menjadi mitra Yogya. Daftarkan produk Anda, kelola kemitraan Anda, dan kembangkan bisnis Anda dengan Yogya Supermarket."
     },
     "limit-management-pg": {
-      "list": "Daftar Data Limit"
+        "list": "Daftar Data Limit",
+        "add-new-limit": "Tambah Limit Baru",
+        "input-new-minimum": "Minimum",
+        "input-new-maximum": "Maksimum",
+        "input-new-start-date": "Tanggal Mulai",
+        "input-new-end-date": "Tanggal Berakhir",
+        "input-new-status": "Status",
+        "edit-limit": "Edit Limit"
+    },
+    "profile-management-pg": {
+        "list": "Daftar Data Profil",
+        "add-new-profile": "Tambah Profil Baru"
     },
     "button": {
-      "new": "Tambah",
-      "find": "Cari"
+        "new": "Tambah",
+        "find": "Cari",
+        "clear": "Reset",
+        "submit": "Kirim"
     },
     "input-field": {
       "username": "ID Pengguna",

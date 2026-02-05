@@ -11,7 +11,7 @@ const increment = () => {
 }
 
 const decrement = () => {
-  count.value--;  
+  count.value--;
 }
 
 const reset = () => {
@@ -32,118 +32,193 @@ const onChangeLocale = (value) => {
     selectedLocale.value = newLocale
   }
 }
+
+const open = ref(false)
 </script>
 
 <template>
-  <div class="container mx-auto p-6">
-    <h1 class="text-3xl font-bold mb-4">Welcome to Home Page</h1>
-    <p class="text-gray-600 mb-4">This is a Vue component page rendered via Laravel route using Nuxt UI.</p>
-    
-    <UCard class="mb-4">
-      <template #header>
-        <h3 class="text-lg font-semibold">Counter Example</h3>
-      </template>
-      
-      <div class="space-y-4">
-        <p class="text-2xl font-bold">Counter: {{ count }}</p>
-        
-        <div class="flex gap-2">
-          <UButton @click="increment" color="primary">
-            Increment
-          </UButton>
-          <UButton @click="decrement" color="gray">
-            Decrement
-          </UButton>
-          <UButton @click="reset" color="red" variant="soft">
-            Reset
-          </UButton>
-        </div>
-      </div>
-    </UCard>
+    <div class="container mx-auto p-6">
 
-    <UCard>
-      <template #header>
-        <h3 class="text-lg font-semibold">Nuxt UI Components Demo</h3>
-      </template>
-      
-      <div class="space-y-4">
-        <UInput v-model="name" placeholder="Enter your name" />
-        <p v-if="name">Hello, {{ name }}! 👋</p>
-        
-        <UBadge color="green">Success</UBadge>
-        <UBadge color="yellow">Warning</UBadge>
-        <UBadge color="red">Error</UBadge>
-      </div>
-    </UCard>
+        <h1 class="text-3xl font-bold mb-4">Welcome to Home Page</h1>
+        <p class="text-gray-600 mb-4">This is a Vue component page rendered via Laravel route using Nuxt UI.</p>
 
-    <UCard>
-      <template #header>
-        <h3 class="text-lg font-semibold">Nuxt UI Testing Components</h3>
-      </template>
-      
-      <div class="space-y-4">
-        <UButton
-          color="primary"
-          variant="solid"
-          size="md"
-          icon="i-heroicons-pencil-square"
-          :label="isExpanded ? 'Edit Document' : ''"
-          :ui="{ 
-            base: 'transition-all duration-500 ease-in-out px-2 gap-1',
-            // Ensure icon doesn't shrink awkwardly
-            icon: 'shrink-0' 
-          }"
-          @click="isExpanded = !isExpanded"
-        >
-          <!-- Optional: Custom trailing icon that rotates when open -->
-          <template #trailing>
-            <UIcon
-              name="i-heroicons-chevron-right-20-solid"
-              :class="['transition-transform duration-500', open && 'rotate-90']"
-            />
-          </template>
-        </UButton>
-        <USelectMenu
-          v-model="selectedLocale"
-          :items="localeOptions"
-          value-key="id"
-          value-attribute="id"
-          option-attribute="label"
-          size="sm"
-          class="w-24 ml-2"
-          @update:model-value="onChangeLocale"
-        />
-        <USelectMenu
-          v-model="selectedLocale"
-          :items="localeOptions"
-          value-key="id"
-          value-attribute="id"
-          option-attribute="label"
-          size="xs"
-          class="ml-2"
-          @update:modelValue="onChangeLocale"
-          :popper="{
-            placement: 'bottom-start',
-            modifiers: [{ name: 'flip', enabled: false }]
-          }"
-        >
-          <!-- Customize the trigger button -->
-          <template #default="{ open }">
-            <UButton
-              color="white"
-              icon="i-heroicons-globe-alt"
-              size="sm"
-              :class="[
-                'transition-all duration-500 ease-in-out overflow-hidden whitespace-nowrap px-0',
-                open ? 'w-40' : 'w-10'
-              ]"
-            >
-              <span v-if="!open">{{ selectedLocale }}</span>
-              <span v-if="open" class="ml-2">{{ t('text.dropdown.select-language') }}</span>
-            </UButton>
-          </template>
-        </USelectMenu>
-      </div>
-    </UCard>
-  </div>
+        <UCard class="mb-4">
+            <template #header>
+                <h3 class="text-lg font-semibold">Counter Example</h3>
+            </template>
+
+            <div class="space-y-4">
+                <p class="text-2xl font-bold">Counter: {{ count }}</p>
+
+                <div class="flex gap-2">
+                <UButton @click="increment" color="primary">
+                    Increment
+                </UButton>
+                <UButton @click="decrement" color="gray">
+                    Decrement
+                </UButton>
+                <UButton @click="reset" color="red" variant="soft">
+                    Reset
+                </UButton>
+                </div>
+            </div>
+        </UCard>
+
+        <UCard>
+            <template #header>
+                <h3 class="text-lg font-semibold">Nuxt UI Components Demo</h3>
+            </template>
+
+            <div class="space-y-4">
+                <UInput v-model="name" placeholder="Enter your name" />
+                <p v-if="name">Hello, {{ name }}! 👋</p>
+
+                <UBadge color="green">Success</UBadge>
+                <UBadge color="yellow">Warning</UBadge>
+                <UBadge color="red">Error</UBadge>
+            </div>
+        </UCard>
+
+        <UCard class="mt-4 mb-4">
+
+            <UModal v-model:open="open" title="Create New User" class="text-[16px] font-semibold" :ui="{ footer: 'justify-end' }">
+
+                <UButton label="NEW" class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[16px] px-5"/>
+
+                <template #body>
+
+                    <UFormField
+                        orientation="horizontal"
+                        class="mb-2"
+                    >
+
+                        <template #label>
+                            <span class="flex items-center gap-1">
+                                Username
+                                <span class="text-red-500">*</span>
+                            </span>
+                        </template>
+
+                        <UInput placeholder="Enter username" class="w-80
+                            border-[#CAD5E2]
+                            font-light
+                            focus:border-[#F26524]
+                            focus:ring-2
+                            focus:ring-[#F26524]
+                            focus:ring-offset-0
+                            ring-0" />
+
+                    </UFormField>
+
+                    <UFormField
+                        orientation="horizontal"
+                        class="mb-2"
+                    >
+
+                        <template #label>
+                            <span class="flex items-center gap-1">
+                                Name
+                                <span class="text-red-500">*</span>
+                            </span>
+                        </template>
+
+                        <UInput placeholder="Enter name" class="w-80 border-[#CAD5E2] font-light" />
+
+                    </UFormField>
+
+                </template>
+
+                <template #footer="{ close }">
+                    <UButton label="Clear" class="bg-[#FEE9D6] text-[#F26524] hover:bg-[#FBD0AD] hover:text-[#E34613] active:bg-[#FBD0AD] active:text-[#E34613] text-[14px] px-5" @click="close" />
+                    <UButton label="Submit" class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[14px] px-5"/>
+                </template>
+
+            </UModal>
+
+        </UCard>
+
+        <UCard>
+            <template #header>
+                <h3 class="text-lg font-semibold">Nuxt UI Testing Components</h3>
+            </template>
+
+            <div class="space-y-4">
+
+                <UButton
+                    color="primary"
+                    variant="solid"
+                    size="md"
+                    icon="i-heroicons-pencil-square"
+                    :label="isExpanded ? 'Edit Document' : ''"
+                    :ui="{
+                        base: 'transition-all duration-500 ease-in-out px-2 gap-1',
+                        // Ensure icon doesn't shrink awkwardly
+                        icon: 'shrink-0'
+                    }"
+                    @click="isExpanded = !isExpanded"
+                >
+
+                    <!-- Optional: Custom trailing icon that rotates when open -->
+                    <template #trailing>
+                        <UIcon
+                        name="i-heroicons-chevron-right-20-solid"
+                        :class="['transition-transform duration-500', open && 'rotate-90']"
+                        />
+                    </template>
+
+                </UButton>
+
+                <USelectMenu
+                    v-model="selectedLocale"
+                    :items="localeOptions"
+                    value-key="id"
+                    value-attribute="id"
+                    option-attribute="label"
+                    size="sm"
+                    class="w-24 ml-2"
+                    @update:model-value="onChangeLocale"
+                />
+
+                <USelectMenu
+                    v-model="selectedLocale"
+                    :items="localeOptions"
+                    value-key="id"
+                    value-attribute="id"
+                    option-attribute="label"
+                    size="xs"
+                    class="ml-2"
+                    @update:modelValue="onChangeLocale"
+                    :popper="{
+                        placement: 'bottom-start',
+                        modifiers: [{ name: 'flip', enabled: false }]
+                    }"
+                >
+
+                    <!-- Customize the trigger button -->
+                    <template #default="{ open }">
+                        <UButton
+                            color="white"
+                            icon="i-heroicons-globe-alt"
+                            size="sm"
+                            :class="[
+                                'transition-all duration-500 ease-in-out overflow-hidden whitespace-nowrap px-0',
+                                open ? 'w-40' : 'w-10'
+                            ]"
+                        >
+                            <span v-if="!open">{{ selectedLocale }}</span>
+                            <span v-if="open" class="ml-2">{{ t('text.dropdown.select-language') }}</span>
+                        </UButton>
+                    </template>
+
+                </USelectMenu>
+
+            </div>
+
+        </UCard>
+
+        <UCard>
+
+        </UCard>
+
+    </div>
 </template>
