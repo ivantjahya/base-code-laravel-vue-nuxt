@@ -48,8 +48,11 @@
       "search": "Cari",
       "more-filters": "Filter Lainnya",
       "limit-code": "Kode Limit",
+      "limit-code-placeholder": "Masukkan kode limit",
       "min-amount": "Minimum",
+      "min-amount-placeholder": "Masukkan minimum",
       "max-amount": "Maksimum",
+      "max-amount-placeholder": "Masukkan maksimum",
       "start-date": "Tanggal Mulai",
       "end-date": "Tanggal Berakhir"
     },

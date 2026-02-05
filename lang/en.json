@@ -48,8 +48,11 @@
       "search": "Search",
       "more-filters": "More Filters",
       "limit-code": "Limit Code",
-      "min-amount": "Min Amount",
-      "max-amount": "Max Amount",
+      "limit-code-placeholder": "Enter limit code",
+      "min-amount": "Minimum",
+      "min-amount-placeholder": "Enter minimum",
+      "max-amount": "Maximum",
+      "max-amount-placeholder": "Enter maximum",
       "start-date": "Start Date",
       "end-date": "End Date"
     },
