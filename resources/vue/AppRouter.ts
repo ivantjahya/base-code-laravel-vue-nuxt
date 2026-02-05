@@ -1,6 +1,7 @@
 const landingPage = '/';
 const home = '/home';
 const limitManagement = '/limit-management';
+const profileManagement = '/profile-management';
 const exploreNuxt = '/explore-nuxt';
 
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
@@ -23,6 +24,11 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('./MasterPages/PgLimitMan.vue'),
     },
     {
+        path: profileManagement,
+        name: 'profileManagement',
+        component: () => import('./MasterPages/PgProfileMan.vue'),
+    },
+    {
         path: exploreNuxt,
         name: 'exploreNuxt',
         component: () => import('./HomePages/PgExploreNuxt.vue'),
@@ -40,6 +46,7 @@ export const useWebStore = defineStore('web', {
         landingPage: landingPage,
         home: home,
         limitManagement: limitManagement,
+        profileManagement: profileManagement,
         exploreNuxt: exploreNuxt,
     }),
 });

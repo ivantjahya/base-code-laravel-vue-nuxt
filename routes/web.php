@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MasterDataLimitController;
+use App\Http\Controllers\MasterDataProfileController;
 use Illuminate\Support\Facades\Route;
 
 /** Route for login redirect */
@@ -33,6 +34,9 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['can:has-master-menu-perm'])->group(function () {
         /** Limit */
         Route::get('/limit-management', [MasterDataLimitController::class, 'limitManagementPage'])->name('limit-management');
+
+        /** Profile */
+        Route::get('/profile-management', [MasterDataProfileController::class, 'profileManagementPage'])->name('profile-management');
     });
 });
 
