@@ -155,11 +155,11 @@ const clearData = () => {
           <!-- Username Field -->
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              {{ t('form.username') }}
+              {{ t('text.input-field.username') }}
             </label>
             <UInput
               v-model="username"
-              :placeholder="t('form.username-placeholder')"
+              :placeholder="t('text.input-field.username-placeholder')"
               size="lg"
               class="w-full"
             />
@@ -168,7 +168,7 @@ const clearData = () => {
           <!-- Password Field -->
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              {{ t('form.password') }}
+              {{ t('text.input-field.password') }}
             </label>
             <UInput
               v-model="password"

@@ -123,7 +123,7 @@ class AuthController extends Controller
 
         /** Send user to route */
         (string) $title = __('app.auth.logout-success.title');
-        (string) $message = __('app.text.logout-success.message');
+        (string) $message = __('app.auth.logout-success.message');
         (string) $route = route('login');
 
         return $this->jsonSuccess($title, $message, $route);

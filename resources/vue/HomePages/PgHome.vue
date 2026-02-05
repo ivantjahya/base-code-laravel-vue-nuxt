@@ -10,7 +10,7 @@ const iconVenditorePlusWhite = new URL('@/images/icon-venditore-plus-white.webp'
 </script>
 
 <template>
-  <CmpLayout :title="t('page.home') || 'Home'">
+  <CmpLayout :title="t('menu.home') || 'Home'">
     <div class="p-3 h-full">
       <UCard class="h-full" body-class="!p-2">
         <!-- Welcome Banner -->

@@ -1,0 +1,94 @@
+{
+  "menu": {
+    "home": "Home",
+    "master-data": "Master Data",
+    "new-registration": "New Registration",
+    "purchase-order": "Purchase Order",
+    "consignment": "Consignment",
+    "principal-report": "Principal Report",
+    "finance": "Finance",
+    "dc-fee": "DC Fee",
+    "tax-supplier-data": "Tax Supplier Data"
+  },
+  "page": {
+    "explore-nuxt": "Explore Nuxt",
+    "login": "Login",
+    "logout": "Logout",
+    "home": "Home",
+    "limit-management": "Limits",
+    "profile-management": "Profiles",
+    "functional-profile-management": "Functional Profiles",
+    "user-management": "Users",
+    "approval-flow-management": "Approval Flows",
+    "regional-site": "Regional Site",
+    "user-guide-management": "User Guide"
+  },
+  "text": {
+    "login-pg": {
+      "welcome": "Welcome",
+      "welcome-msg": "Welcome to Venditore Plus - please login first before accessing the website.",
+      "new-supplier-msg": "Are you a new supplier?",
+      "register": "Register"
+    },
+    "home-pg": {
+      "welcome": "Welcome to ",
+      "welcome-msg": "Your gateway to becoming a Yogya supplier. Register your products, manage your partnership, and grow your business with Yogya Supermarket."
+    },
+    "limit-management-pg": {
+      "list": "List of Limits"
+    },
+    "button": {
+      "new": "New",
+      "find": "Find"
+    },
+    "input-field": {
+      "username": "Username",
+      "username-placeholder": "Enter username",
+      "password": "Password",
+      "search": "Search",
+      "more-filters": "More Filters",
+      "limit-code": "Limit Code",
+      "min-amount": "Min Amount",
+      "max-amount": "Max Amount",
+      "start-date": "Start Date",
+      "end-date": "End Date"
+    },
+    "dropdown": {
+      "select-language": "Select language"
+    },
+    "table-column": {
+      "column-no": "No",
+      "column-limit-code": "Limit Code",
+      "column-minimum-amount": "Minimum",
+      "column-maximum-amount": "Maximum",
+      "column-start-date": "Start Date",
+      "column-end-date": "End Date"
+    }
+  },
+  "auth": {
+    "login-success": {
+      "title": "Login successful",
+      "message": "Welcome back!"
+    },
+    "logout-success": {
+      "title": "Logout successful",
+      "message": "You have been logged out."
+    },
+    "validation": {
+      "username-required": "Username is required",
+      "password-required": "Password is required",
+      "username-incorrect": "Username is incorrect",
+      "password-incorrect": "Password is incorrect"
+    }
+  },
+  "token": {
+    "generated": {
+      "title": "Token generated",
+      "message": "Token generated, please copy this token and save it in a safe place. This token is only displayed once and cannot be recovered."
+    },
+    "revoked": {
+      "title": "Token revoked",
+      "message": "Token revoked, please create a new token."
+    }
+  }
+}

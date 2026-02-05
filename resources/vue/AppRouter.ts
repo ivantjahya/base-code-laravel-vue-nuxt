@@ -1,5 +1,6 @@
 const landingPage = '/';
 const home = '/home';
+const limitManagement = '/limit-management';
 const exploreNuxt = '/explore-nuxt';
 
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
@@ -15,6 +16,11 @@ const routes: Array<RouteRecordRaw> = [
         path: home,
         name: 'home',
         component: () => import('./HomePages/PgHome.vue'),
+    },
+    {
+        path: limitManagement,
+        name: 'limitManagement',
+        component: () => import('./MasterPages/PgLimitMan.vue'),
     },
     {
         path: exploreNuxt,
@@ -33,6 +39,7 @@ export const useWebStore = defineStore('web', {
         /** Define route here because if not defined and get from XHR it will be race condition */
         landingPage: landingPage,
         home: home,
+        limitManagement: limitManagement,
         exploreNuxt: exploreNuxt,
     }),
 });

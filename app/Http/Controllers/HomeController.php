@@ -18,7 +18,7 @@ class HomeController extends Controller
         Log::debug('Computer access explore nuxt page', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
 
         return view('base-components.base-vue', [
-            'title' => __('app.page.exploreNuxt'),
+            'title' => __('app.page.explore-nuxt'),
         ]);
     }
 
