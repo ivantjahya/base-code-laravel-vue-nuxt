@@ -126,6 +126,34 @@
         "placeholder-filter-status": "Select status"
 
     },
+    "user-management-pg": {
+        "list": "List of Users",
+        "add-new-user": "Add New User",
+
+        "input-new-username": "Username",
+        "input-new-username-placeholder": "Enter username",
+        "input-new-name": "Name",
+        "input-new-name-placeholder": "Enter name",
+        "input-new-description": "Description",
+        "input-new-profile": "Profile",
+        "input-new-profile-placeholder": "Select profile",
+        "input-new-category": "Category",
+        "input-new-category-placeholder": "Select category",
+        "input-new-site": "Site",
+        "input-new-site-placeholder": "Select site",
+        "input-new-validity-date": "Validity Date",
+
+        "input-filter-username": "Username",
+        "placeholder-filter-username": "Enter username",
+        "input-filter-name": "Name",
+        "placeholder-filter-name": "Enter name",
+        "input-filter-profile": "Profile",
+        "placeholder-filter-profile": "Select profile",
+        "input-filter-category": "Category",
+        "placeholder-filter-category": "Select category",
+        "input-filter-status": "Status",
+        "placeholder-filter-status": "Select status"
+    },
     "button": {
         "new": "New",
         "find": "Find",

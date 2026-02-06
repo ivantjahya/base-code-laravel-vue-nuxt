@@ -124,6 +124,34 @@
         "input-filter-status": "Status",
         "placeholder-filter-status": "Pilih status"
     },
+    "user-management-pg": {
+        "list": "Daftar Data Pengguna",
+        "add-new-user": "Tambah Pengguna Baru",
+
+        "input-new-username": "ID Pengguna",
+        "input-new-username-placeholder": "Masukkan ID pengguna",
+        "input-new-name": "Nama",
+        "input-new-name-placeholder": "Masukkan nama",
+        "input-new-description": "Deskripsi",
+        "input-new-profile": "Profil",
+        "input-new-profile-placeholder": "Pilih profil",
+        "input-new-category": "Kategori",
+        "input-new-category-placeholder": "Pilih kategori",
+        "input-new-site": "Lokasi",
+        "input-new-site-placeholder": "Pilih lokasi",
+        "input-new-validity-date": "Tanggal Berlaku",
+
+        "input-filter-username": "ID Pengguna",
+        "placeholder-filter-username": "Masukkan ID pengguna",
+        "input-filter-name": "Nama",
+        "placeholder-filter-name": "Masukkan nama",
+        "input-filter-profile": "Profil",
+        "placeholder-filter-profile": "Pilih profil",
+        "input-filter-category": "Kategori",
+        "placeholder-filter-category": "Pilih kategori",
+        "input-filter-status": "Status",
+        "placeholder-filter-status": "Pilih status"
+    },
     "button": {
         "new": "Tambah",
         "find": "Cari",
