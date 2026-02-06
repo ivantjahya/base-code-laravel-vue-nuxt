@@ -40,6 +40,14 @@ export const router = createRouter({
     routes,
 });
 
+// Clear console on route changes
+router.afterEach(() => {
+    // Clear console when navigating between pages
+    if (console && console.clear) {
+        console.clear();
+    }
+});
+
 export const useWebStore = defineStore('web', {
     state: () => ({
         /** Define route here because if not defined and get from XHR it will be race condition */

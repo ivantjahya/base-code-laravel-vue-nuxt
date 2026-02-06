@@ -4,7 +4,6 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class SetLocale
@@ -26,8 +25,6 @@ class SetLocale
 
         // Set application locale
         app()->setLocale($locale);
-
-        Log::debug('SetLocale middleware', ['locale' => $locale, 'appLocale' => app()->getLocale()]);
 
         return $next($request);
     }

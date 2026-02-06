@@ -21,7 +21,45 @@
     "user-management": "Pengguna",
     "approval-flow-management": "Alur Persetujuan",
     "regional-site": "Lokasi Regional",
-    "user-guide-management": "Panduan Pengguna"
+    "user-guide-management": "Panduan Pengguna",
+    "article": "Artikel",
+    "supplier": "Supplier",
+    "po-status-report": "Laporan Status PO",
+    "po-list": "Daftar Data PO",
+    "po-cross-dock": "PO Cross Dock",
+    "return": "Retur",
+    "pengajuan-retur": "Pengajuan Retur",
+    "pengajuan-acara": "Pengajuan Acara",
+    "upload-brand-store": "Unggah Brand Store",
+    "surat-acara": "Surat Acara",
+    "stock-report": "Stok",
+    "sales-report": "Penjualan",
+    "frozen-for-purchase-report": "Pembekuan Pembelian",
+    "market-share-report": "Pangsa Pasar",
+    "merchandise-structure-report": "Struktur Merchandise",
+    "sell-out-by-month-report": "Penjualan Masuk per Bulan",
+    "sell-out-by-div-month-report": "Penjualan per Bulan",
+    "sell-out-by-div-by-cat-by-brand-report": "Penjualan per Div per Kategori per Merek",
+    "50-top-sku-report": "50 SKU Teratas",
+    "sell-in-by-month-report": "Penjualan Masuk per Bulan",
+    "sell-in-by-div-month-report": "Penjualan Masuk per Divisi per Bulan",
+    "sl-by-month-report": "SL per Bulan",
+    "sl-by-div-month-report": "SL per Divisi per Bulan",
+    "sl-distributor-by-div-by-month-report": "SL Distributor per Divisi per Bulan",
+    "payment-check": "Cek Pembayaran",
+    "invoice-input-putus": "Faktur Putus",
+    "invoice-consignment": "Faktur Konsinyasi",
+    "po-kontra-bon": "PO Kontra Bon",
+    "data-retur-coretax": "Retur Coretax",
+    "report-payment": "Laporan Pembayaran",
+    "billing": "Penagihan",
+    "dc-list": "Daftar Data DC",
+    "handling-fee": "Biaya Penanganan",
+    "distribution-fee": "Biaya Distribusi",
+    "dc-fee-supplier": "Biaya DC Supplier",
+    "set-handling-method": "Pengaturan Metode Penanganan",
+    "dc-fee-validation": "Validasi Biaya DC",
+    "dc-fee-by-receiving": "Biaya DC Berdasarkan Penerimaan"
   },
   "text": {
     "login-pg": {
@@ -67,7 +105,8 @@
       "max-amount": "Maksimum",
       "max-amount-placeholder": "Masukkan maksimum",
       "start-date": "Tanggal Mulai",
-      "end-date": "Tanggal Berakhir"
+      "end-date": "Tanggal Berakhir",
+      "search-menu-placeholder": "Ketik perintah atau cari..."
     },
     "dropdown": {
       "select-language": "Pilih bahasa"
@@ -79,6 +118,13 @@
       "column-maximum-amount": "Maksimum",
       "column-start-date": "Tanggal Mulai",
       "column-end-date": "Tanggal Berakhir"
+    },
+    "message": {
+      "navigation": "Navigasi",
+      "to-navigate": "untuk menavigasi",
+      "to-select": "untuk memilih",
+      "to-close": "untuk menutup",
+      "no-results-found": "Tidak ada hasil yang ditemukan"
     }
   },
   "auth": {

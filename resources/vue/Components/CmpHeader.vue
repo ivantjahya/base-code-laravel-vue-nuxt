@@ -3,17 +3,14 @@ import { ref } from 'vue'
 import { useI18n } from '../composables/useI18n'
 import { localeOptions } from '../composables/useLocale'
 import { useWebStore } from '../AppRouter'
+import { useMainStore } from '../AppState'
 
 const { t, locale, setLocale } = useI18n()
 const web = useWebStore()
+const mainStore = useMainStore()
 
 const props = defineProps<{
   title: string
-  isMenuCollapsed: boolean
-}>()
-
-const emit = defineEmits<{
-  'toggle-menu': []
 }>()
 
 const selectedLocale = ref(locale.value)
@@ -27,20 +24,20 @@ const onChangeLocale = (value: any) => {
 }
 
 const toggleMenu = () => {
-  emit('toggle-menu')
+  mainStore.toggleSidebar()
 }
 </script>
 
 <template>
   <header class="h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-6 flex-shrink-0">
     <!-- Left Section -->
-    <div class="flex items-center gap-4 flex-1">
+    <div class="flex items-center gap-1.5 flex-1">
       <!-- Menu Toggle Button -->
       <UButton
         color="gray"
         variant="ghost"
-        icon="i-lucide-panel-right-open"
-        size="lg"
+        :icon="!mainStore.isCollapsed ? 'i-lucide-panel-right-open' : 'i-lucide-panel-left-open'"
+        size="xl"
         class="text-orange-600"
         @click="toggleMenu"
       />

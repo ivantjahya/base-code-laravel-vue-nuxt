@@ -20,6 +20,7 @@ class MenuSeeder extends Seeder
                 'url' => '/home',
                 'icon' => 'i-lucide-house',
                 'code' => 0,
+                'name_code' => 'menu.home',
                 'submenu' => [],
             ],
             [
@@ -27,12 +28,14 @@ class MenuSeeder extends Seeder
                 'url' => null,
                 'icon' => 'i-lucide-folder-open',
                 'code' => 1000,
+                'name_code' => 'menu.master-data',
                 'submenu' => [
                     [
                         'name' => 'Limits',
                         'url' => '/limit-management',
                         'icon' => null,
                         'code' => 1010,
+                        'name_code' => 'page.limit-management',
                         'access_control' => ['create', 'update'],
                     ],
                     [
@@ -40,6 +43,7 @@ class MenuSeeder extends Seeder
                         'url' => '/profile-management',
                         'icon' => null,
                         'code' => 1020,
+                        'name_code' => 'page.profile-management',
                         'access_control' => ['create', 'update'],
                     ],
                     [
@@ -47,6 +51,7 @@ class MenuSeeder extends Seeder
                         'url' => '/functional-profile-management',
                         'icon' => null,
                         'code' => 1030,
+                        'name_code' => 'page.functional-profile-management',
                         'access_control' => ['create', 'update'],
                     ],
                     [
@@ -54,6 +59,7 @@ class MenuSeeder extends Seeder
                         'url' => '/user-management',
                         'icon' => null,
                         'code' => 1040,
+                        'name_code' => 'page.user-management',
                         'access_control' => ['create', 'update'],
                     ],
                     [
@@ -61,6 +67,7 @@ class MenuSeeder extends Seeder
                         'url' => '/approval-flow-management',
                         'icon' => null,
                         'code' => 1050,
+                        'name_code' => 'page.approval-flow-management',
                         'access_control' => ['create', 'update'],
                     ],
                     [
@@ -68,6 +75,7 @@ class MenuSeeder extends Seeder
                         'url' => '/regional-site',
                         'icon' => null,
                         'code' => 1060,
+                        'name_code' => 'page.regional-site',
                         'access_control' => [],
                     ],
                     [
@@ -75,6 +83,7 @@ class MenuSeeder extends Seeder
                         'url' => '/user-guide-management',
                         'icon' => null,
                         'code' => 1070,
+                        'name_code' => 'page.user-guide-management',
                         'access_control' => ['create', 'update', 'delete'],
                     ],
                 ],
@@ -84,12 +93,14 @@ class MenuSeeder extends Seeder
                 'url' => null,
                 'icon' => 'i-lucide-file-pen',
                 'code' => 2000,
+                'name_code' => 'menu.new-registration',
                 'submenu' => [
                     [
                         'name' => 'Article',
                         'url' => '/article',
                         'icon' => null,
                         'code' => 2010,
+                        'name_code' => 'page.article',
                         'access_control' => ['create', 'update', 'upload', 'export', 'viewdetail'],
                     ],
                     [
@@ -97,6 +108,7 @@ class MenuSeeder extends Seeder
                         'url' => '/supplier',
                         'icon' => null,
                         'code' => 2020,
+                        'name_code' => 'page.supplier',
                         'access_control' => ['update', 'viewdetail'],
                     ],
                 ],
@@ -106,12 +118,14 @@ class MenuSeeder extends Seeder
                 'url' => null,
                 'icon' => 'i-luicide-baggage-claim',
                 'code' => 3000,
+                'name_code' => 'menu.purchase-order',
                 'submenu' => [
                     [
                         'name' => 'PO Status Report',
                         'url' => '/po-status-report',
                         'icon' => null,
                         'code' => 3010,
+                        'name_code' => 'page.po-status-report',
                         'access_control' => ['create', 'export', 'viewdetail'],
                     ],
                     [
@@ -119,6 +133,7 @@ class MenuSeeder extends Seeder
                         'url' => '/po-list',
                         'icon' => null,
                         'code' => 3020,
+                        'name_code' => 'page.po-list',
                         'access_control' => ['viewdetail', 'print'],
                     ],
                     [
@@ -126,6 +141,7 @@ class MenuSeeder extends Seeder
                         'url' => '/po-cross-dock',
                         'icon' => null,
                         'code' => 3030,
+                        'name_code' => 'page.po-cross-dock',
                         'access_control' => ['update', 'print'],
                     ],
                     [
@@ -133,6 +149,7 @@ class MenuSeeder extends Seeder
                         'url' => '/return',
                         'icon' => null,
                         'code' => 3040,
+                        'name_code' => 'page.return',
                         'access_control' => ['export'],
                     ],
                 ],
@@ -142,12 +159,14 @@ class MenuSeeder extends Seeder
                 'url' => null,
                 'icon' => 'i-lucide-handshake',
                 'code' => 4000,
+                'name_code' => 'menu.consignment',
                 'submenu' => [
                     [
                         'name' => 'Pengajuan Retur',
                         'url' => '/pengajuan-retur',
                         'icon' => null,
                         'code' => 4010,
+                        'name_code' => 'page.pengajuan-retur',
                         'access_control' => ['create', 'update', 'delete'],
                     ],
                     [
@@ -155,6 +174,7 @@ class MenuSeeder extends Seeder
                         'url' => '/pengajuan-acara',
                         'icon' => null,
                         'code' => 4020,
+                        'name_code' => 'page.pengajuan-acara',
                         'access_control' => ['create', 'update', 'delete', 'export'],
                     ],
                     [
@@ -162,6 +182,7 @@ class MenuSeeder extends Seeder
                         'url' => '/upload-brand-store',
                         'icon' => null,
                         'code' => 4030,
+                        'name_code' => 'page.upload-brand-store',
                         'access_control' => ['upload'],
                     ],
                     [
@@ -169,6 +190,7 @@ class MenuSeeder extends Seeder
                         'url' => '/surat-acara',
                         'icon' => null,
                         'code' => 4040,
+                        'name_code' => 'page.surat-acara',
                         'access_control' => ['export', 'viewdetail'],
                     ],
                 ],
@@ -178,12 +200,14 @@ class MenuSeeder extends Seeder
                 'url' => null,
                 'icon' => 'i-lucide-file-chart-column',
                 'code' => 5000,
+                'name_code' => 'menu.principal-report',
                 'submenu' => [
                     [
                         'name' => 'Stock',
                         'url' => '/stock-report',
                         'icon' => null,
                         'code' => 5010,
+                        'name_code' => 'page.stock-report',
                         'access_control' => ['export'],
                     ],
                     [
@@ -191,6 +215,7 @@ class MenuSeeder extends Seeder
                         'url' => '/sales-report',
                         'icon' => null,
                         'code' => 5020,
+                        'name_code' => 'page.sales-report',
                         'access_control' => ['viewdetail'],
                     ],
                     [
@@ -198,6 +223,7 @@ class MenuSeeder extends Seeder
                         'url' => '/frozen-for-purchase-report',
                         'icon' => null,
                         'code' => 5030,
+                        'name_code' => 'page.frozen-for-purchase-report',
                         'access_control' => ['viewdetail'],
                     ],
                     [
@@ -205,6 +231,7 @@ class MenuSeeder extends Seeder
                         'url' => '/market-share-report',
                         'icon' => null,
                         'code' => 5040,
+                        'name_code' => 'page.market-share-report',
                         'access_control' => ['viewdetail'],
                     ],
                     [
@@ -212,6 +239,7 @@ class MenuSeeder extends Seeder
                         'url' => '/merchandise-structure-report',
                         'icon' => null,
                         'code' => 5050,
+                        'name_code' => 'page.merchandise-structure-report',
                         'access_control' => ['viewdetail'],
                     ],
                     [
@@ -219,6 +247,7 @@ class MenuSeeder extends Seeder
                         'url' => '/sell-out-by-month-report',
                         'icon' => null,
                         'code' => 5060,
+                        'name_code' => 'page.sell-out-by-month-report',
                         'access_control' => ['export'],
                     ],
                     [
@@ -226,6 +255,7 @@ class MenuSeeder extends Seeder
                         'url' => '/sell-out-by-div-month-report',
                         'icon' => null,
                         'code' => 5070,
+                        'name_code' => 'page.sell-out-by-div-month-report',
                         'access_control' => ['export'],
                     ],
                     [
@@ -233,6 +263,7 @@ class MenuSeeder extends Seeder
                         'url' => '/sell-out-by-div-by-cat-by-brand-report',
                         'icon' => null,
                         'code' => 5080,
+                        'name_code' => 'page.sell-out-by-div-by-cat-by-brand-report',
                         'access_control' => ['export'],
                     ],
                     [
@@ -240,6 +271,7 @@ class MenuSeeder extends Seeder
                         'url' => '/50-top-sku-report',
                         'icon' => null,
                         'code' => 5090,
+                        'name_code' => 'page.50-top-sku-report',
                         'access_control' => ['export'],
                     ],
                     [
@@ -247,6 +279,7 @@ class MenuSeeder extends Seeder
                         'url' => '/sell-in-by-month-report',
                         'icon' => null,
                         'code' => 5100,
+                        'name_code' => 'page.sell-in-by-month-report',
                         'access_control' => ['export'],
                     ],
                     [
@@ -254,6 +287,7 @@ class MenuSeeder extends Seeder
                         'url' => '/sell-in-by-div-by-month-report',
                         'icon' => null,
                         'code' => 5110,
+                        'name_code' => 'page.sell-in-by-div-by-month-report',
                         'access_control' => ['export'],
                     ],
                     [
@@ -261,6 +295,7 @@ class MenuSeeder extends Seeder
                         'url' => '/sl-by-month-report',
                         'icon' => null,
                         'code' => 5120,
+                        'name_code' => 'page.sl-by-month-report',
                         'access_control' => ['export'],
                     ],
                     [
@@ -268,6 +303,7 @@ class MenuSeeder extends Seeder
                         'url' => '/sl-by-div-by-month-report',
                         'icon' => null,
                         'code' => 5130,
+                        'name_code' => 'page.sl-by-div-by-month-report',
                         'access_control' => ['export'],
                     ],
                     [
@@ -275,6 +311,7 @@ class MenuSeeder extends Seeder
                         'url' => '/sl-distributor-by-div-by-month-report',
                         'icon' => null,
                         'code' => 5140,
+                        'name_code' => 'page.sl-distributor-by-div-by-month-report',
                         'access_control' => ['export'],
                     ],
                 ],
@@ -284,12 +321,14 @@ class MenuSeeder extends Seeder
                 'url' => null,
                 'icon' => 'i-lucide-wallet',
                 'code' => 6000,
+                'name_code' => 'page.finance',
                 'submenu' => [
                     [
                         'name' => 'Payment Check',
                         'url' => '/payment-check',
                         'icon' => null,
                         'code' => 6010,
+                        'name_code' => 'page.payment-check',
                         'access_control' => ['print'],
                     ],
                     [
@@ -297,6 +336,7 @@ class MenuSeeder extends Seeder
                         'url' => '/invoice-input-putus',
                         'icon' => null,
                         'code' => 6020,
+                        'name_code' => 'page.invoice-input-putus',
                         'access_control' => ['create', 'upload', 'print'],
                     ],
                     [
@@ -304,6 +344,7 @@ class MenuSeeder extends Seeder
                         'url' => '/invoice-consignment',
                         'icon' => null,
                         'code' => 6030,
+                        'name_code' => 'page.invoice-consignment',
                         'access_control' => ['create', 'print'],
                     ],
                     [
@@ -311,6 +352,7 @@ class MenuSeeder extends Seeder
                         'url' => '/po-kontra-bon',
                         'icon' => null,
                         'code' => 6040,
+                        'name_code' => 'page.po-kontra-bon',
                         'access_control' => ['print'],
                     ],
                     [
@@ -318,6 +360,7 @@ class MenuSeeder extends Seeder
                         'url' => '/data-retur-coretax',
                         'icon' => null,
                         'code' => 6050,
+                        'name_code' => 'page.data-retur-coretax',
                         'access_control' => ['create', 'viewdetail'],
                     ],
                     [
@@ -325,20 +368,15 @@ class MenuSeeder extends Seeder
                         'url' => '/report-payment',
                         'icon' => null,
                         'code' => 6060,
+                        'name_code' => 'page.report-payment',
                         'access_control' => ['export'],
-                    ],
-                    [
-                        'name' => 'Tax Supplier Data',
-                        'url' => '/tax-supplier-data',
-                        'icon' => null,
-                        'code' => 6070,
-                        'access_control' => ['export', 'viewdetail'],
                     ],
                     [
                         'name' => 'Billing',
                         'url' => '/billing',
                         'icon' => null,
-                        'code' => 6080,
+                        'code' => 6070,
+                        'name_code' => 'page.billing',
                         'access_control' => ['upload', 'export', 'viewdetail'],
                     ],
                 ],
@@ -348,12 +386,14 @@ class MenuSeeder extends Seeder
                 'url' => null,
                 'icon' => 'i-lucide-truck',
                 'code' => 7000,
+                'name_code' => 'page.dc-fee',
                 'submenu' => [
                     [
                         'name' => 'DC List',
                         'url' => '/dc-list',
                         'icon' => null,
                         'code' => 7010,
+                        'name_code' => 'page.dc-list',
                         'access_control' => ['create', 'update', 'delete', 'viewdetail'],
                     ],
                     [
@@ -361,6 +401,7 @@ class MenuSeeder extends Seeder
                         'url' => '/handling-fee',
                         'icon' => null,
                         'code' => 7020,
+                        'name_code' => 'page.handling-fee',
                         'access_control' => [],
                     ],
                     [
@@ -368,6 +409,7 @@ class MenuSeeder extends Seeder
                         'url' => '/distribution-fee',
                         'icon' => null,
                         'code' => 7030,
+                        'name_code' => 'page.distribution-fee',
                         'access_control' => ['create', 'update', 'delete'],
                     ],
                     [
@@ -375,6 +417,7 @@ class MenuSeeder extends Seeder
                         'url' => '/dc-fee-supplier',
                         'icon' => null,
                         'code' => 7040,
+                        'name_code' => 'page.dc-fee-supplier',
                         'access_control' => ['update'],
                     ],
                     [
@@ -382,6 +425,7 @@ class MenuSeeder extends Seeder
                         'url' => '/set-handling-method',
                         'icon' => null,
                         'code' => 7050,
+                        'name_code' => 'page.set-handling-method',
                         'access_control' => [],
                     ],
                     [
@@ -389,6 +433,7 @@ class MenuSeeder extends Seeder
                         'url' => '/dc-fee-validation',
                         'icon' => null,
                         'code' => 7060,
+                        'name_code' => 'page.dc-fee-validation',
                         'access_control' => ['approve'],
                     ],
                     [
@@ -396,6 +441,7 @@ class MenuSeeder extends Seeder
                         'url' => '/dc-fee-by-receiving',
                         'icon' => null,
                         'code' => 7070,
+                        'name_code' => 'page.dc-fee-by-receiving',
                         'access_control' => ['export'],
                     ],
                 ],
@@ -405,6 +451,7 @@ class MenuSeeder extends Seeder
                 'url' => '/tax-supplier-data',
                 'icon' => 'i-lucide-circle-dollar-sign',
                 'code' => 8000,
+                'name_code' => 'menu.tax-supplier-data',
                 'submenu' => [],
             ],
         ];
@@ -416,6 +463,7 @@ class MenuSeeder extends Seeder
             ], [
                 'icon' => $menu['icon'],
                 'code' => $menu['code'],
+                'name_code' => $menu['name_code'],
             ]);
 
             foreach ($menu['submenu'] as $submenus) {
@@ -425,6 +473,7 @@ class MenuSeeder extends Seeder
                     'name' => $submenus['name'],
                     'icon' => $submenus['icon'],
                     'code' => $submenus['code'],
+                    'name_code' => $submenus['name_code'],
                     'parent_id' => $parent->id,
                 ]);
 

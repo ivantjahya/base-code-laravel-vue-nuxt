@@ -71,9 +71,9 @@ const minFilter = ref<number | null>(null)
 const maxFilter = ref<number | null>(null)
 
 const StartDateFilter = ref<any>(null)
-const ModelStartDateFilter = shallowRef<CalendarDate | null>(null)
+const ModelStartDateFilter = shallowRef<CalendarDate>()
 const EndDateFilter = ref<any>(null)
-const ModelEndDateFilter = shallowRef<CalendarDate | null>(null)
+const ModelEndDateFilter = shallowRef<CalendarDate>()
 
 // Convert CalendarDate to string format for API
 const getDateString = (calendarDate: CalendarDate | undefined) => {
