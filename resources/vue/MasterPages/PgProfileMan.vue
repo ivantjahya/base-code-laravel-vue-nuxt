@@ -22,14 +22,12 @@ const moreFilterItems = computed(() => [
 ])
 
 // ========================= FILTER =========================
-const limitCodeFilter = ref('')
-const minFilter = ref<number | null>(null)
-const maxFilter = ref<number | null>(null)
-
-const StartDateFilter = ref<any>(null)
-const ModelStartDateFilter = shallowRef<CalendarDate | null>(null)
-const EndDateFilter = ref<any>(null)
-const ModelEndDateFilter = shallowRef<CalendarDate | null>(null)
+const profileCodeFilter = ref('')
+const profileNameFilter = ref('')
+const profileSourceValueFilter = ref(['Internal', 'External'])
+const profileSourceFilter = ref<string | null>(null)
+const statusValueFilter = ref(['Active', 'Not Active'])
+const statusFilter = ref<string | null>(null)
 
 // Convert CalendarDate to string format for API
 const getDateString = (calendarDate: CalendarDate | undefined) => {
@@ -44,209 +42,28 @@ const getDateString = (calendarDate: CalendarDate | undefined) => {
 // Actions
 const postFindData = () => {
     console.log('Finding data with filters:', {
-        limitCode: limitCodeFilter.value,
-        minAmount: minFilter.value,
-        maxAmount: maxFilter.value,
-        startDate: getDateString(ModelStartDateFilter.value),
-        endDate: getDateString(ModelEndDateFilter.value)
+        profileCode: profileCodeFilter.value,
+        profileName: profileNameFilter.value,
+        profileSource: profileSourceFilter.value,
+        status: statusFilter.value
     })
 }
 
 // ========================= MODAL =========================
-const valueMin = ref<number | null>(null)
-const valueMax = ref<number | null>(null)
+const profileName = ref<string>('')
+const description = ref<string>('')
 
-const inputStartDate = ref<any>(null)
-const modelValueStart = shallowRef<CalendarDate | null>(null)
-const inputEndDate = ref<any>(null)
-const modelValueEnd = shallowRef<CalendarDate | null>(null)
+const profileSourceValue = ref(['Internal', 'External'])
+const profileSource = ref<string | null>(null)
 
 const valueSwitch = ref(true)
 
 const resetForm = () => {
-    valueMin.value = null
-    valueMax.value = null
-    modelValueStart.value = null
-    modelValueEnd.value = null
+    profileName.value = ''
+    description.value = ''
+    profileSource.value = null
     valueSwitch.value = true
 }
-// const rowSelection = ref({})
-
-// Format number with thousand separators
-// const formatNumber = (num: number) => {
-//   if (num === 0) return '0'
-//   return num.toLocaleString('id-ID')
-// }
-
-// const handleEdit = (limit: any) => {
-//   console.log('Edit limit:', limit)
-//   // Implement edit limit
-// }
-
-// const handleDelete = (limit: any) => {
-//   console.log('Delete limit:', limit)
-//   // Implement delete limit
-// }
-
-// Row actions dropdown
-// const getRowActions = (row: any) => [
-//   [
-//     {
-//       label: 'Edit',
-//       icon: 'i-lucide-pencil',
-//       onSelect: () => handleEdit(row.original)
-//     }
-//   ],
-//   [
-//     {
-//       label: 'Delete',
-//       icon: 'i-lucide-trash',
-//       color: 'error',
-//       onSelect: () => handleDelete(row.original)
-//     }
-//   ]
-// ]
-
-// Table columns definition
-// const columns: TableColumn<any>[] = [
-//   {
-//     id: 'no',
-//     header: 'No.',
-//     cell: ({ row }) => {
-//       const pageIndex = table.value?.tableApi?.getState().pagination.pageIndex || 0
-//       const pageSize = table.value?.tableApi?.getState().pagination.pageSize || 20
-//       return pageIndex * pageSize + row.index + 1
-//     }
-//   },
-//   {
-//     accessorKey: 'limitCode',
-//     header: ({ column }) => {
-//       const isSorted = column.getIsSorted()
-
-//       return h(UButton, {
-//         color: 'neutral',
-//         variant: 'ghost',
-//         label: 'Limit Code',
-//         icon: isSorted
-//           ? isSorted === 'asc'
-//             ? 'i-lucide-arrow-up-narrow-wide'
-//             : 'i-lucide-arrow-down-wide-narrow'
-//           : 'i-lucide-arrow-up-down',
-//         class: '-mx-2.5',
-//         onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
-//       })
-//     }
-//   },
-//   {
-//     accessorKey: 'minimum',
-//     header: ({ column }) => {
-//       const isSorted = column.getIsSorted()
-
-//       return h(UButton, {
-//         color: 'neutral',
-//         variant: 'ghost',
-//         label: 'Minimum',
-//         icon: isSorted
-//           ? isSorted === 'asc'
-//             ? 'i-lucide-arrow-up-narrow-wide'
-//             : 'i-lucide-arrow-down-wide-narrow'
-//           : 'i-lucide-arrow-up-down',
-//         class: '-mx-2.5',
-//         onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
-//       })
-//     },
-//     cell: ({ row }) => formatNumber(row.getValue('minimum'))
-//   },
-//   {
-//     accessorKey: 'maximum',
-//     header: ({ column }) => {
-//       const isSorted = column.getIsSorted()
-
-//       return h(UButton, {
-//         color: 'neutral',
-//         variant: 'ghost',
-//         label: 'Maximum',
-//         icon: isSorted
-//           ? isSorted === 'asc'
-//             ? 'i-lucide-arrow-up-narrow-wide'
-//             : 'i-lucide-arrow-down-wide-narrow'
-//           : 'i-lucide-arrow-up-down',
-//         class: '-mx-2.5',
-//         onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
-//       })
-//     },
-//     cell: ({ row }) => formatNumber(row.getValue('maximum'))
-//   },
-//   {
-//     accessorKey: 'startDate',
-//     header: ({ column }) => {
-//       const isSorted = column.getIsSorted()
-
-//       return h(UButton, {
-//         color: 'neutral',
-//         variant: 'ghost',
-//         label: 'Start Date',
-//         icon: isSorted
-//           ? isSorted === 'asc'
-//             ? 'i-lucide-arrow-up-narrow-wide'
-//             : 'i-lucide-arrow-down-wide-narrow'
-//           : 'i-lucide-arrow-up-down',
-//         class: '-mx-2.5',
-//         onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
-//       })
-//     }
-//   },
-//   {
-//     accessorKey: 'endDate',
-//     header: ({ column }) => {
-//       const isSorted = column.getIsSorted()
-
-//       return h(UButton, {
-//         color: 'neutral',
-//         variant: 'ghost',
-//         label: 'End Date',
-//         icon: isSorted
-//           ? isSorted === 'asc'
-//             ? 'i-lucide-arrow-up-narrow-wide'
-//             : 'i-lucide-arrow-down-wide-narrow'
-//           : 'i-lucide-arrow-up-down',
-//         class: '-mx-2.5',
-//         onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
-//       })
-//     }
-//   },
-//   {
-//     id: 'actions',
-//     header: () => h('div', { class: 'text-right' }, ''),
-//     cell: ({ row }) => {
-//       return h(
-//         'div',
-//         { class: 'text-right' },
-//         h(
-//           UDropdownMenu,
-//           {
-//             content: {
-//               align: 'end'
-//             },
-//             items: getRowActions(row)
-//           },
-//           () =>
-//             h(UButton, {
-//               icon: 'i-lucide-ellipsis-vertical',
-//               color: 'neutral',
-//               variant: 'ghost',
-//               size: 'sm'
-//             })
-//         )
-//       )
-//     }
-//   }
-// ]
-
-// const pagination = ref({
-//   pageIndex: 4, // Start at page 5 (0-indexed)
-//   pageSize: 20
-// })
 
 </script>
 
@@ -272,100 +89,50 @@ const resetForm = () => {
 
                             <template #body>
 
-                                <!-- MINIMUM -->
+                                <!-- PROFILE NAME -->
                                 <UFormField orientation="horizontal" class="mb-2" >
 
                                     <template #label>
                                         <span class="flex items-center gap-1">
-                                            {{ t('text.limit-management-pg.input-new-minimum') || 'Minimum' }}
+                                            {{ t('text.profile-management-pg.input-new-profile-name') || 'Profile Name' }}
                                             <span class="text-red-500">*</span>
                                         </span>
                                     </template>
 
-                                    <!-- <UInput placeholder="Enter minimum" class="w-80
-                                        border-[#CAD5E2]
-                                        font-light
-                                        focus:border-[#F26524]
-                                        focus:ring-2
-                                        focus:ring-[#F26524]
-                                        focus:ring-offset-0
-                                        ring-0" /> -->
-
-                                    <UInputNumber
-                                        v-model="valueMin"
-                                        locale="id-ID"
-                                        :format-options="{
-                                            style: 'currency',
-                                            currency: 'IDR'
-                                        }"
-                                        class="w-80 border-[#CAD5E2] font-reguler focus:border-[#F26524] "
-                                    />
+                                    <UInput v-model="profileName" :placeholder="t('text.profile-management-pg.input-new-profile-name-placeholder') || 'Enter profile name'" class="w-80 border-[#CAD5E2] font-light"/>
 
                                 </UFormField>
 
-                                <!-- MAXIMUM -->
+                                <!-- DESCRIPTION -->
                                 <UFormField orientation="horizontal" class="mb-2" >
 
                                     <template #label>
                                         <span class="flex items-center gap-1">
-                                            {{ t('text.limit-management-pg.input-new-maximum') || 'Maximum' }}
+                                            {{ t('text.profile-management-pg.input-new-description') || 'Description' }}
                                             <span class="text-red-500">*</span>
                                         </span>
                                     </template>
 
-                                    <UInputNumber
-                                        v-model="valueMax"
-                                        locale="id-ID"
-                                        :format-options="{
-                                            style: 'currency',
-                                            currency: 'IDR'
-                                        }"
-                                        class="w-80 border-[#CAD5E2] font-reguler focus:border-[#F26524] "
-                                    />
+                                    <UTextarea v-model="description" :maxrows="5" autoresize class="w-80 font-light" />
 
                                 </UFormField>
 
-                                <!-- START DATE -->
+                                <!-- PROFILE SOURCE -->
                                 <UFormField orientation="horizontal" class="mb-2" >
 
                                     <template #label>
                                         <span class="flex items-center gap-1">
-                                            {{ t('text.limit-management-pg.input-new-start-date') || 'Start Date' }}
+                                            {{ t('text.profile-management-pg.input-new-profile-source') || 'Profile Source' }}
                                             <span class="text-red-500">*</span>
                                         </span>
                                     </template>
 
-                                    <UInputDate
-                                        ref="inputStartDate"
-                                        v-model="modelValueStart"
-                                        locale="id-ID" format="dd/mm/yyyy"
-                                        :max-value="modelValueEnd"
-                                        class="w-80 border-[#CAD5E2] font-reguler focus:border-[#F26524]"
-                                    >
-
-                                        <template #trailing>
-                                            <UPopover>
-                                                <UButton
-                                                    color="neutral"
-                                                    variant="link"
-                                                    size="sm"
-                                                    icon="i-lucide-calendar"
-                                                    aria-label="Select a date"
-                                                    class="px-0"
-                                                />
-
-                                                <template #content>
-                                                    <UCalendar v-model="modelValueStart" :max-value="modelValueEnd" class="p-2" />
-                                                </template>
-                                            </UPopover>
-                                        </template>
-
-                                    </UInputDate>
+                                    <USelectMenu v-model="profileSource" :items="profileSourceValue" placeholder="Select profile source" class="w-80 font-light"/>
 
                                 </UFormField>
 
-                                <!-- END DATE -->
-                                <UFormField orientation="horizontal" class="mb-2" >
+                                <!-- ACCESS RIGHT -->
+                                <!-- <UFormField orientation="horizontal" class="mb-2" >
 
                                     <template #label>
                                         <span class="flex items-center gap-1">
@@ -401,7 +168,7 @@ const resetForm = () => {
 
                                     </UInputDate>
 
-                                </UFormField>
+                                </UFormField> -->
 
                                 <!-- STATUS -->
                                 <UFormField orientation="horizontal" class="mb-2" >
@@ -470,14 +237,14 @@ const resetForm = () => {
 
                                     <div class="flex flex-col md:flex-row w-full my-1 gap-2">
 
-                                        <!-- LIMIT CODE -->
+                                        <!-- PROFILE CODE -->
                                         <div class="flex w-full">
 
-                                            <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.limit-code') || 'Limit Code' }}</div>
+                                            <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.profile-management-pg.input-filter-profile-code') || 'Profile Code' }}</div>
                                             <div class="flex w-full text-sm">
                                                 <UInput
-                                                    v-model="limitCodeFilter"
-                                                    :placeholder="t('text.input-field.limit-code-placeholder') || 'Enter limit code'"
+                                                    v-model="profileCodeFilter"
+                                                    :placeholder="t('text.profile-management-pg.placeholder-filter-profile-code') || 'Enter profile code'"
                                                     size="md"
                                                     class="w-full font-light text-base md:text-sm"
                                                 />
@@ -487,37 +254,12 @@ const resetForm = () => {
 
                                         <div class="px-2"></div>
 
-                                        <!-- START DATE -->
+                                        <!-- PROFILE SOURCE -->
                                         <div class="flex w-full">
 
-                                            <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.start-date') || 'Start Date' }}</div>
+                                            <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.profile-management-pg.input-filter-profile-source') || 'Profile Source' }}</div>
                                             <div class="flex w-full text-sm">
-                                                <UInputDate
-                                                    ref="StartDateFilter"
-                                                    v-model="ModelStartDateFilter"
-                                                    locale="id-ID" format="dd/mm/yyyy"
-                                                    :max-value="ModelEndDateFilter"
-                                                    class="w-full border-[#CAD5E2] font-reguler focus:border-[#F26524]"
-                                                >
-
-                                                    <template #trailing>
-                                                        <UPopover>
-                                                            <UButton
-                                                                color="neutral"
-                                                                variant="link"
-                                                                size="sm"
-                                                                icon="i-lucide-calendar"
-                                                                aria-label="Select a date"
-                                                                class="px-0"
-                                                            />
-
-                                                            <template #content>
-                                                                <UCalendar v-model="ModelStartDateFilter" :max-value="ModelEndDateFilter" class="p-2" />
-                                                            </template>
-                                                        </UPopover>
-                                                    </template>
-
-                                                </UInputDate>
+                                                <USelectMenu v-model="profileSourceFilter" :items="profileSourceValueFilter" :placeholder="t('text.profile-management-pg.placeholder-filter-profile-source') || 'Select profile source'" class="w-full font-reguler"/>
                                             </div>
 
                                         </div>
@@ -526,19 +268,16 @@ const resetForm = () => {
 
                                     <div class="flex flex-col md:flex-row w-full my-1 gap-2">
 
-                                        <!-- MINIMUM -->
+                                        <!-- PROFILE NAME -->
                                         <div class="flex w-full">
 
-                                            <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.min-amount') || 'Minimum' }}</div>
+                                            <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.profile-management-pg.input-filter-profile-name') || 'Profile Name' }}</div>
                                             <div class="flex w-full text-sm">
-                                                <UInputNumber
-                                                    v-model="minFilter"
-                                                    locale="id-ID"
-                                                    :format-options="{
-                                                        style: 'currency',
-                                                        currency: 'IDR'
-                                                    }"
-                                                    class="w-full border-[#CAD5E2] font-reguler focus:border-[#F26524] "
+                                                <UInput
+                                                    v-model="profileNameFilter"
+                                                    :placeholder="t('text.profile-management-pg.placeholder-filter-profile-name') || 'Enter profile name'"
+                                                    size="md"
+                                                    class="w-full font-light text-base md:text-sm"
                                                 />
                                             </div>
 
@@ -546,38 +285,13 @@ const resetForm = () => {
 
                                         <div class="px-2"></div>
 
-                                        <!-- END DATE -->
+                                        <!-- STATUS -->
                                         <div class="flex w-full">
 
-                                            <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.end-date') || 'End Date' }}</div>
+                                            <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.profile-management-pg.input-filter-status') || 'Status' }}</div>
                                             <div class="flex w-full text-sm">
 
-                                                <UInputDate
-                                                    ref="EndDateFilter"
-                                                    v-model="ModelEndDateFilter"
-                                                    locale="id-ID" format="dd/mm/yyyy"
-                                                    :min-value="ModelStartDateFilter"
-                                                    class="w-full border-[#CAD5E2] font-reguler focus:border-[#F26524]"
-                                                >
-
-                                                    <template #trailing>
-                                                        <UPopover>
-                                                            <UButton
-                                                                color="neutral"
-                                                                variant="link"
-                                                                size="sm"
-                                                                icon="i-lucide-calendar"
-                                                                aria-label="Select a date"
-                                                                class="px-0"
-                                                            />
-
-                                                            <template #content>
-                                                                <UCalendar v-model="ModelEndDateFilter" :min-value="ModelStartDateFilter" class="p-2" />
-                                                            </template>
-                                                        </UPopover>
-                                                    </template>
-
-                                                </UInputDate>
+                                                <USelectMenu v-model="statusFilter" :items="statusValueFilter" :placeholder="t('text.profile-management-pg.placeholder-filter-status') || 'Select status'" class="w-full font-reguler"/>
 
                                             </div>
 
@@ -587,23 +301,7 @@ const resetForm = () => {
 
                                     <div class="flex flex-col md:flex-row w-full my-1 gap-2">
 
-                                        <!-- MAXIMUM -->
-                                        <div class="flex w-full">
-
-                                            <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.max-amount') || 'Maximum' }}</div>
-                                            <div class="flex w-full text-sm">
-                                                <UInputNumber
-                                                    v-model="maxFilter"
-                                                    locale="id-ID"
-                                                    :format-options="{
-                                                        style: 'currency',
-                                                        currency: 'IDR'
-                                                    }"
-                                                    class="w-full border-[#CAD5E2] font-reguler focus:border-[#F26524] "
-                                                />
-                                            </div>
-
-                                        </div>
+                                        <div class="flex w-full"></div>
 
                                         <div class="px-2"></div>
 

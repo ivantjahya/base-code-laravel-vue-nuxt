@@ -46,7 +46,47 @@
     },
     "profile-management-pg": {
         "list": "List of Profiles",
-        "add-new-profile": "Add New Profile"
+        "add-new-profile": "Add New Profile",
+
+        "input-new-profile-name": "Profile Name",
+        "input-new-profile-name-placeholder": "Enter profile name",
+        "input-new-description": "Description",
+        "input-new-profile-source": "Profile Source",
+
+        "input-filter-profile-code": "Profile Code",
+        "placeholder-filter-profile-code": "Enter profile code",
+        "input-filter-profile-name": "Profile Name",
+        "placeholder-filter-profile-name": "Enter profile name",
+        "input-filter-profile-source": "Profile Source",
+        "placeholder-filter-profile-source": "Select profile source",
+        "input-filter-status": "Status",
+        "placeholder-filter-status": "Select status"
+
+    },
+    "functional-profile-management-pg": {
+        "list": "List of Functional Profiles",
+        "add-new-functional-profile": "Add New Functional Profile",
+
+        "input-new-functional-profile-name": "Functional Profile Name",
+        "input-new-functional-profile-name-placeholder": "Enter functional profile name",
+        "input-new-profile": "Profile",
+        "input-new-profile-placeholder": "Select profile",
+        "input-new-limit": "Limit",
+        "input-new-limit-placeholder": "Select limit",
+
+        "input-filter-functional-profile-code": "Func. Profile Code",
+        "placeholder-filter-functional-profile-code": "Enter functional profile code",
+        "input-filter-functional-profile-name": "Func. Profile Name",
+        "placeholder-filter-functional-profile-name": "Enter functional profile name",
+        "input-filter-profile": "Profile",
+        "placeholder-filter-profile": "Select profile",
+        "input-filter-division": "Division",
+        "placeholder-filter-division": "Select division",
+        "input-filter-limit": "Limit",
+        "placeholder-filter-limit": "Select limit",
+        "input-filter-status": "Status",
+        "placeholder-filter-status": "Select status"
+
     },
     "button": {
         "new": "New",
