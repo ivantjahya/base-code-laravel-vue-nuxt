@@ -7,10 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
-
 class MasterDataProfileController extends Controller
 {
-
     /**
      * GET request for profile management page
      */
@@ -23,5 +21,4 @@ class MasterDataProfileController extends Controller
             'title' => __('app.page.profile-management'),
         ]);
     }
-
 }

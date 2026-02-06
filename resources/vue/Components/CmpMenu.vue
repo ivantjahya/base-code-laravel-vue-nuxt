@@ -1,19 +1,15 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from '../composables/useI18n'
 import { useMainStore } from '../AppState'
 import Swal from 'sweetalert2'
+import CmpDialogMenuSearch from './CmpDialogMenuSearch.vue'
 
 const { t } = useI18n()
 const mainStore = useMainStore()
-
-const props = defineProps<{
-  isCollapsed: boolean
-}>()
-
-const emit = defineEmits<{
-  'update:isCollapsed': [value: boolean]
-}>()
+const router = useRouter()
+const route = useRoute()
 
 const venditorePlusLogoHorizontal = new URL('@/images/logo-venditore-plus-horizontal.webp', import.meta.url).href
 const venditorePlusLogoHorizontalWhite = new URL('@/images/logo-venditore-plus-horizontal-white.webp', import.meta.url).href
@@ -36,19 +32,22 @@ const menuItems = ref([
     icon: 'i-lucide-house',
     code: 0,
     submenu: [],
-    active: true
+    name_code: 'menu.home',
+    active: false
   },
   {
     name: 'Master Data',
     url: null,
     icon: 'i-lucide-folder-open',
     code: 1000,
+    name_code: 'menu.master-data',
     submenu: [
       {
         name: 'Limits',
         url: '/limit-management',
         icon: null,
         code: 1010,
+        name_code: 'page.limit-management',
         submenu: [],
         active: false
       },
@@ -57,6 +56,7 @@ const menuItems = ref([
         url: '/profile-management',
         icon: null,
         code: 1020,
+        name_code: 'page.profile-management',
         submenu: [],
         active: false
       },
@@ -65,6 +65,7 @@ const menuItems = ref([
         url: '/functional-profile-management',
         icon: null,
         code: 1030,
+        name_code: 'page.functional-profile-management',
         submenu: [],
         active: false
       },
@@ -73,6 +74,7 @@ const menuItems = ref([
         url: '/user-management',
         icon: null,
         code: 1040,
+        name_code: 'page.user-management',
         submenu: [],
         active: false
       },
@@ -81,6 +83,7 @@ const menuItems = ref([
         url: '/approval-flow-management',
         icon: null,
         code: 1050,
+        name_code: 'page.approval-flow-management',
         submenu: [],
         active: false
       },
@@ -89,6 +92,7 @@ const menuItems = ref([
         url: '/regional-site',
         icon: null,
         code: 1060,
+        name_code: 'page.regional-site',
         submenu: [],
         active: false
       },
@@ -97,6 +101,7 @@ const menuItems = ref([
         url: '/user-guide-management',
         icon: null,
         code: 1070,
+        name_code: 'page.user-guide-management',
         submenu: [],
         active: false
       },
@@ -108,12 +113,14 @@ const menuItems = ref([
     url: null,
     icon: 'i-lucide-file-pen',
     code: 2000,
+    name_code: 'menu.new-registration',
     submenu: [
       {
         name: 'Article',
         url: '/article',
         icon: null,
         code: 2010,
+        name_code: 'page.article',
         submenu: [],
         active: false
       },
@@ -122,6 +129,7 @@ const menuItems = ref([
         url: '/supplier',
         icon: null,
         code: 2020,
+        name_code: 'page.supplier',
         submenu: [],
         active: false
       },
@@ -133,12 +141,14 @@ const menuItems = ref([
     url: null,
     icon: 'i-lucide-baggage-claim',
     code: 3000,
+    name_code: 'menu.purchase-order',
     submenu: [
       {
         name: 'PO Status Report',
         url: '/po-status-report',
         icon: null,
         code: 3010,
+        name_code: 'page.po-status-report',
         submenu: [],
         active: false
       },
@@ -147,6 +157,7 @@ const menuItems = ref([
         url: '/po-list',
         icon: null,
         code: 3020,
+        name_code: 'page.po-list',
         submenu: [],
         active: false
       },
@@ -155,6 +166,7 @@ const menuItems = ref([
         url: '/po-cross-dock',
         icon: null,
         code: 3030,
+        name_code: 'page.po-cross-dock',
         submenu: [],
         active: false
       },
@@ -163,6 +175,7 @@ const menuItems = ref([
         url: '/return',
         icon: null,
         code: 3040,
+        name_code: 'page.return',
         submenu: [],
         active: false
       },
@@ -174,12 +187,14 @@ const menuItems = ref([
     url: null,
     icon: 'i-lucide-handshake',
     code: 4000,
+    name_code: 'menu.consignment',
     submenu: [
       {
         name: 'Pengajuan Retur',
         url: '/pengajuan-retur',
         icon: null,
         code: 4010,
+        name_code: 'page.pengajuan-retur',
         submenu: [],
         active: false
       },
@@ -188,6 +203,7 @@ const menuItems = ref([
         url: '/pengajuan-acara',
         icon: null,
         code: 4020,
+        name_code: 'page.pengajuan-acara',
         submenu: [],
         active: false
       },
@@ -196,6 +212,7 @@ const menuItems = ref([
         url: '/upload-brand-store',
         icon: null,
         code: 4030,
+        name_code: 'page.upload-brand-store',
         submenu: [],
         active: false
       },
@@ -204,6 +221,7 @@ const menuItems = ref([
         url: '/surat-acara',
         icon: null,
         code: 4040,
+        name_code: 'page.surat-acara',
         submenu: [],
         active: false
       },
@@ -215,12 +233,14 @@ const menuItems = ref([
     url: null,
     icon: 'i-lucide-file-chart-column',
     code: 5000,
+    name_code: 'menu.principal-report',
     submenu: [
       {
         name: 'Stock',
         url: '/stock-report',
         icon: null,
         code: 5010,
+        name_code: 'page.stock-report',
         submenu: [],
         active: false
       },
@@ -229,6 +249,7 @@ const menuItems = ref([
         url: '/sales-report',
         icon: null,
         code: 5020,
+        name_code: 'page.sales-report',
         submenu: [],
         active: false
       },
@@ -237,6 +258,7 @@ const menuItems = ref([
         url: '/frozen-for-purchase-report',
         icon: null,
         code: 5030,
+        name_code: 'page.frozen-for-purchase-report',
         submenu: [],
         active: false
       },
@@ -245,6 +267,7 @@ const menuItems = ref([
         url: '/market-share-report',
         icon: null,
         code: 5040,
+        name_code: 'page.market-share-report',
         submenu: [],
         active: false
       },
@@ -253,6 +276,7 @@ const menuItems = ref([
         url: '/merchandise-structure-report',
         icon: null,
         code: 5050,
+        name_code: 'page.merchandise-structure-report',
         submenu: [],
         active: false
       },
@@ -261,6 +285,7 @@ const menuItems = ref([
         url: '/sell-out-by-month-report',
         icon: null,
         code: 5060,
+        name_code: 'page.sell-out-by-month-report',
         submenu: [],
         active: false
       },
@@ -269,6 +294,7 @@ const menuItems = ref([
         url: '/sell-out-by-div-month-report',
         icon: null,
         code: 5070,
+        name_code: 'page.sell-out-by-div-month-report',
         submenu: [],
         active: false
       },
@@ -277,6 +303,7 @@ const menuItems = ref([
         url: '/sell-out-by-div-by-cat-by-brand-report',
         icon: null,
         code: 5080,
+        name_code: 'page.sell-out-by-div-by-cat-by-brand-report',
         submenu: [],
         active: false
       },
@@ -285,6 +312,7 @@ const menuItems = ref([
         url: '/50-top-sku-report',
         icon: null,
         code: 5090,
+        name_code: 'page.50-top-sku-report',
         submenu: [],
         active: false
       },
@@ -293,6 +321,7 @@ const menuItems = ref([
         url: '/sell-in-by-month-report',
         icon: null,
         code: 5100,
+        name_code: 'page.sell-in-by-month-report',
         submenu: [],
         active: false
       },
@@ -301,6 +330,7 @@ const menuItems = ref([
         url: '/sell-in-by-div-month-report',
         icon: null,
         code: 5110,
+        name_code: 'page.sell-in-by-div-month-report',
         submenu: [],
         active: false
       },
@@ -309,6 +339,7 @@ const menuItems = ref([
         url: '/sl-by-month-report',
         icon: null,
         code: 5120,
+        name_code: 'page.sl-by-month-report',
         submenu: [],
         active: false
       },
@@ -317,6 +348,7 @@ const menuItems = ref([
         url: '/sl-by-div-month-report',
         icon: null,
         code: 5130,
+        name_code: 'page.sl-by-div-month-report',
         submenu: [],
         active: false
       },
@@ -325,6 +357,7 @@ const menuItems = ref([
         url: '/sl-distributor-by-div-by-month-report',
         icon: null,
         code: 5140,
+        name_code: 'page.sl-distributor-by-div-by-month-report',
         submenu: [],
         active: false
       },
@@ -336,12 +369,14 @@ const menuItems = ref([
     url: null,
     icon: 'i-lucide-wallet',
     code: 6000,
+    name_code: 'menu.finance',
     submenu: [
       {
         name: 'Payment Check',
         url: '/payment-check',
         icon: null,
         code: 6010,
+        name_code: 'page.payment-check',
         submenu: [],
         active: false
       },
@@ -350,6 +385,7 @@ const menuItems = ref([
         url: '/invoice-input-putus',
         icon: null,
         code: 6020,
+        name_code: 'page.invoice-input-putus',
         submenu: [],
         active: false
       },
@@ -358,6 +394,7 @@ const menuItems = ref([
         url: '/invoice-consignment',
         icon: null,
         code: 6030,
+        name_code: 'page.invoice-consignment',
         submenu: [],
         active: false
       },
@@ -366,6 +403,7 @@ const menuItems = ref([
         url: '/po-kontra-bon',
         icon: null,
         code: 6040,
+        name_code: 'page.po-kontra-bon',
         submenu: [],
         active: false
       },
@@ -374,6 +412,7 @@ const menuItems = ref([
         url: '/data-retur-coretax',
         icon: null,
         code: 6050,
+        name_code: 'page.data-retur-coretax',
         submenu: [],
         active: false
       },
@@ -382,14 +421,7 @@ const menuItems = ref([
         url: '/report-payment',
         icon: null,
         code: 6060,
-        submenu: [],
-        active: false
-      },
-      {
-        name: 'Tax Supplier Data',
-        url: '/tax-supplier-data',
-        icon: null,
-        code: 6070,
+        name_code: 'page.report-payment',
         submenu: [],
         active: false
       },
@@ -397,7 +429,8 @@ const menuItems = ref([
         name: 'Billing',
         url: '/billing',
         icon: null,
-        code: 6080,
+        code: 6070,
+        name_code: 'page.billing',
         submenu: [],
         active: false
       },
@@ -409,12 +442,14 @@ const menuItems = ref([
     url: null,
     icon: 'i-lucide-truck',
     code: 7000,
+    name_code: 'menu.dc-fee',
     submenu: [
       {
         name: 'DC List',
         url: '/dc-list',
         icon: null,
         code: 7010,
+        name_code: 'page.dc-list',
         submenu: [],
         active: false
       },
@@ -423,6 +458,7 @@ const menuItems = ref([
         url: '/handling-fee',
         icon: null,
         code: 7020,
+        name_code: 'page.handling-fee',
         submenu: [],
         active: false
       },
@@ -431,6 +467,7 @@ const menuItems = ref([
         url: '/distribution-fee',
         icon: null,
         code: 7030,
+        name_code: 'page.distribution-fee',
         submenu: [],
         active: false
       },
@@ -439,6 +476,7 @@ const menuItems = ref([
         url: '/dc-fee-supplier',
         icon: null,
         code: 7040,
+        name_code: 'page.dc-fee-supplier',
         submenu: [],
         active: false
       },
@@ -447,6 +485,7 @@ const menuItems = ref([
         url: '/set-handling-method',
         icon: null,
         code: 7050,
+        name_code: 'page.set-handling-method',
         submenu: [],
         active: false
       },
@@ -455,6 +494,7 @@ const menuItems = ref([
         url: '/dc-fee-validation',
         icon: null,
         code: 7060,
+        name_code: 'page.dc-fee-validation',
         submenu: [],
         active: false
       },
@@ -463,16 +503,105 @@ const menuItems = ref([
         url: '/dc-fee-by-receiving',
         icon: null,
         code: 7070,
+        name_code: 'page.dc-fee-by-receiving',
         submenu: [],
         active: false
       },
     ],
     active: false
   },
+  {
+    name: 'Tax Supplier Data',
+    url: '/tax-supplier-data',
+    icon: 'i-lucide-circle-dollar-sign',
+    code: 8000,
+    submenu: [],
+    name_code: 'menu.tax-supplier-data',
+    active: false
+  },
 ])
 
-const expandedMenus = ref<number[]>([0]) // Consignment menu expanded by default
+const expandedMenus = ref<number[]>([]) // Will be set based on active menu
 const searchQuery = ref('')
+const isDialogMenuSearchOpen = ref(false)
+
+// Function to set active menu based on current URL
+const setActiveMenu = () => {
+  const currentPath = route.path
+  
+  // Reset all active states
+  menuItems.value.forEach(item => {
+    item.active = false
+    if (item.submenu && item.submenu.length > 0) {
+      item.submenu.forEach(child => {
+        child.active = false
+      })
+    }
+  })
+  
+  // Find and set active menu
+  menuItems.value.forEach((item, index) => {
+    // Check if current item URL matches
+    if (item.url && currentPath === item.url) {
+      item.active = true
+      return
+    }
+    
+    // Check submenu items
+    if (item.submenu && item.submenu.length > 0) {
+      const activeChild = item.submenu.find(child => child.url && currentPath === child.url)
+      if (activeChild) {
+        activeChild.active = true
+        item.active = true // Also mark parent as active
+        // Expand the parent menu
+        if (!expandedMenus.value.includes(index)) {
+          expandedMenus.value.push(index)
+        }
+      }
+    }
+  })
+}
+
+// Handle keyboard shortcut for dialog menu search
+const handleKeydown = (event: KeyboardEvent) => {
+  // Check for Ctrl+K (Windows/Linux) or Cmd+K (Mac)
+  if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
+    event.preventDefault()
+    isDialogMenuSearchOpen.value = true
+  }
+}
+
+// Open dialog menu search
+const openDialogMenuSearch = () => {
+  isDialogMenuSearchOpen.value = true
+}
+
+// Close dialog menu search
+const closeDialogMenuSearch = () => {
+  isDialogMenuSearchOpen.value = false
+}
+
+// Handle navigation from dialog menu search
+const handleDialogMenuSearchNavigation = (url: string) => {
+  navigateTo(url)
+}
+
+// Watch route changes to update active menu
+watch(() => route.path, () => {
+  setActiveMenu()
+})
+
+// Call setActiveMenu on mount
+onMounted(() => {
+  setActiveMenu()
+  // Add keyboard event listener
+  window.addEventListener('keydown', handleKeydown)
+})
+
+// Remove keyboard event listener on unmount
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeydown)
+})
 
 const toggleMenu = (index: number) => {
   const idx = expandedMenus.value.indexOf(index)
@@ -489,7 +618,7 @@ const isExpanded = (index: number) => {
 
 const navigateTo = (url: string | null) => {
   if (url) {
-    window.location.href = url
+    router.push(url)
   }
 }
 
@@ -568,15 +697,22 @@ const showChangePassword = () => {
 </script>
 
 <template>
+  <!-- Dialog Menu Search -->
+  <CmpDialogMenuSearch
+    :menu-items="menuItems"
+    :is-open="isDialogMenuSearchOpen"
+    @close="closeDialogMenuSearch"
+    @navigate="handleDialogMenuSearchNavigation"
+  />
   <div 
     :class="[
       'h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col transition-all duration-300 overflow-hidden',
-      isCollapsed ? 'w-16' : 'w-60'
+      mainStore.isCollapsed ? 'w-16' : 'w-60'
     ]"
   >
     <!-- Logo Section -->
     <div class="h-16 flex items-center justify-center px-4 flex-shrink-0">
-      <div v-if="!isCollapsed" class="flex items-center gap-2">
+      <div v-if="!mainStore.isCollapsed" class="flex items-center gap-2">
         <img :src="mainStore.mode === 'dark' ? venditorePlusLogoHorizontalWhite : venditorePlusLogoHorizontal" alt="Venditore+" class="h-6" />
       </div>
       <div v-else class="text-orange-500 text-2xl font-bold">
@@ -585,37 +721,132 @@ const showChangePassword = () => {
     </div>
 
     <!-- Search -->
-    <div v-if="!isCollapsed" class="max-w-md mx-3">
-      <UInput
-        v-model="searchQuery"
-        icon="i-lucide-search"
-        size="md"
-        :placeholder="t('text.input-field.search') || 'Search...'"
-        :ui="{ icon: { trailing: { pointer: '' } } }"
+    <div v-if="!mainStore.isCollapsed" class="max-w-md mx-3">
+      <button 
+        @click="openDialogMenuSearch"
+        class="w-full text-left"
+        type="button"
       >
-        <template #trailing>
-          <div class="flex items-center gap-1 text-xs text-gray-400">
-            <kbd class="px-1.5 py-0.5 bg-gray-100 border border-gray-200 rounded">{{ modifierKey }}</kbd>
-            <kbd class="px-1.5 py-0.5 bg-gray-100 border border-gray-200 rounded">K</kbd>
+        <UInput
+          :model-value="searchQuery"
+          icon="i-lucide-search"
+          size="md"
+          :placeholder="t('text.input-field.search') || 'Search...'"
+          :ui="{ icon: { trailing: { pointer: '' } } }"
+          readonly
+          class="cursor-pointer"
+        >
+          <template #trailing>
+            <div class="flex items-center gap-1 text-xs text-gray-400">
+              <kbd class="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded">{{ modifierKey }}</kbd>
+              <kbd class="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded">K</kbd>
+            </div>
+          </template>
+        </UInput>
+      </button>
+    </div>
+    <div v-if="mainStore.isCollapsed" class="flex justify-center py-2">
+      <UPopover 
+        v-if="mainStore.isCollapsed"
+        mode="hover" 
+        :open-delay="200"
+        :close-delay="100"
+        :content="{ side: 'right', align: 'start', sideOffset: 8 }"
+      >
+        <button 
+          @click="openDialogMenuSearch"
+          class="p-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+          type="button"
+        >
+          <UIcon
+            name="i-lucide-search"
+            :class="[
+              'w-5 h-5 flex-shrink-0 transition-colors text-[#9F9FA9] dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300',
+            ]"
+          />
+        </button>
+        <template #content>
+          <div class="px-3 py-2 font-semibold text-sm text-gray-900 dark:text-gray-100">
+            {{ t('text.input-field.search') }}
           </div>
         </template>
-      </UInput>
-    </div>
-    <div v-if="isCollapsed" class="flex justify-center py-2">
-      <UIcon
-        name="i-lucide-search"
-        :class="[
-          'w-5 h-5 flex-shrink-0 transition-colors text-[#9F9FA9] dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300',
-        ]"
-      />
+      </UPopover>
     </div>
 
     <!-- Menu Items -->
     <div class="flex-1 overflow-y-auto py-2 px-3">
       <nav class="space-y-0.5">
         <div v-for="(item, index) in menuItems" :key="index">
-          <!-- Menu Item -->
+          <!-- Menu Item with Popover when collapsed -->
+          <UPopover 
+            v-if="mainStore.isCollapsed"
+            mode="hover" 
+            :open-delay="200"
+            :close-delay="100"
+            :content="{ side: 'right', align: 'start', sideOffset: 8 }"
+          >
+            <button
+              @click="item.submenu && item.submenu.length > 0 ? toggleMenu(index) : navigateTo(item.url)"
+              :class="[
+                'w-full flex items-center justify-center gap-2.5 px-2.5 py-2 rounded-md transition-all duration-150 text-sm group',
+                item.active 
+                  ? 'bg-orange-50 dark:bg-orange-950/50 text-orange-600 dark:text-orange-400 font-medium' 
+                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100'
+              ]"
+            >
+              <UIcon 
+                :name="item.icon" 
+                :class="[
+                  'w-5 h-5 flex-shrink-0 transition-colors',
+                  item.active ? 'text-orange-600 dark:text-orange-400' : 'text-[#9F9FA9] dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300'
+                ]"
+              />
+            </button>
+            <template #content>
+              <div v-if="item.submenu && item.submenu.length > 0" class="min-w-[200px] max-w-[280px] p-2">
+                <!-- Main menu item -->
+                <div class="px-3 py-2 font-semibold text-sm text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700 mb-2">
+                  {{ t(item.name_code) }}
+                </div>
+                
+                <!-- Submenu items if available -->
+                <div v-if="item.submenu && item.submenu.length > 0" class="space-y-0.5">
+                  <button
+                    v-for="(child, childIndex) in item.submenu"
+                    :key="childIndex"
+                    @click="navigateTo(child.url)"
+                    :class="[
+                      'w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-all duration-150 group',
+                      child.active 
+                        ? 'bg-orange-50 dark:bg-orange-950/50 text-orange-600 dark:text-orange-400 font-medium' 
+                        : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100'
+                    ]"
+                  >
+                    <span class="text-left truncate">{{ t(child.name_code) }}</span>
+                  </button>
+                </div>
+                
+                <!-- If no submenu, show clickable item -->
+                <div v-else>
+                  <button
+                    @click="navigateTo(item.url)"
+                    class="w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-all duration-150 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100"
+                  >
+                    <span class="text-left">Open {{ t(item.name_code) }}</span>
+                  </button>
+                </div>
+              </div>
+              <div v-else>
+                <div class="px-3 py-2 font-semibold text-sm text-gray-900 dark:text-gray-100">
+                  {{ t(item.name_code) }}
+                </div>
+              </div>
+            </template>
+          </UPopover>
+
+          <!-- Menu Item (expanded state) -->
           <button
+            v-else
             @click="item.submenu && item.submenu.length > 0 ? toggleMenu(index) : navigateTo(item.url)"
             :class="[
               'w-full flex items-center gap-2.5 px-2.5 py-2 rounded-md transition-all duration-150 text-sm group',
@@ -631,9 +862,9 @@ const showChangePassword = () => {
                 item.active ? 'text-orange-600 dark:text-orange-400' : 'text-[#9F9FA9] dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300'
               ]"
             />
-            <span v-if="!isCollapsed" class="flex-1 text-left">{{ item.name }}</span>
+            <span class="flex-1 text-left">{{ t(item.name_code) }}</span>
             <UIcon 
-              v-if="!isCollapsed && item.submenu && item.submenu.length > 0"
+              v-if="item.submenu && item.submenu.length > 0"
               :name="isExpanded(index) ? 'i-heroicons-chevron-down' : 'i-heroicons-chevron-right'"
               :class="[
                 'w-4 h-4 flex-shrink-0 transition-transform duration-200',
@@ -641,10 +872,9 @@ const showChangePassword = () => {
               ]"
             />
           </button>
-
-          <!-- Submenu Items -->
+          <!-- Submenu Items (expanded state) -->
           <div 
-            v-if="item.submenu && isExpanded(index) && !isCollapsed && item.submenu.length > 0"
+            v-if="item.submenu && isExpanded(index) && !mainStore.isCollapsed && item.submenu.length > 0"
             class="mt-0.5 mb-1 ml-5 space-y-0.5 relative pl-2.5 border-l-2 border-gray-200 dark:border-gray-700"
           >
             <button
@@ -665,7 +895,7 @@ const showChangePassword = () => {
                   child.active ? 'text-orange-600 dark:text-orange-400' : 'text-[#9F9FA9] dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300'
                 ]"
               />
-              <span class="text-left truncate">{{ child.name }}</span>
+              <span class="text-left truncate">{{ t(child.name_code) }}</span>
             </button>
           </div>
         </div>
@@ -674,7 +904,7 @@ const showChangePassword = () => {
 
     <!-- User Profile Section -->
     <div class="border-t border-gray-200 dark:border-gray-700 p-3 flex-shrink-0">
-      <div v-if="!isCollapsed">
+      <div v-if="!mainStore.isCollapsed">
         <UDropdownMenu
           :items="[
             [
@@ -736,10 +966,65 @@ const showChangePassword = () => {
         </UDropdownMenu>
       </div>
       <div v-else class="flex justify-center">
-        <UAvatar 
-          src="https://ui-avatars.com/api/?name=Username&background=f97316&color=fff"
-          size="sm"
-        />
+        <UPopover 
+          mode="hover" 
+          :open-delay="200"
+          :close-delay="100"
+          :content="{ side: 'right', align: 'end', sideOffset: 8 }"
+        >
+          <UAvatar 
+            src="https://ui-avatars.com/api/?name=Username&background=f97316&color=fff"
+            size="sm"
+            class="cursor-pointer"
+          />
+          
+          <template #content>
+            <div class="min-w-[180px] p-2">
+              <div class="px-3 py-2 border-b border-gray-200 dark:border-gray-700 mb-2">
+                <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">Username</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">user@example.com</p>
+              </div>
+              
+              <div class="space-y-0.5">
+                <button
+                  @click="showProfile()"
+                  class="w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-all duration-150 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100"
+                >
+                  <UIcon name="i-lucide-circle-user-round" class="w-4 h-4" />
+                  <span>Profile</span>
+                </button>
+                
+                <button
+                  @click="showChangePassword()"
+                  class="w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-all duration-150 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100"
+                >
+                  <UIcon name="i-lucide-lock" class="w-4 h-4" />
+                  <span>Change Password</span>
+                </button>
+                
+                <div class="border-t border-gray-200 dark:border-gray-700 my-2"></div>
+                
+                <button
+                  @click="mainStore.mode === 'light' ? mainStore.setDark() : mainStore.setLight()"
+                  class="w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-all duration-150 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100"
+                >
+                  <UIcon :name="mainStore.mode === 'light' ? 'i-lucide-moon' : 'i-lucide-sun'" class="w-4 h-4" />
+                  <span>{{ mainStore.mode === 'light' ? 'Dark' : 'Light' }} Mode</span>
+                </button>
+                
+                <div class="border-t border-gray-200 dark:border-gray-700 my-2"></div>
+                
+                <button
+                  @click="postLogout()"
+                  class="w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-all duration-150 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50"
+                >
+                  <UIcon name="i-lucide-log-out" class="w-4 h-4" />
+                  <span>Logout</span>
+                </button>
+              </div>
+            </div>
+          </template>
+        </UPopover>
       </div>
     </div>
   </div>

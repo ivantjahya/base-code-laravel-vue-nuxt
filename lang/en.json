@@ -21,7 +21,45 @@
     "user-management": "Users",
     "approval-flow-management": "Approval Flows",
     "regional-site": "Regional Site",
-    "user-guide-management": "User Guide"
+    "user-guide-management": "User Guide",
+    "article": "Article",
+    "supplier": "Supplier",
+    "po-status-report": "PO Status Report",
+    "po-list": "PO List",
+    "po-cross-dock": "PO Cross Dock",
+    "return": "Return",
+    "pengajuan-retur": "Return Request",
+    "pengajuan-acara": "Event Request",
+    "upload-brand-store": "Upload Brand Store",
+    "surat-acara": "Official Report",
+    "stock-report": "Stock",
+    "sales-report": "Sales",
+    "frozen-for-purchase-report": "Frozen for Purchase",
+    "market-share-report": "Market Share",
+    "merchandise-structure-report": "Merchandise Structure",
+    "sell-out-by-month-report": "Sell Out By Month",
+    "sell-out-by-div-month-report": "Sell Out By Div Month",
+    "sell-out-by-div-by-cat-by-brand-report": "Sell Out By Div By Cat By Brand",
+    "50-top-sku-report": "50 Top SKU",
+    "sell-in-by-month-report": "Sell In By Month",
+    "sell-in-by-div-month-report": "Sell In By Div Month",
+    "sl-by-month-report": "SL By Month",
+    "sl-by-div-month-report": "SL By Div Month",
+    "sl-distributor-by-div-by-month-report": "SL Distributor By Div By Month",
+    "payment-check": "Payment Check",
+    "invoice-input-putus": "Invoice Putus",
+    "invoice-consignment": "Invoice Consignment",
+    "po-kontra-bon": "PO Kontra Bon",
+    "data-retur-coretax": "Coretax Return Data",
+    "report-payment": "Payment Report",
+    "billing": "Billing",
+    "dc-list": "DC List",
+    "handling-fee": "Handling Fee",
+    "distribution-fee": "Distribution Fee",
+    "dc-fee-supplier": "DC Fee Supplier",
+    "set-handling-method": "Set Handling Method",
+    "dc-fee-validation": "DC Fee Validation",
+    "dc-fee-by-receiving": "DC Fee By Receiving"
   },
   "text": {
     "login-pg": {
@@ -67,7 +105,8 @@
       "max-amount": "Maximum",
       "max-amount-placeholder": "Enter maximum",
       "start-date": "Start Date",
-      "end-date": "End Date"
+      "end-date": "End Date",
+      "search-menu-placeholder": "Type a command or search..."
     },
     "dropdown": {
       "select-language": "Select language"
@@ -79,6 +118,13 @@
       "column-maximum-amount": "Maximum",
       "column-start-date": "Start Date",
       "column-end-date": "End Date"
+    },
+    "message": {
+      "navigation": "Navigation",
+      "to-navigate": "to navigate",
+      "to-select": "to select",
+      "to-close": "to close",
+      "no-results-found": "No results found"
     }
   },
   "auth": {

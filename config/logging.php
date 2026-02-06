@@ -1,5 +1,7 @@
 <?php
 
+use App\Logging\ProcessLogHandler;
+use App\Logging\UserLogHandler;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
@@ -55,6 +57,12 @@ return [
         'stack' => [
             'driver' => 'stack',
             'channels' => explode(',', (string) env('LOG_STACK', 'single')),
+            'ignore_exceptions' => false,
+        ],
+
+        'stack_custom' => [
+            'driver' => 'stack',
+            'channels' => ['single', 'userdb'],
             'ignore_exceptions' => false,
         ],
 
@@ -125,6 +133,18 @@ return [
 
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
+        ],
+
+        'userdb' => [
+            'driver' => 'custom',
+            'via' => UserLogHandler::class,
+            'level' => env('LOG_LEVEL', 'debug'),
+        ],
+
+        'processdb' => [
+            'driver' => 'custom',
+            'via' => ProcessLogHandler::class,
+            'level' => env('LOG_LEVEL', 'debug'),
         ],
 
     ],
