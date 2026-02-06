@@ -84,7 +84,45 @@
     },
     "profile-management-pg": {
         "list": "Daftar Data Profil",
-        "add-new-profile": "Tambah Profil Baru"
+        "add-new-profile": "Tambah Profil Baru",
+
+        "input-new-profile-name": "Nama Profil",
+        "input-new-profile-name-placeholder": "Masukkan nama profil",
+        "input-new-description": "Deskripsi",
+        "input-new-profile-source": "Sumber Profil",
+
+        "input-filter-profile-code": "Kode Profil",
+        "placeholder-filter-profile-code": "Masukkan kode profil",
+        "input-filter-profile-name": "Nama Profil",
+        "placeholder-filter-profile-name": "Masukkan nama profil",
+        "input-filter-profile-source": "Sumber Profil",
+        "placeholder-filter-profile-source": "Pilih sumber profil",
+        "input-filter-status": "Status",
+        "placeholder-filter-status": "Pilih status"
+    },
+    "functional-profile-management-pg": {
+        "list": "Daftar Data Profil Fungsional",
+        "add-new-functional-profile": "Tambah Profil Fungsional Baru",
+
+        "input-new-functional-profile-name": "Nama Profil Fungsional",
+        "input-new-functional-profile-name-placeholder": "Masukkan nama profil fungsional",
+        "input-new-profile": "Profil",
+        "input-new-profile-placeholder": "Pilih profil",
+        "input-new-limit": "Limit",
+        "input-new-limit-placeholder": "Pilih limit",
+
+        "input-filter-functional-profile-code": "Kode Profil Fung.",
+        "placeholder-filter-functional-profile-code": "Masukkan kode profil fungsional",
+        "input-filter-functional-profile-name": "Nama Profil Fung.",
+        "placeholder-filter-functional-profile-name": "Masukkan nama profil fungsional",
+        "input-filter-profile": "Profil",
+        "placeholder-filter-profile": "Pilih profil",
+        "input-filter-division": "Divisi",
+        "placeholder-filter-division": "Pilih divisi",
+        "input-filter-limit": "Limit",
+        "placeholder-filter-limit": "Pilih limit",
+        "input-filter-status": "Status",
+        "placeholder-filter-status": "Pilih status"
     },
     "button": {
         "new": "Tambah",

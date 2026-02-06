@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MasterDataFunctionalProfileController;
 use App\Http\Controllers\MasterDataLimitController;
 use App\Http\Controllers\MasterDataProfileController;
 use Illuminate\Support\Facades\Route;
@@ -37,6 +38,9 @@ Route::middleware(['auth'])->group(function () {
 
         /** Profile */
         Route::get('/profile-management', [MasterDataProfileController::class, 'profileManagementPage'])->name('profile-management');
+
+        /** Functional Profile */
+        Route::get('/functional-profile-management', [MasterDataFunctionalProfileController::class, 'functionalProfileManagementPage'])->name('functional-profile-management');
     });
 });
 
