@@ -20,17 +20,27 @@ export const useApiStore = defineStore('api', {
 });
 
 export const useMainStore = defineStore('main', {
-    state: () => ({
-        /** Additional data */
-        appName: import.meta.env.APP_NAME,
-        appVersion: '',
-        appDebug: false,
-        userName: '',
-        userId: '',
-        notificationList: [],
-        locale: (localStorage.getItem('locale') || 'en') as 'en' | 'id',
-        mode: (localStorage.getItem('colorMode') || 'system') as ColorMode,
-    }),
+    state: () => {
+        // Detect if user is on mobile device
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+        
+        // Get stored value or default based on device type
+        const storedCollapsed = localStorage.getItem('sidebarCollapsed');
+        const defaultCollapsed = storedCollapsed !== null ? storedCollapsed === 'true' : isMobile;
+        
+        return {
+            /** Additional data */
+            appName: import.meta.env.APP_NAME,
+            appVersion: '',
+            appDebug: false,
+            userName: '',
+            userId: '',
+            notificationList: [],
+            locale: (localStorage.getItem('locale') || 'en') as 'en' | 'id',
+            mode: (localStorage.getItem('colorMode') || 'system') as ColorMode,
+            isCollapsed: defaultCollapsed,
+        };
+    },
 
     getters: {
         /**
@@ -78,6 +88,16 @@ export const useMainStore = defineStore('main', {
             } else {
                 this.setLight();
             }
+        },
+
+        toggleSidebar() {
+            this.isCollapsed = !this.isCollapsed;
+            localStorage.setItem('sidebarCollapsed', String(this.isCollapsed));
+        },
+
+        setSidebarCollapsed(collapsed: boolean) {
+            this.isCollapsed = collapsed;
+            localStorage.setItem('sidebarCollapsed', String(collapsed));
         },
 
         applyMode() {

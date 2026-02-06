@@ -18,6 +18,7 @@ class Menu extends Model
      * icon: string(100), nullable
      * parent_id: uuid, nullable
      * code: integer, nullable
+     * name_code: string(100), nullable
      * created_at: timestamp
      * updated_at: timestamp
      */
@@ -33,5 +34,6 @@ class Menu extends Model
         'icon',
         'parent_id',
         'code',
+        'name_code',
     ];
 }
