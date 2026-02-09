@@ -90,6 +90,7 @@
         "input-new-profile-name-placeholder": "Enter profile name",
         "input-new-description": "Description",
         "input-new-profile-source": "Profile Source",
+        "input-new-access-right": "Access Right",
 
         "input-filter-profile-code": "Profile Code",
         "placeholder-filter-profile-code": "Enter profile code",
@@ -109,6 +110,7 @@
         "input-new-functional-profile-name-placeholder": "Enter functional profile name",
         "input-new-profile": "Profile",
         "input-new-profile-placeholder": "Select profile",
+        "input-new-division": "Division",
         "input-new-limit": "Limit",
         "input-new-limit-placeholder": "Select limit",
 

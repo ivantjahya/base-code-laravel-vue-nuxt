@@ -159,7 +159,7 @@ const resetForm = () => {
                                         </span>
                                     </template>
 
-                                    <USelectMenu v-model="category" :items="categoryValue" :placeholder="t('text.user-management-pg.input-new-category-placeholder') || 'Select category'" class="w-80 font-light"/>
+                                    <USelectMenu multiple v-model="category" :items="categoryValue" :placeholder="t('text.user-management-pg.input-new-category-placeholder') || 'Select category'" class="w-80 font-light"/>
 
                                 </UFormField>
 

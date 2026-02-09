@@ -5,6 +5,8 @@ import { getPaginationRowModel } from '@tanstack/table-core'
 import { CalendarDate, DateFormatter, getLocalTimeZone, today } from '@internationalized/date'
 import { useI18n } from '../composables/useI18n'
 import CmpLayout from '../Components/CmpLayout.vue'
+import type { TreeItemSelectEvent } from 'reka-ui'
+import type { TreeItem } from '@nuxt/ui'
 
 const { t } = useI18n()
 
@@ -71,6 +73,47 @@ const resetForm = () => {
     limit.value = null
     valueSwitch.value = true
 }
+
+type DivisionItem = {
+  label: string
+  value?: string
+  children?: DivisionItem[]
+}
+
+const items: TreeItem[] = [
+  {
+    label: 'A - LADIES',
+    children: [
+        { label: 'A1 - MISSY', },
+        { label: 'A2 - YOUNG', },
+        { label: 'A3 - INTIMATE', },
+        { label: 'A4 - BRANDED OUTRIGHT NORMAL', },
+        { label: 'A5 - SPECIAL BRAND',  }
+    ]
+  },
+  {
+    label: 'B - MENS',
+    children: [
+        { label: 'B1 - FORMAL', },
+        { label: 'B2 - ADULT', },
+        { label: 'B3 - YOUTH', },
+        { label: 'B4 - MENS NEEDS', },
+        { label: 'B5 - MOSLEM WEAR',  }
+    ]
+  },
+  {
+    label: 'C  - BABY AND KIDS',
+    children: [
+        { label: 'C1 - KIDS BOYS', },
+        { label: 'C2 - KIDS GIRLS', },
+        { label: 'C3  - SCHOOL UNIFORM', },
+        { label: 'C4 - TODDLER BOYS', },
+        { label: 'C5 - TODDLER GIRLS',  }
+    ]
+  },
+]
+
+const selectDivision = ref<string | null>(null)
 
 </script>
 
@@ -139,43 +182,32 @@ const resetForm = () => {
                                 </UFormField>
 
                                 <!-- ACCESS RIGHT -->
-                                <!-- <UFormField orientation="horizontal" class="mb-2" >
+                                <UFormField orientation="horizontal" class="mb-2" >
 
                                     <template #label>
                                         <span class="flex items-center gap-1">
-                                            {{ t('text.limit-management-pg.input-new-end-date') || 'End Date' }}
+                                            {{ t('text.functional-profile-management-pg.input-new-division') || 'Division' }}
                                             <span class="text-red-500">*</span>
                                         </span>
                                     </template>
 
-                                    <UInputDate
-                                        ref="inputEndDate"
-                                        v-model="modelValueEnd"
-                                        locale="id-ID"
-                                        format="dd/mm/yyyy"
-                                        :min-value="modelValueStart"
-                                        class="w-80 border-[#CAD5E2] font-reguler focus:border-[#F26524]">
+                                    <div class="w-80 max-h-70 overflow-y-auto border border-gray-300 rounded-md p-2 dark:border-gray-700">
+                                        <UTree
+                                            v-model="selectDivision"
+                                            :as="{ link: 'div' }"
+                                            :items="items"
+                                            @select="onSelect"
+                                            >
+                                            <template #item-leading="{ selected, handleSelect }">
+                                                <URadioGroup :model-value="selected"
+                                                    @update:model-value="handleSelect"
+                                                    @click.stop />
+                                            </template>
+                                        </UTree>
 
-                                        <template #trailing>
-                                            <UPopover>
-                                                <UButton
-                                                    color="neutral"
-                                                    variant="link"
-                                                    size="sm"
-                                                    icon="i-lucide-calendar"
-                                                    aria-label="Select a date"
-                                                    class="px-0"
-                                                />
+                                    </div>
 
-                                                <template #content>
-                                                    <UCalendar v-model="modelValueEnd" :min-value="modelValueStart" class="p-2" />
-                                                </template>
-                                            </UPopover>
-                                        </template>
-
-                                    </UInputDate>
-
-                                </UFormField> -->
+                                </UFormField>
 
                                 <!-- STATUS -->
                                 <UFormField orientation="horizontal" class="mb-2" >

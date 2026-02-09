@@ -90,6 +90,7 @@
         "input-new-profile-name-placeholder": "Masukkan nama profil",
         "input-new-description": "Deskripsi",
         "input-new-profile-source": "Sumber Profil",
+        "input-new-access-right": "Hak Akses",
 
         "input-filter-profile-code": "Kode Profil",
         "placeholder-filter-profile-code": "Masukkan kode profil",
@@ -108,6 +109,7 @@
         "input-new-functional-profile-name-placeholder": "Masukkan nama profil fungsional",
         "input-new-profile": "Profil",
         "input-new-profile-placeholder": "Pilih profil",
+        "input-new-division": "Divisi",
         "input-new-limit": "Limit",
         "input-new-limit-placeholder": "Pilih limit",
 
