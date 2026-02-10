@@ -154,6 +154,20 @@
         "input-filter-status": "Status",
         "placeholder-filter-status": "Pilih status"
     },
+    "user-guide-management-pg": {
+        "list": "Daftar Panduan Pengguna",
+        "add-new-user-guide": "Tambah Panduan Pengguna Baru",
+
+        "input-new-name": "Nama Panduan",
+        "input-new-name-placeholder": "Masukkan nama panduan pengguna",
+        "input-new-menu": "Menu",
+        "input-new-menu-placeholder": "Pilih menu",
+
+        "input-filter-name": "Nama Panduan",
+        "placeholder-filter-name": "Masukkan nama panduan pengguna",
+        "input-filter-menu": "Menu",
+        "placeholder-filter-menu": "Pilih menu"
+    },
     "button": {
         "new": "Tambah",
         "find": "Cari",

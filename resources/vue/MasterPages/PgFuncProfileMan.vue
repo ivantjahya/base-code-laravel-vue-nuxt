@@ -181,7 +181,7 @@ const selectDivision = ref<string | null>(null)
 
                                 </UFormField>
 
-                                <!-- ACCESS RIGHT -->
+                                <!-- DIVISION -->
                                 <UFormField orientation="horizontal" class="mb-2" >
 
                                     <template #label>

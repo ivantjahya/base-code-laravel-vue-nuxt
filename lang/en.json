@@ -156,6 +156,20 @@
         "input-filter-status": "Status",
         "placeholder-filter-status": "Select status"
     },
+    "user-guide-management-pg": {
+        "list": "List of User Guides",
+        "add-new-user-guide": "Add New User Guide",
+
+        "input-new-name": "User Guide Name",
+        "input-new-name-placeholder": "Enter user guide name",
+        "input-new-menu": "Menu",
+        "input-new-menu-placeholder": "Select menu",
+
+        "input-filter-name": "User Guide Name",
+        "placeholder-filter-name": "Enter user guide name",
+        "input-filter-menu": "Menu",
+        "placeholder-filter-menu": "Select menu"
+    },
     "button": {
         "new": "New",
         "find": "Find",
