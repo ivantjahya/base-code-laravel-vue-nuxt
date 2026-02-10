@@ -90,6 +90,7 @@
         "input-new-profile-name-placeholder": "Masukkan nama profil",
         "input-new-description": "Deskripsi",
         "input-new-profile-source": "Sumber Profil",
+        "input-new-access-right": "Hak Akses",
 
         "input-filter-profile-code": "Kode Profil",
         "placeholder-filter-profile-code": "Masukkan kode profil",
@@ -108,6 +109,7 @@
         "input-new-functional-profile-name-placeholder": "Masukkan nama profil fungsional",
         "input-new-profile": "Profil",
         "input-new-profile-placeholder": "Pilih profil",
+        "input-new-division": "Divisi",
         "input-new-limit": "Limit",
         "input-new-limit-placeholder": "Pilih limit",
 
@@ -151,6 +153,20 @@
         "placeholder-filter-category": "Pilih kategori",
         "input-filter-status": "Status",
         "placeholder-filter-status": "Pilih status"
+    },
+    "user-guide-management-pg": {
+        "list": "Daftar Panduan Pengguna",
+        "add-new-user-guide": "Tambah Panduan Pengguna Baru",
+
+        "input-new-name": "Nama Panduan",
+        "input-new-name-placeholder": "Masukkan nama panduan pengguna",
+        "input-new-menu": "Menu",
+        "input-new-menu-placeholder": "Pilih menu",
+
+        "input-filter-name": "Nama Panduan",
+        "placeholder-filter-name": "Masukkan nama panduan pengguna",
+        "input-filter-menu": "Menu",
+        "placeholder-filter-menu": "Pilih menu"
     },
     "button": {
         "new": "Tambah",

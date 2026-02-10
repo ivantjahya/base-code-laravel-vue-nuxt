@@ -90,6 +90,7 @@
         "input-new-profile-name-placeholder": "Enter profile name",
         "input-new-description": "Description",
         "input-new-profile-source": "Profile Source",
+        "input-new-access-right": "Access Right",
 
         "input-filter-profile-code": "Profile Code",
         "placeholder-filter-profile-code": "Enter profile code",
@@ -109,6 +110,7 @@
         "input-new-functional-profile-name-placeholder": "Enter functional profile name",
         "input-new-profile": "Profile",
         "input-new-profile-placeholder": "Select profile",
+        "input-new-division": "Division",
         "input-new-limit": "Limit",
         "input-new-limit-placeholder": "Select limit",
 
@@ -153,6 +155,20 @@
         "placeholder-filter-category": "Select category",
         "input-filter-status": "Status",
         "placeholder-filter-status": "Select status"
+    },
+    "user-guide-management-pg": {
+        "list": "List of User Guides",
+        "add-new-user-guide": "Add New User Guide",
+
+        "input-new-name": "User Guide Name",
+        "input-new-name-placeholder": "Enter user guide name",
+        "input-new-menu": "Menu",
+        "input-new-menu-placeholder": "Select menu",
+
+        "input-filter-name": "User Guide Name",
+        "placeholder-filter-name": "Enter user guide name",
+        "input-filter-menu": "Menu",
+        "placeholder-filter-menu": "Select menu"
     },
     "button": {
         "new": "New",

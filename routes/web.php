@@ -6,6 +6,7 @@ use App\Http\Controllers\MasterDataFunctionalProfileController;
 use App\Http\Controllers\MasterDataLimitController;
 use App\Http\Controllers\MasterDataProfileController;
 use App\Http\Controllers\MasterDataUserController;
+use App\Http\Controllers\MasterDataUserGuideController;
 use Illuminate\Support\Facades\Route;
 
 /** Route for login redirect */
@@ -45,6 +46,9 @@ Route::middleware(['auth'])->group(function () {
 
         /** User */
         Route::get('/user-management', [MasterDataUserController::class, 'userManagementPage'])->name('user-management');
+
+        /** User Guide */
+        Route::get('/user-guide-management', [MasterDataUserGuideController::class, 'userGuideManagementPage'])->name('user-guide-management');
     });
 });
 

@@ -4,6 +4,7 @@ const limitManagement = '/limit-management';
 const profileManagement = '/profile-management';
 const functionalProfileManagement = '/functional-profile-management';
 const userManagement = '/user-management';
+const userGuideManagement = '/user-guide-management';
 const exploreNuxt = '/explore-nuxt';
 
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
@@ -41,6 +42,11 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('./MasterPages/PgUserMan.vue'),
     },
     {
+        path: userGuideManagement,
+        name: 'userGuideManagement',
+        component: () => import('./MasterPages/PgUserGuideMan.vue'),
+    },
+    {
         path: exploreNuxt,
         name: 'exploreNuxt',
         component: () => import('./HomePages/PgExploreNuxt.vue'),
@@ -69,6 +75,7 @@ export const useWebStore = defineStore('web', {
         profileManagement: profileManagement,
         functionalProfileManagement: functionalProfileManagement,
         userManagement: userManagement,
+        userGuideManagement: userGuideManagement,
         exploreNuxt: exploreNuxt,
     }),
 });

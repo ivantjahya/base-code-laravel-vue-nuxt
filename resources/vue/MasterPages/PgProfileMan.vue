@@ -5,6 +5,8 @@ import { getPaginationRowModel } from '@tanstack/table-core'
 import { CalendarDate, DateFormatter, getLocalTimeZone, today } from '@internationalized/date'
 import { useI18n } from '../composables/useI18n'
 import CmpLayout from '../Components/CmpLayout.vue'
+import type { TreeItemSelectEvent } from 'reka-ui'
+import type { TreeItem } from '@nuxt/ui'
 
 const { t } = useI18n()
 
@@ -63,6 +65,65 @@ const resetForm = () => {
     description.value = ''
     profileSource.value = null
     valueSwitch.value = true
+    treeValue.value = []
+}
+
+const items: TreeItem[] = [
+  {
+    label: 'Master Data',
+    value: 'master-data',
+    children: [
+      {
+        label: 'Limit',
+        value: 'master-limit',
+        children: [
+          { label: 'List', value: 'limit-list' },
+          { label: 'Create', value: 'limit-create' },
+          { label: 'Update', value: 'limit-update' }
+        ]
+      },
+      {
+        label: 'Profile',
+        value: 'master-profile',
+        children: [
+          { label: 'List', value: 'profile-list' },
+          { label: 'Create', value: 'profile-create' },
+          { label: 'Update', value: 'profile-update' }
+        ]
+      },
+      {
+        label: 'Functional Profile',
+        value: 'functional-profile',
+        children: [
+          { label: 'List', value: 'fp-list' },
+          { label: 'Create', value: 'fp-create' },
+          { label: 'Update', value: 'fp-update' },
+          { label: 'Reset Password', value: 'fp-reset-password' }
+        ]
+      },
+      {
+        label: 'User',
+        value: 'user',
+        children: [
+          { label: 'List', value: 'user-list' },
+          { label: 'Create', value: 'user-create' },
+          { label: 'Update', value: 'user-update' },
+          { label: 'Reset Password', value: 'user-reset-password' }
+        ]
+      }
+    ]
+  },
+  { label: 'New Registration', value: 'new-registration' },
+  { label: 'Purchase Order (PO)', value: 'purchase-order' },
+  { label: 'Consignment', value: 'consignment' }
+]
+
+const treeValue = ref<string[]>([])
+
+function onSelect(e: TreeItemSelectEvent<TreeItem>) {
+  if (e.detail.originalEvent.type === 'click') {
+    e.preventDefault()
+  }
 }
 
 </script>
@@ -132,43 +193,37 @@ const resetForm = () => {
                                 </UFormField>
 
                                 <!-- ACCESS RIGHT -->
-                                <!-- <UFormField orientation="horizontal" class="mb-2" >
+                                <UFormField orientation="horizontal" class="mb-2" >
 
                                     <template #label>
                                         <span class="flex items-center gap-1">
-                                            {{ t('text.limit-management-pg.input-new-end-date') || 'End Date' }}
+                                            {{ t('text.profile-management-pg.input-new-access-right') || 'Access Right' }}
                                             <span class="text-red-500">*</span>
                                         </span>
                                     </template>
 
-                                    <UInputDate
-                                        ref="inputEndDate"
-                                        v-model="modelValueEnd"
-                                        locale="id-ID"
-                                        format="dd/mm/yyyy"
-                                        :min-value="modelValueStart"
-                                        class="w-80 border-[#CAD5E2] font-reguler focus:border-[#F26524]">
+                                    <div class="w-80 max-h-70 overflow-y-auto border border-gray-300 rounded-md p-2 dark:border-gray-700">
+                                        <UTree
+                                            v-model="treeValue"
+                                            :as="{ link: 'div' }"
+                                            :items="items"
+                                            multiple
+                                            propagate-select
+                                            bubble-select
+                                            @select="onSelect"
+                                        >
+                                            <template #item-leading="{ selected, indeterminate, handleSelect }">
+                                            <UCheckbox
+                                                :model-value="indeterminate ? 'indeterminate' : selected"
+                                                tabindex="-1"
+                                                @change="handleSelect"
+                                                @click.stop
+                                            />
+                                            </template>
+                                        </UTree>
+                                    </div>
 
-                                        <template #trailing>
-                                            <UPopover>
-                                                <UButton
-                                                    color="neutral"
-                                                    variant="link"
-                                                    size="sm"
-                                                    icon="i-lucide-calendar"
-                                                    aria-label="Select a date"
-                                                    class="px-0"
-                                                />
-
-                                                <template #content>
-                                                    <UCalendar v-model="modelValueEnd" :min-value="modelValueStart" class="p-2" />
-                                                </template>
-                                            </UPopover>
-                                        </template>
-
-                                    </UInputDate>
-
-                                </UFormField> -->
+                                </UFormField>
 
                                 <!-- STATUS -->
                                 <UFormField orientation="horizontal" class="mb-2" >
