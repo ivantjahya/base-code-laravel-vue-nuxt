@@ -241,7 +241,9 @@
       "username-required": "Username is required",
       "password-required": "Password is required",
       "username-incorrect": "Username is incorrect",
-      "password-incorrect": "Password is incorrect"
+      "password-incorrect": "Password is incorrect",
+      "required": "This field is required",
+      "amount-max-greater-than-min": "Maximum must be greater than or equal to minimum"
     }
   },
   "token": {
