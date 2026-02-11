@@ -64,6 +64,7 @@ interface Props {
   
   // Loading
   loading?: boolean
+  showLoadingOverlay?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -84,12 +85,14 @@ const emit = defineEmits<{
   'update:pageSize': [size: number]
   'row-click': [row: any]
   'selection-change': [selectedRows: any[]]
+  'search': [query: string] // For global search, server-side
 }>()
 
 // Refs
 const table = ref<any>(null)
 const rowSelection = ref({})
 const searchQuery = ref('')
+let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null // For global search, server-side
 
 // Page size options
 const pageSizeOptions = [
@@ -113,22 +116,39 @@ const handlePageChange = (newPage: number) => {
   emit('update:currentPage', newPage)
 }
 
-// Client-side filtering on current page data (filter accordion is server-side)
-const filteredData = computed(() => {
-  if (!searchQuery.value || !props.showFilters) {
-    return props.data
+// Watch search query and emit to parent with debouncing for server-side search // For global search, server-side
+watch(searchQuery, (newQuery) => {
+  // Clear previous timer
+  if (searchDebounceTimer) {
+    clearTimeout(searchDebounceTimer)
   }
   
-  const query = searchQuery.value.toLowerCase()
-  
-  return props.data.filter((row) => {
-    return props.columns.some((col) => {
-      const value = row[col.key]
-      if (value === null || value === undefined) return false
-      return String(value).toLowerCase().includes(query)
-    })
-  })
+  // Debounce search to avoid too many API calls
+  searchDebounceTimer = setTimeout(() => {
+    console.log('CmpCustomTable - Emitting search:', newQuery)
+    emit('search', newQuery)
+  }, 500) // Wait 500ms after user stops typing
 })
+
+// No client-side filtering - all filtering done on server // For global search, server-side
+const filteredData = computed(() => props.data)
+
+// // Client-side filtering on current page data (filter accordion is server-side)
+// const filteredData = computed(() => {
+//   if (!searchQuery.value || !props.showFilters) {
+//     return props.data
+//   }
+  
+//   const query = searchQuery.value.toLowerCase()
+  
+//   return props.data.filter((row) => {
+//     return props.columns.some((col) => {
+//       const value = row[col.key]
+//       if (value === null || value === undefined) return false
+//       return String(value).toLowerCase().includes(query)
+//     })
+//   })
+// })
 
 // Get row actions
 const getRowActions = (row: any) => {
@@ -300,6 +320,12 @@ watch(rowSelection, (newVal) => {
         separator: 'h-0'
       }"
     >
+      <template #loading>
+        <div v-if="showLoadingOverlay" class="text-center text-gray-500">
+          <UIcon name="i-lucide-loader-2" class="animate-spin inline-block mr-2" />
+          {{ t('text.message.loading') || 'Loading...' }}
+        </div>
+      </template>
       <template #empty>
         <div class="text-center text-gray-500">
           {{ t('text.message.no-data') || 'No data available.' }}

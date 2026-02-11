@@ -171,8 +171,8 @@
     "button": {
         "new": "Tambah",
         "find": "Cari",
-        "clear": "Reset",
-        "submit": "Kirim",
+        "clear": "Kosongkan",
+        "submit": "Simpan",
         "edit": "Ubah Data"
     },
     "input-field": {
@@ -220,7 +220,10 @@
       "failed-to-save-data": "Gagal menyimpan data!",
       "data-saved-msg": "Data telah berhasil disimpan!",
       "data-updated-msg": "Data telah berhasil diperbarui!",
-      "failed-to-save-data-msg": "Gagal menyimpan data. Terjadi kesalahan."
+      "failed-to-save-data-msg": "Gagal menyimpan data. Terjadi kesalahan.",
+      "failed-to-load-data-msg": "Gagal memuat data.",
+      "loading": "Memuat...",
+      "error": "Kesalahan!"
     }
   },
   "auth": {
