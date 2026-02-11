@@ -34,6 +34,18 @@ const StartDateFilter = ref<any>(null)
 const ModelStartDateFilter = shallowRef<CalendarDate>()
 const EndDateFilter = ref<any>(null)
 const ModelEndDateFilter = shallowRef<CalendarDate>()
+const isPopoverFilterStartDateOpen = ref(false)
+const isPopoverFilterEndDateOpen = ref(false)
+
+const resetFilter = () => {
+    limitCodeFilter.value = ''
+    minFilter.value = null
+    maxFilter.value = null
+    StartDateFilter.value = null
+    ModelStartDateFilter.value = undefined
+    EndDateFilter.value = null
+    ModelEndDateFilter.value = undefined
+}
 
 // ========================= STATE FOR TABLE =========================
 const limitData = ref([])
@@ -41,6 +53,8 @@ const currentPage = ref(1)
 const itemPerPage = ref(10)
 const countTotalData = ref(0)
 const loadingTable = ref(false)
+const showLoadingOverlay = ref(false)
+
 const columns = computed(() => [
     {
         key: 'code',
@@ -96,6 +110,7 @@ const modalSubmitOpen = ref(false)
 const isSubmitting = ref(false)
 const editMode = ref(false)
 const editingId = ref<string | null>(null)
+const globalSearchQuery = ref('') // For global search, server-side
 
 const valueMin = ref<number | null>(null)
 const valueMax = ref<number | null>(null)
@@ -104,6 +119,8 @@ const inputStartDate = ref<any>(null)
 const modelValueStart = shallowRef<CalendarDate>()
 const inputEndDate = ref<any>(null)
 const modelValueEnd = shallowRef<CalendarDate>()
+const isPopoverFormStartDateOpen = ref(false)
+const isPopoverFormEndDateOpen = ref(false)
 
 const valueSwitch = ref(true)
 
@@ -187,6 +204,7 @@ const postSubmitLimit = async () => {
 }
 
 const getLimitList = async () => {
+    limitData.value = showLoadingOverlay.value ? [] : limitData.value;
     loadingTable.value = true;
 
     try {
@@ -197,7 +215,8 @@ const getLimitList = async () => {
             start_date: getDateString(ModelStartDateFilter.value),
             end_date: getDateString(ModelEndDateFilter.value),
             skip: (currentPage.value - 1) * itemPerPage.value,
-            limit: itemPerPage.value
+            limit: itemPerPage.value,
+            search: globalSearchQuery.value, // For global search, server-side
         }
         const response = await axios.get(api.getLimitList, { params });
         
@@ -211,7 +230,7 @@ const getLimitList = async () => {
         Swal?.fire({
             icon: 'error',
             title: t('text.message.error' as any) || 'Error!',
-            text: t('text.message.failed-to-load-data' as any) || 'Failed to load data.',
+            text: t('text.message.failed-to-load-data-msg' as any) || 'Failed to load data.',
             confirmButtonText: 'OK'
         });
     } finally {
@@ -232,6 +251,12 @@ const handlePageChange = (page: number) => {
 const handlePageSizeChange = (size: number) => {
     itemPerPage.value = size
     currentPage.value = 1 // Reset to first page when changing page size
+    getLimitList()
+}
+
+const handleSearch = (query: string) => { // For global search, server-side
+    globalSearchQuery.value = query
+    currentPage.value = 1 // Reset to first page when searching
     getLimitList()
 }
 
@@ -279,7 +304,7 @@ onMounted(() => {
                         </h1>
 
                         <!-- MODAL -->
-                        <UModal v-model:open="modalSubmitOpen" :title="modalTitle" class="text-[16px] font-semibold" :ui="{ footer: 'justify-end' }">
+                        <UModal v-model:open="modalSubmitOpen" :title="modalTitle" :dismissible="false" class="text-[16px] font-semibold" :ui="{ footer: 'justify-end' }">
                             <template #body>
                                 <!-- MINIMUM -->
                                 <UFormField
@@ -343,7 +368,7 @@ onMounted(() => {
                                         class="w-80 border-[#CAD5E2] font-reguler focus:border-[#F26524]"
                                     >
                                         <template #trailing>
-                                            <UPopover>
+                                            <UPopover v-model:open="isPopoverFormStartDateOpen">
                                                 <UButton
                                                     color="neutral"
                                                     variant="link"
@@ -355,7 +380,12 @@ onMounted(() => {
                                                 />
 
                                                 <template #content>
-                                                    <UCalendar v-model="modelValueStart" :max-value="modelValueEnd" class="p-2" />
+                                                    <UCalendar
+                                                        v-model="modelValueStart"
+                                                        :max-value="modelValueEnd"
+                                                        class="p-2"
+                                                        @update:model-value="isPopoverFormStartDateOpen = false"
+                                                    />
                                                 </template>
                                             </UPopover>
                                         </template>
@@ -381,7 +411,7 @@ onMounted(() => {
                                         class="w-80 border-[#CAD5E2] font-reguler focus:border-[#F26524]"
                                     >
                                         <template #trailing>
-                                            <UPopover>
+                                            <UPopover v-model:open="isPopoverFormEndDateOpen">
                                                 <UButton
                                                     color="neutral"
                                                     variant="link"
@@ -393,7 +423,12 @@ onMounted(() => {
                                                 />
 
                                                 <template #content>
-                                                    <UCalendar v-model="modelValueEnd" :min-value="modelValueStart" class="p-2" />
+                                                    <UCalendar
+                                                        v-model="modelValueEnd"
+                                                        :min-value="modelValueStart"
+                                                        class="p-2"
+                                                        @update:model-value="isPopoverFormEndDateOpen = false"
+                                                    />
                                                 </template>
                                             </UPopover>
                                         </template>
@@ -482,7 +517,7 @@ onMounted(() => {
                                                     class="w-full border-[#CAD5E2] font-reguler focus:border-[#F26524]"
                                                 >
                                                     <template #trailing>
-                                                        <UPopover>
+                                                        <UPopover v-model:open="isPopoverFilterStartDateOpen">
                                                             <UButton
                                                                 color="neutral"
                                                                 variant="link"
@@ -493,7 +528,12 @@ onMounted(() => {
                                                             />
 
                                                             <template #content>
-                                                                <UCalendar v-model="ModelStartDateFilter" :max-value="ModelEndDateFilter" class="p-2" />
+                                                                <UCalendar
+                                                                    v-model="ModelStartDateFilter"
+                                                                    :max-value="ModelEndDateFilter"
+                                                                    class="p-2"
+                                                                    @update:model-value="isPopoverFilterStartDateOpen = false"
+                                                                />
                                                             </template>
                                                         </UPopover>
                                                     </template>
@@ -533,7 +573,7 @@ onMounted(() => {
                                                     class="w-full border-[#CAD5E2] font-reguler focus:border-[#F26524]"
                                                 >
                                                     <template #trailing>
-                                                        <UPopover>
+                                                        <UPopover v-model:open="isPopoverFilterEndDateOpen">
                                                             <UButton
                                                                 color="neutral"
                                                                 variant="link"
@@ -544,7 +584,12 @@ onMounted(() => {
                                                             />
 
                                                             <template #content>
-                                                                <UCalendar v-model="ModelEndDateFilter" :min-value="ModelStartDateFilter" class="p-2" />
+                                                                <UCalendar
+                                                                    v-model="ModelEndDateFilter"
+                                                                    :min-value="ModelStartDateFilter"
+                                                                    class="p-2"
+                                                                    @update:model-value="isPopoverFilterEndDateOpen = false"
+                                                                />
                                                             </template>
                                                         </UPopover>
                                                     </template>
@@ -575,14 +620,19 @@ onMounted(() => {
                                         <!-- BUTTON FIND -->
                                         <div class="flex w-full mb-1">
                                             <div class="w-full md:w-50 my-auto text-base md:text-sm"></div>
-                                            <div class="flex w-full text-sm">
+                                            <div class="flex w-full text-sm gap-2">
                                                 <UButton
-                                                    @click="onClickFindButton"
+                                                    class="flex-1 w-full justify-center text-base md:text-sm text-[#F26524] hover:text-[#E34613] bg-[#FEE9D6] hover:bg-[#FBD0AD] active:bg-[#FBD0AD] active:text-[#E34613]"
+                                                    :disabled="isSubmitting"
+                                                    @click="resetFilter"
+                                                >{{ t('text.button.clear') || 'Clear' }}</UButton>
+
+                                                <UButton
+                                                    class="flex-3 w-full justify-center text-base md:text-sm text-white bg-[#F26524] hover:bg-[#E34613] active:bg-[#E34613]"
                                                     :loading="loadingTable"
-                                                    color="primary"
                                                     size="md"
                                                     icon="i-lucide-search"
-                                                    class="w-full justify-center text-base md:text-sm text-white"
+                                                    @click="onClickFindButton"
                                                 >
                                                     {{ t('text.button.find') || 'Find' }}
                                                 </UButton>
@@ -603,11 +653,13 @@ onMounted(() => {
                     :showNumberColumn="false"
                     :showFilters="true"
                     :loading="loadingTable"
+                    :showLoadingOverlay="showLoadingOverlay"
                     :page-size="itemPerPage"
                     :current-page="currentPage"
                     :count-total-data="countTotalData"
                     @update:currentPage="handlePageChange"
                     @update:pageSize="handlePageSizeChange"
+                    @search="handleSearch"
                 />
             </UCard>
         </div>

@@ -99,9 +99,9 @@ class PythonModuleMasterDataService
             fn () => Http::acceptJson()
                 ->connectTimeout(3)
                 ->timeout(60)
-                ->get("{$this->baseUrl}/limit/list", $temp)
+                ->get("{$this->baseUrl}/limit/get_list", $temp)
                 ->throw(),
-            '/masterdata/limit/list',
+            '/masterdata/limit/get_list',
             'Failed to get limit list',
             ['params' => $params]
         );

@@ -222,7 +222,10 @@
       "failed-to-save-data": "Failed to save data!",
       "data-saved-msg": "The data has been saved successfully!",
       "data-updated-msg": "The data has been updated successfully!",
-      "failed-to-save-data-msg": "Failed to save the data. An error occurred."
+      "failed-to-save-data-msg": "Failed to save the data. An error occurred.",
+      "failed-to-load-data-msg": "Failed to load the data.",
+      "loading": "Loading...",
+      "error": "Error!"
     }
   },
   "auth": {
