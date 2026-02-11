@@ -1,61 +1,24 @@
 <script setup lang="ts">
-import { ref, computed, h, resolveComponent, shallowRef } from 'vue'
+import { ref, computed, h, resolveComponent, shallowRef, onMounted } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
-import { getPaginationRowModel } from '@tanstack/table-core'
 import { CalendarDate, DateFormatter, getLocalTimeZone, today } from '@internationalized/date'
 import { useI18n } from '../composables/useI18n'
+import { useFormatters } from '../composables/useFormatters'
+import { useApiStore } from '../AppState'
+import axios from 'axios'
+import { getCurrentInstance } from 'vue'
 import CmpLayout from '../Components/CmpLayout.vue'
+import CmpCustomTable from '../Components/CmpCustomTable.vue'
 
 const { t } = useI18n()
+const { formatDate, formatCurrency, getDateString, stringToCalendarDate } = useFormatters()
+const api = useApiStore()
+const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
 const UButton = resolveComponent('UButton')
 const UDropdownMenu = resolveComponent('UDropdownMenu')
 
-// Sample data - replace with actual API call
-// const limits = ref([
-//   {
-//     id: 1,
-//     limitCode: 'L001',
-//     minimum: 0,
-//     maximum: 5000000,
-//     startDate: '01-12-2025',
-//     endDate: '31-12-2030'
-//   },
-//   {
-//     id: 2,
-//     limitCode: 'L002',
-//     minimum: 5000000,
-//     maximum: 10000000,
-//     startDate: '15-01-2026',
-//     endDate: '31-12-2030'
-//   },
-//   {
-//     id: 3,
-//     limitCode: 'L003',
-//     minimum: 10000000,
-//     maximum: 50000000,
-//     startDate: '21-11-2025',
-//     endDate: '31-12-2030'
-//   },
-//   {
-//     id: 4,
-//     limitCode: 'L004',
-//     minimum: 0,
-//     maximum: 10000000,
-//     startDate: '01-09-2025',
-//     endDate: '31-12-2030'
-//   },
-//   {
-//     id: 5,
-//     limitCode: 'L005',
-//     minimum: 50000000,
-//     maximum: 100000000,
-//     startDate: '12-12-2024',
-//     endDate: '31-12-2030'
-//   }
-// ])
-
-// State
+// ========================= STATE FOR FILTER =========================
 const moreFilterItems = computed(() => [
   {
     label: t('text.input-field.more-filters'),
@@ -64,237 +27,235 @@ const moreFilterItems = computed(() => [
     defaultOpen: false
   }
 ])
-
-// ========================= FILTER =========================
 const limitCodeFilter = ref('')
 const minFilter = ref<number | null>(null)
 const maxFilter = ref<number | null>(null)
-
 const StartDateFilter = ref<any>(null)
 const ModelStartDateFilter = shallowRef<CalendarDate>()
 const EndDateFilter = ref<any>(null)
 const ModelEndDateFilter = shallowRef<CalendarDate>()
 
-// Convert CalendarDate to string format for API
-const getDateString = (calendarDate: CalendarDate | undefined) => {
-    if (!calendarDate) return null
-    const date = calendarDate.toDate(getLocalTimeZone())
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const day = String(date.getDate()).padStart(2, '0')
-    return `${year}-${month}-${day}` // Returns YYYY-MM-DD format
-}
+// ========================= STATE FOR TABLE =========================
+const limitData = ref([])
+const currentPage = ref(1)
+const itemPerPage = ref(10)
+const countTotalData = ref(0)
+const loadingTable = ref(false)
+const columns = computed(() => [
+    {
+        key: 'code',
+        label: t('text.table-column.column-limit-code'),
+        sortable: true
+    },
+    {
+        key: 'min_value',
+        label: t('text.table-column.column-minimum-amount'),
+        sortable: true,
+        formatter: (value: number) => formatCurrency(value),
+        alignBody: 'right'
+    },
+    {
+        key: 'max_value',
+        label: t('text.table-column.column-maximum-amount'),
+        sortable: true,
+        formatter: (value: number) => formatCurrency(value),
+        alignBody: 'right'
+    },
+    {
+        key: 'start_date',
+        label: t('text.table-column.column-start-date'),
+        sortable: true,
+        formatter: (value: string) => formatDate(value)
+    },
+    {
+        key: 'end_date',
+        label: t('text.table-column.column-end-date'),
+        sortable: true,
+        formatter: (value: string) => formatDate(value)
+    },
+    {
+        key: 'actions',
+        label: '',
+        sortable: false,
+    }
+])
 
-// Actions
-const postFindData = () => {
-    console.log('Finding data with filters:', {
-        limitCode: limitCodeFilter.value,
-        minAmount: minFilter.value,
-        maxAmount: maxFilter.value,
-        startDate: getDateString(ModelStartDateFilter.value),
-        endDate: getDateString(ModelEndDateFilter.value)
-    })
-}
+const actions = computed(() => [
+    [
+        {
+            label: t('text.button.edit' as any) || 'Edit',
+            icon: 'i-lucide-pencil',
+            onSelect: (row) => handleEdit(row)
+        }
+    ]
+])
 
-// ========================= MODAL =========================
+// ========================= STATE FOR MODAL =========================
+const modalTitle = ref('')
+const modalSubmitOpen = ref(false)
+const isSubmitting = ref(false)
+const editMode = ref(false)
+const editingId = ref<string | null>(null)
+
 const valueMin = ref<number | null>(null)
 const valueMax = ref<number | null>(null)
 
 const inputStartDate = ref<any>(null)
-const modelValueStart = shallowRef<CalendarDate | null>(null)
+const modelValueStart = shallowRef<CalendarDate>()
 const inputEndDate = ref<any>(null)
-const modelValueEnd = shallowRef<CalendarDate | null>(null)
+const modelValueEnd = shallowRef<CalendarDate>()
 
 const valueSwitch = ref(true)
 
 const resetForm = () => {
     valueMin.value = null
     valueMax.value = null
-    modelValueStart.value = null
-    modelValueEnd.value = null
+    modelValueStart.value = undefined
+    modelValueEnd.value = undefined
     valueSwitch.value = true
+    editMode.value = false
+    editingId.value = null
 }
 
+const showModal = () => {
+    modalTitle.value = t('text.limit-management-pg.add-new-limit' as any) || 'Create New Limit'
+    resetForm()
+    modalSubmitOpen.value = true
+}
 
-// const table = ref<any>(null)
-// const rowSelection = ref({})
+const closeModal = () => {
+    modalTitle.value = ''
+    modalSubmitOpen.value = false
+    resetForm()
+}
 
-// Format number with thousand separators
-// const formatNumber = (num: number) => {
-//   if (num === 0) return '0'
-//   return num.toLocaleString('id-ID')
-// }
+// Submit create/update limit
+const postSubmitLimit = async () => {
+    // Validation
+    if (valueMin.value == null || valueMax.value == null || !getDateString(modelValueStart.value) || !getDateString(modelValueEnd.value)) {
+        console.error('Please fill all required fields')
+        return
+    }
 
-// const handleEdit = (limit: any) => {
-//   console.log('Edit limit:', limit)
-//   // Implement edit limit
-// }
+    if (valueMax.value < valueMin.value) {
+        console.error('Maximum must be greater than or equal to minimum')
+        return
+    }
 
-// const handleDelete = (limit: any) => {
-//   console.log('Delete limit:', limit)
-//   // Implement delete limit
-// }
+    isSubmitting.value = true
+    try {
+        // Convert CalendarDate to YYYY-MM-DD format
+        const startDate = getDateString(modelValueStart.value)
+        const endDate = getDateString(modelValueEnd.value)
 
-// Row actions dropdown
-// const getRowActions = (row: any) => [
-//   [
-//     {
-//       label: 'Edit',
-//       icon: 'i-lucide-pencil',
-//       onSelect: () => handleEdit(row.original)
-//     }
-//   ],
-//   [
-//     {
-//       label: 'Delete',
-//       icon: 'i-lucide-trash',
-//       color: 'error',
-//       onSelect: () => handleDelete(row.original)
-//     }
-//   ]
-// ]
+        const payload = {
+            min_value: valueMin.value,
+            max_value: valueMax.value,
+            start_date: startDate,
+            end_date: endDate,
+        }
 
-// Table columns definition
-// const columns: TableColumn<any>[] = [
-//   {
-//     id: 'no',
-//     header: 'No.',
-//     cell: ({ row }) => {
-//       const pageIndex = table.value?.tableApi?.getState().pagination.pageIndex || 0
-//       const pageSize = table.value?.tableApi?.getState().pagination.pageSize || 20
-//       return pageIndex * pageSize + row.index + 1
-//     }
-//   },
-//   {
-//     accessorKey: 'limitCode',
-//     header: ({ column }) => {
-//       const isSorted = column.getIsSorted()
+        let response
+        if (editMode.value && editingId.value) {
+            // Update existing limit
+            response = await axios.put(`${api.postLimitUpdate}${editingId.value}`, payload)
+        } else {
+            // Create new limit
+            response = await axios.post(api.postLimitCreate, payload)
+        }
 
-//       return h(UButton, {
-//         color: 'neutral',
-//         variant: 'ghost',
-//         label: 'Limit Code',
-//         icon: isSorted
-//           ? isSorted === 'asc'
-//             ? 'i-lucide-arrow-up-narrow-wide'
-//             : 'i-lucide-arrow-down-wide-narrow'
-//           : 'i-lucide-arrow-up-down',
-//         class: '-mx-2.5',
-//         onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
-//       })
-//     }
-//   },
-//   {
-//     accessorKey: 'minimum',
-//     header: ({ column }) => {
-//       const isSorted = column.getIsSorted()
+        Swal?.fire({
+            icon: 'success',
+            title: t('text.message.success' as any) || 'Success!',
+            text: editMode.value ? t('text.message.data-updated-msg' as any) || 'The data has been updated successfully!' : t('text.message.data-saved-msg' as any) || 'The data has been saved successfully!',
+            confirmButtonText: 'OK'
+        })
 
-//       return h(UButton, {
-//         color: 'neutral',
-//         variant: 'ghost',
-//         label: 'Minimum',
-//         icon: isSorted
-//           ? isSorted === 'asc'
-//             ? 'i-lucide-arrow-up-narrow-wide'
-//             : 'i-lucide-arrow-down-wide-narrow'
-//           : 'i-lucide-arrow-up-down',
-//         class: '-mx-2.5',
-//         onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
-//       })
-//     },
-//     cell: ({ row }) => formatNumber(row.getValue('minimum'))
-//   },
-//   {
-//     accessorKey: 'maximum',
-//     header: ({ column }) => {
-//       const isSorted = column.getIsSorted()
+        closeModal()
+        await getLimitList()
+    } catch (error: any) {
+        console.error('Error submitting limit:', error.response?.data || error.message)
+        Swal?.fire({
+            icon: 'error',
+            title: t('text.message.failed-to-save-data' as any) || 'Failed to save data!',
+            text: t('text.message.failed-to-save-data-msg' as any) || 'Failed to save the data. An error occurred.',
+            confirmButtonText: 'OK'
+        })
+    } finally {
+        isSubmitting.value = false
+    }
+}
 
-//       return h(UButton, {
-//         color: 'neutral',
-//         variant: 'ghost',
-//         label: 'Maximum',
-//         icon: isSorted
-//           ? isSorted === 'asc'
-//             ? 'i-lucide-arrow-up-narrow-wide'
-//             : 'i-lucide-arrow-down-wide-narrow'
-//           : 'i-lucide-arrow-up-down',
-//         class: '-mx-2.5',
-//         onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
-//       })
-//     },
-//     cell: ({ row }) => formatNumber(row.getValue('maximum'))
-//   },
-//   {
-//     accessorKey: 'startDate',
-//     header: ({ column }) => {
-//       const isSorted = column.getIsSorted()
+const getLimitList = async () => {
+    loadingTable.value = true;
 
-//       return h(UButton, {
-//         color: 'neutral',
-//         variant: 'ghost',
-//         label: 'Start Date',
-//         icon: isSorted
-//           ? isSorted === 'asc'
-//             ? 'i-lucide-arrow-up-narrow-wide'
-//             : 'i-lucide-arrow-down-wide-narrow'
-//           : 'i-lucide-arrow-up-down',
-//         class: '-mx-2.5',
-//         onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
-//       })
-//     }
-//   },
-//   {
-//     accessorKey: 'endDate',
-//     header: ({ column }) => {
-//       const isSorted = column.getIsSorted()
+    try {
+        const params = {
+            limit_code: limitCodeFilter.value,
+            min_amount: minFilter.value,
+            max_amount: maxFilter.value,
+            start_date: getDateString(ModelStartDateFilter.value),
+            end_date: getDateString(ModelEndDateFilter.value),
+            skip: (currentPage.value - 1) * itemPerPage.value,
+            limit: itemPerPage.value
+        }
+        const response = await axios.get(api.getLimitList, { params });
+        
+        limitData.value = response.data.data?.items.map((item: any) => ({
+            ...item,
+            status: item.status === 1 ? 'Active' : 'Inactive'
+        }));
+        countTotalData.value = response.data.data?.total || 0;
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        Swal?.fire({
+            icon: 'error',
+            title: t('text.message.error' as any) || 'Error!',
+            text: t('text.message.failed-to-load-data' as any) || 'Failed to load data.',
+            confirmButtonText: 'OK'
+        });
+    } finally {
+        loadingTable.value = false;
+    }
+}
 
-//       return h(UButton, {
-//         color: 'neutral',
-//         variant: 'ghost',
-//         label: 'End Date',
-//         icon: isSorted
-//           ? isSorted === 'asc'
-//             ? 'i-lucide-arrow-up-narrow-wide'
-//             : 'i-lucide-arrow-down-wide-narrow'
-//           : 'i-lucide-arrow-up-down',
-//         class: '-mx-2.5',
-//         onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
-//       })
-//     }
-//   },
-//   {
-//     id: 'actions',
-//     header: () => h('div', { class: 'text-right' }, ''),
-//     cell: ({ row }) => {
-//       return h(
-//         'div',
-//         { class: 'text-right' },
-//         h(
-//           UDropdownMenu,
-//           {
-//             content: {
-//               align: 'end'
-//             },
-//             items: getRowActions(row)
-//           },
-//           () =>
-//             h(UButton, {
-//               icon: 'i-lucide-ellipsis-vertical',
-//               color: 'neutral',
-//               variant: 'ghost',
-//               size: 'sm'
-//             })
-//         )
-//       )
-//     }
-//   }
-// ]
+const onClickFindButton = () => {
+    currentPage.value = 1
+    getLimitList()
+}
 
-// const pagination = ref({
-//   pageIndex: 4, // Start at page 5 (0-indexed)
-//   pageSize: 20
-// })
+const handlePageChange = (page: number) => {
+    currentPage.value = page
+    getLimitList()
+}
 
+const handlePageSizeChange = (size: number) => {
+    itemPerPage.value = size
+    currentPage.value = 1 // Reset to first page when changing page size
+    getLimitList()
+}
+
+const handleEdit = (data: any) => {
+    modalTitle.value = t('text.limit-management-pg.edit-limit' as any) || 'Edit Limit'
+
+    // Populate form with existing data
+    editMode.value = true
+    editingId.value = data.id
+    valueMin.value = data.min_value
+    valueMax.value = data.max_value
+    
+    // Convert date strings to CalendarDate
+    modelValueStart.value = stringToCalendarDate(data.start_date)
+    modelValueEnd.value = stringToCalendarDate(data.end_date)
+    
+    valueSwitch.value = data.is_active
+    modalSubmitOpen.value = true
+}
+
+// Fetch initial data on component mount
+onMounted(() => {
+    getLimitList()
+})
 </script>
 
 <template>
@@ -305,23 +266,26 @@ const resetForm = () => {
 
             <!-- Title Section -->
             <UCard class="mb-3">
-
                 <div class="flex items-center justify-between">
-
                     <div class="flex items-center gap-4">
+                        <!-- BUTTON NEW -->
+                        <UButton type="button" @click="showModal" class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[16px] px-5">
+                            {{ t('text.button.new').toUpperCase() || 'NEW' }}
+                        </UButton>
+                        
+                        <!-- TITLE -->
+                        <h1 class="text-lg font-semibold text-gray-900 dark:text-white">
+                            {{ t('text.limit-management-pg.list') || 'List of Limits' }}
+                        </h1>
 
-                        <UModal v-model:open="open" :title="t('text.limit-management-pg.add-new-limit') || 'Create New Limit'" class="text-[16px] font-semibold" :ui="{ footer: 'justify-end' }">
-
-                            <!-- BUTTON NEW -->
-                            <UButton type="button" class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[16px] px-5">
-                                {{ t('text.button.new').toUpperCase() || 'NEW' }}
-                            </UButton>
-
+                        <!-- MODAL -->
+                        <UModal v-model:open="modalSubmitOpen" :title="modalTitle" class="text-[16px] font-semibold" :ui="{ footer: 'justify-end' }">
                             <template #body>
-
                                 <!-- MINIMUM -->
-                                <UFormField orientation="horizontal" class="mb-2" >
-
+                                <UFormField
+                                    orientation="horizontal"
+                                    class="mb-2"
+                                >
                                     <template #label>
                                         <span class="flex items-center gap-1">
                                             {{ t('text.limit-management-pg.input-new-minimum') || 'Minimum' }}
@@ -329,30 +293,20 @@ const resetForm = () => {
                                         </span>
                                     </template>
 
-                                    <!-- <UInput placeholder="Enter minimum" class="w-80
-                                        border-[#CAD5E2]
-                                        font-light
-                                        focus:border-[#F26524]
-                                        focus:ring-2
-                                        focus:ring-[#F26524]
-                                        focus:ring-offset-0
-                                        ring-0" /> -->
-
                                     <UInputNumber
                                         v-model="valueMin"
+                                        required
                                         locale="id-ID"
                                         :format-options="{
                                             style: 'currency',
                                             currency: 'IDR'
                                         }"
-                                        class="w-80 border-[#CAD5E2] font-reguler focus:border-[#F26524] "
+                                        class="w-80 border-[#CAD5E2] font-reguler focus:border-[#F26524]"
                                     />
-
                                 </UFormField>
 
                                 <!-- MAXIMUM -->
                                 <UFormField orientation="horizontal" class="mb-2" >
-
                                     <template #label>
                                         <span class="flex items-center gap-1">
                                             {{ t('text.limit-management-pg.input-new-maximum') || 'Maximum' }}
@@ -369,12 +323,10 @@ const resetForm = () => {
                                         }"
                                         class="w-80 border-[#CAD5E2] font-reguler focus:border-[#F26524] "
                                     />
-
                                 </UFormField>
 
                                 <!-- START DATE -->
                                 <UFormField orientation="horizontal" class="mb-2" >
-
                                     <template #label>
                                         <span class="flex items-center gap-1">
                                             {{ t('text.limit-management-pg.input-new-start-date') || 'Start Date' }}
@@ -387,9 +339,9 @@ const resetForm = () => {
                                         v-model="modelValueStart"
                                         locale="id-ID" format="dd/mm/yyyy"
                                         :max-value="modelValueEnd"
+                                        :disabled="editMode"
                                         class="w-80 border-[#CAD5E2] font-reguler focus:border-[#F26524]"
                                     >
-
                                         <template #trailing>
                                             <UPopover>
                                                 <UButton
@@ -399,6 +351,7 @@ const resetForm = () => {
                                                     icon="i-lucide-calendar"
                                                     aria-label="Select a date"
                                                     class="px-0"
+                                                    :disabled="editMode"
                                                 />
 
                                                 <template #content>
@@ -406,14 +359,11 @@ const resetForm = () => {
                                                 </template>
                                             </UPopover>
                                         </template>
-
                                     </UInputDate>
-
                                 </UFormField>
 
                                 <!-- END DATE -->
                                 <UFormField orientation="horizontal" class="mb-2" >
-
                                     <template #label>
                                         <span class="flex items-center gap-1">
                                             {{ t('text.limit-management-pg.input-new-end-date') || 'End Date' }}
@@ -427,8 +377,9 @@ const resetForm = () => {
                                         locale="id-ID"
                                         format="dd/mm/yyyy"
                                         :min-value="modelValueStart"
-                                        class="w-80 border-[#CAD5E2] font-reguler focus:border-[#F26524]">
-
+                                        :disabled="editMode"
+                                        class="w-80 border-[#CAD5E2] font-reguler focus:border-[#F26524]"
+                                    >
                                         <template #trailing>
                                             <UPopover>
                                                 <UButton
@@ -438,6 +389,7 @@ const resetForm = () => {
                                                     icon="i-lucide-calendar"
                                                     aria-label="Select a date"
                                                     class="px-0"
+                                                    :disabled="editMode"
                                                 />
 
                                                 <template #content>
@@ -445,14 +397,11 @@ const resetForm = () => {
                                                 </template>
                                             </UPopover>
                                         </template>
-
                                     </UInputDate>
-
                                 </UFormField>
 
                                 <!-- STATUS -->
                                 <UFormField orientation="horizontal" class="mb-2" >
-
                                     <template #label>
                                         <span class="flex items-center gap-1">
                                             {{ t('text.limit-management-pg.input-new-status') || 'Status' }}
@@ -462,43 +411,35 @@ const resetForm = () => {
                                     <div class="flex justify-start w-80">
                                         <USwitch v-model="valueSwitch" />
                                     </div>
-
                                 </UFormField>
-
                             </template>
 
                             <template #footer>
-
                                 <UButton
+                                    v-if="!editMode"
                                     class="bg-[#FEE9D6] text-[#F26524] hover:bg-[#FBD0AD] hover:text-[#E34613] active:bg-[#FBD0AD] active:text-[#E34613] text-[14px] px-5"
+                                    :disabled="isSubmitting"
                                     @click="resetForm"
                                 >{{ t('text.button.clear') || 'Clear' }}</UButton>
 
-                                <UButton label="Submit" class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[14px] px-5">
+                                <UButton 
+                                    class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[14px] px-5"
+                                    :loading="isSubmitting"
+                                    :disabled="isSubmitting"
+                                    @click="postSubmitLimit"
+                                >
                                     {{ t('text.button.submit') || 'Submit' }}
                                 </UButton>
-
                             </template>
-
                         </UModal>
-
-                        <h1 class="text-lg font-semibold text-gray-900 dark:text-white">
-
-                            {{ t('text.limit-management-pg.list') || 'List of Limits' }}
-
-                        </h1>
-
                     </div>
-
                 </div>
-
             </UCard>
 
+            <!-- MAIN CONTENT -->
             <UCard>
-
                 <!-- Filters Section with Accordion -->
                 <div class="mb-6">
-
                     <UAccordion
                         :items="moreFilterItems"
                         class="w-full border-1 border-gray-200 dark:border-gray-700 rounded-lg px-4"
@@ -509,17 +450,13 @@ const resetForm = () => {
                         }
                         }"
                     >
-
                         <template #panelMoreFilter>
-
                             <div class="py-2 space-y-4 bg-white dark:bg-gray-900">
                                 <div class="grid grid-flow-row text-sm">
-
                                     <div class="flex flex-col md:flex-row w-full my-1 gap-2">
 
                                         <!-- LIMIT CODE -->
                                         <div class="flex w-full">
-
                                             <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.limit-code') || 'Limit Code' }}</div>
                                             <div class="flex w-full text-sm">
                                                 <UInput
@@ -529,14 +466,12 @@ const resetForm = () => {
                                                     class="w-full font-light text-base md:text-sm"
                                                 />
                                             </div>
-
                                         </div>
 
                                         <div class="px-2"></div>
 
                                         <!-- START DATE -->
                                         <div class="flex w-full">
-
                                             <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.start-date') || 'Start Date' }}</div>
                                             <div class="flex w-full text-sm">
                                                 <UInputDate
@@ -546,7 +481,6 @@ const resetForm = () => {
                                                     :max-value="ModelEndDateFilter"
                                                     class="w-full border-[#CAD5E2] font-reguler focus:border-[#F26524]"
                                                 >
-
                                                     <template #trailing>
                                                         <UPopover>
                                                             <UButton
@@ -563,19 +497,14 @@ const resetForm = () => {
                                                             </template>
                                                         </UPopover>
                                                     </template>
-
                                                 </UInputDate>
                                             </div>
-
                                         </div>
-
                                     </div>
 
                                     <div class="flex flex-col md:flex-row w-full my-1 gap-2">
-
                                         <!-- MINIMUM -->
                                         <div class="flex w-full">
-
                                             <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.min-amount') || 'Minimum' }}</div>
                                             <div class="flex w-full text-sm">
                                                 <UInputNumber
@@ -588,17 +517,14 @@ const resetForm = () => {
                                                     class="w-full border-[#CAD5E2] font-reguler focus:border-[#F26524] "
                                                 />
                                             </div>
-
                                         </div>
 
                                         <div class="px-2"></div>
 
                                         <!-- END DATE -->
                                         <div class="flex w-full">
-
                                             <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.end-date') || 'End Date' }}</div>
                                             <div class="flex w-full text-sm">
-
                                                 <UInputDate
                                                     ref="EndDateFilter"
                                                     v-model="ModelEndDateFilter"
@@ -606,7 +532,6 @@ const resetForm = () => {
                                                     :min-value="ModelStartDateFilter"
                                                     class="w-full border-[#CAD5E2] font-reguler focus:border-[#F26524]"
                                                 >
-
                                                     <template #trailing>
                                                         <UPopover>
                                                             <UButton
@@ -623,20 +548,14 @@ const resetForm = () => {
                                                             </template>
                                                         </UPopover>
                                                     </template>
-
                                                 </UInputDate>
-
                                             </div>
-
                                         </div>
-
                                     </div>
 
                                     <div class="flex flex-col md:flex-row w-full my-1 gap-2">
-
                                         <!-- MAXIMUM -->
                                         <div class="flex w-full">
-
                                             <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.max-amount') || 'Maximum' }}</div>
                                             <div class="flex w-full text-sm">
                                                 <UInputNumber
@@ -649,18 +568,17 @@ const resetForm = () => {
                                                     class="w-full border-[#CAD5E2] font-reguler focus:border-[#F26524] "
                                                 />
                                             </div>
-
                                         </div>
 
                                         <div class="px-2"></div>
 
                                         <!-- BUTTON FIND -->
                                         <div class="flex w-full mb-1">
-
                                             <div class="w-full md:w-50 my-auto text-base md:text-sm"></div>
                                             <div class="flex w-full text-sm">
                                                 <UButton
-                                                    @click="postFindData"
+                                                    @click="onClickFindButton"
+                                                    :loading="loadingTable"
                                                     color="primary"
                                                     size="md"
                                                     icon="i-lucide-search"
@@ -669,60 +587,30 @@ const resetForm = () => {
                                                     {{ t('text.button.find') || 'Find' }}
                                                 </UButton>
                                             </div>
-
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
-
                         </template>
-
                     </UAccordion>
-
                 </div>
 
                 <!-- Nuxt UI Table -->
-                <!-- <UTable
-                ref="table"
-                v-model:row-selection="rowSelection"
-                v-model:pagination="pagination"
-                :pagination-options="{
-                    getPaginationRowModel: getPaginationRowModel()
-                }"
-                :data="limits"
-                :columns="columns"
-                class="shrink-0"
-                :ui="{
-                    base: 'table-fixed border-separate border-spacing-0',
-                    thead: '[&>tr]:bg-elevated/50 [&>tr]:after:content-none',
-                    tbody: '[&>tr]:last:[&>td]:border-b-0',
-                    th: 'py-2 first:rounded-l-lg last:rounded-r-lg border-y border-default first:border-l last:border-r',
-                    td: 'border-b border-default',
-                    separator: 'h-0'
-                }"
-                /> -->
-
-                <!-- Table Footer -->
-                <!-- <div class="flex items-center justify-between gap-3 border-t border-default pt-4 mt-auto">
-                <div class="text-sm text-muted">
-                    {{ table?.tableApi?.getFilteredSelectedRowModel().rows.length || 0 }} of
-                    {{ table?.tableApi?.getFilteredRowModel().rows.length || 0 }} row(s) selected.
-                </div>
-
-                <div class="flex items-center gap-1.5">
-                    <UPagination
-                    :default-page="(table?.tableApi?.getState().pagination.pageIndex || 0) + 1"
-                    :items-per-page="table?.tableApi?.getState().pagination.pageSize"
-                    :total="table?.tableApi?.getFilteredRowModel().rows.length"
-                    @update:page="(p: number) => table?.tableApi?.setPageIndex(p - 1)"
-                    />
-                </div>
-                </div> -->
+                <CmpCustomTable
+                    :data="limitData"
+                    :columns="columns"
+                    :actions="actions"
+                    :showNumberColumn="false"
+                    :showFilters="true"
+                    :loading="loadingTable"
+                    :page-size="itemPerPage"
+                    :current-page="currentPage"
+                    :count-total-data="countTotalData"
+                    @update:currentPage="handlePageChange"
+                    @update:pageSize="handlePageSizeChange"
+                />
             </UCard>
-
         </div>
-
     </CmpLayout>
 </template>
 
@@ -742,4 +630,6 @@ const resetForm = () => {
   animation: fade-in 0.2s ease-out;
 }
 </style>
+
+
 

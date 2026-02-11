@@ -9,7 +9,6 @@ use Illuminate\View\View;
 
 class MasterDataFunctionalProfileController extends Controller
 {
-
     /**
      * GET request for profile management page
      */
@@ -22,5 +21,4 @@ class MasterDataFunctionalProfileController extends Controller
             'title' => __('app.page.functional-profile-management'),
         ]);
     }
-
 }

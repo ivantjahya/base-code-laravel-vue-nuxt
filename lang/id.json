@@ -172,7 +172,8 @@
         "new": "Tambah",
         "find": "Cari",
         "clear": "Reset",
-        "submit": "Kirim"
+        "submit": "Kirim",
+        "edit": "Ubah Data"
     },
     "input-field": {
       "username": "ID Pengguna",
@@ -193,6 +194,13 @@
     "dropdown": {
       "select-language": "Pilih bahasa"
     },
+    "table": {
+      "rows-per-page": "Baris per halaman",
+      "showing": "Menampilkan",
+      "to": "sampai",
+      "of": "dari",
+      "entries": "entri"
+    },
     "table-column": {
       "column-no": "No",
       "column-limit-code": "Kode Limit",
@@ -206,7 +214,13 @@
       "to-navigate": "untuk menavigasi",
       "to-select": "untuk memilih",
       "to-close": "untuk menutup",
-      "no-results-found": "Tidak ada hasil yang ditemukan"
+      "no-results-found": "Tidak ada hasil yang ditemukan",
+      "no-data": "Tidak ada data",
+      "success": "Sukses!",
+      "failed-to-save-data": "Gagal menyimpan data!",
+      "data-saved-msg": "Data telah berhasil disimpan!",
+      "data-updated-msg": "Data telah berhasil diperbarui!",
+      "failed-to-save-data-msg": "Gagal menyimpan data. Terjadi kesalahan."
     }
   },
   "auth": {

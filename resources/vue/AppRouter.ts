@@ -15,31 +15,37 @@ const routes: Array<RouteRecordRaw> = [
         path: landingPage,
         name: 'landingPage',
         component: () => import('./AuthPages/PgLogin.vue'),
+        meta: { title: 'Login' },
     },
     {
         path: home,
         name: 'home',
         component: () => import('./HomePages/PgHome.vue'),
+        meta: { title: 'Home' },
     },
     {
         path: limitManagement,
         name: 'limitManagement',
         component: () => import('./MasterPages/PgLimitMan.vue'),
+        meta: { title: 'Limit' },
     },
     {
         path: profileManagement,
         name: 'profileManagement',
         component: () => import('./MasterPages/PgProfileMan.vue'),
+        meta: { title: 'Profile' },
     },
     {
         path: functionalProfileManagement,
         name: 'functionalProfileManagement',
         component: () => import('./MasterPages/PgFuncProfileMan.vue'),
+        meta: { title: 'Functional Profile' },
     },
     {
         path: userManagement,
         name: 'userManagement',
         component: () => import('./MasterPages/PgUserMan.vue'),
+        meta: { title: 'User' },
     },
     {
         path: userGuideManagement,
@@ -50,12 +56,22 @@ const routes: Array<RouteRecordRaw> = [
         path: exploreNuxt,
         name: 'exploreNuxt',
         component: () => import('./HomePages/PgExploreNuxt.vue'),
+        meta: { title: 'Explore Nuxt' },
     },
 ];
 
 export const router = createRouter({
     history: createWebHistory(),
     routes,
+});
+
+// Update page title on route changes
+router.beforeEach((to, from, next) => {
+    // Update document title if meta.title exists
+    if (to.meta.title) {
+        document.title = `${to.meta.title} - ${import.meta.env.VITE_APP_NAME}`;
+    }
+    next();
 });
 
 // Clear console on route changes

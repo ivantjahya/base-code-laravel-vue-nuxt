@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Middleware\ApiOrWebAuth;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -9,6 +8,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Session\Middleware\StartSession;
+use Laravel\Passport\Http\Middleware\CreateFreshApiToken;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -20,14 +20,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'guest' => RedirectIfAuthenticated::class,
-            'api_or_web_auth' => ApiOrWebAuth::class,
             'locale' => SetLocale::class,
         ]);
 
         $middleware->group('api', [
-            EncryptCookies::class,
             AddQueuedCookiesToResponse::class,
-            StartSession::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             SetLocale::class,
         ]);
@@ -38,6 +35,7 @@ return Application::configure(basePath: dirname(__DIR__))
             StartSession::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             SetLocale::class,
+            CreateFreshApiToken::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

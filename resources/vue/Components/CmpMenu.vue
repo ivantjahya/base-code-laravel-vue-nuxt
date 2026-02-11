@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router' // Change reloads page
 import { useI18n } from '../composables/useI18n'
 import { useMainStore } from '../AppState'
 import Swal from 'sweetalert2'
@@ -8,8 +8,8 @@ import CmpDialogMenuSearch from './CmpDialogMenuSearch.vue'
 
 const { t } = useI18n()
 const mainStore = useMainStore()
-const router = useRouter()
-const route = useRoute()
+const router = useRouter()  // Change reloads page
+const route = useRoute()  // Change reloads page
 
 const venditorePlusLogoHorizontal = new URL('@/images/logo-venditore-plus-horizontal.webp', import.meta.url).href
 const venditorePlusLogoHorizontalWhite = new URL('@/images/logo-venditore-plus-horizontal-white.webp', import.meta.url).href
@@ -527,6 +527,7 @@ const isDialogMenuSearchOpen = ref(false)
 
 // Function to set active menu based on current URL
 const setActiveMenu = () => {
+  // const currentPath = window.location.pathname // Change reloads page
   const currentPath = route.path
   
   // Reset all active states
@@ -618,6 +619,7 @@ const isExpanded = (index: number) => {
 
 const navigateTo = (url: string | null) => {
   if (url) {
+    // window.location.href = url // Change reloads page
     router.push(url)
   }
 }
