@@ -239,7 +239,9 @@
       "username-required": "ID pengguna wajib diisi",
       "password-required": "Kata sandi wajib diisi",
       "username-incorrect": "ID pengguna salah",
-      "password-incorrect": "Kata sandi salah"
+      "password-incorrect": "Kata sandi salah",
+      "required": "Kolom ini wajib diisi",
+      "amount-max-greater-than-min": "Maksimum harus lebih besar dari atau sama dengan minimum"
     }
   },
   "token": {

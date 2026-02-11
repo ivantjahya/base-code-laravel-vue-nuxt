@@ -124,6 +124,14 @@ const isPopoverFormEndDateOpen = ref(false)
 
 const valueSwitch = ref(true)
 
+// Validation error states
+const errors = ref({
+    valueMin: '',
+    valueMax: '',
+    startDate: '',
+    endDate: '',
+})
+
 const resetForm = () => {
     valueMin.value = null
     valueMax.value = null
@@ -132,6 +140,12 @@ const resetForm = () => {
     valueSwitch.value = true
     editMode.value = false
     editingId.value = null
+    errors.value = {
+        valueMin: '',
+        valueMax: '',
+        startDate: '',
+        endDate: '',
+    }
 }
 
 const showModal = () => {
@@ -148,14 +162,43 @@ const closeModal = () => {
 
 // Submit create/update limit
 const postSubmitLimit = async () => {
-    // Validation
-    if (valueMin.value == null || valueMax.value == null || !getDateString(modelValueStart.value) || !getDateString(modelValueEnd.value)) {
-        console.error('Please fill all required fields')
-        return
+    // Reset errors
+    errors.value = {
+        valueMin: '',
+        valueMax: '',
+        startDate: '',
+        endDate: '',
     }
 
-    if (valueMax.value < valueMin.value) {
-        console.error('Maximum must be greater than or equal to minimum')
+    // Validation
+    let hasError = false
+
+    if (valueMin.value == null) {
+        errors.value.valueMin = t('auth.validation.required' as any) || 'This field is required'
+        hasError = true
+    }
+
+    if (valueMax.value == null) {
+        errors.value.valueMax = t('auth.validation.required' as any) || 'This field is required'
+        hasError = true
+    }
+
+    if (!getDateString(modelValueStart.value)) {
+        errors.value.startDate = t('auth.validation.required' as any) || 'This field is required'
+        hasError = true
+    }
+
+    if (!getDateString(modelValueEnd.value)) {
+        errors.value.endDate = t('auth.validation.required' as any) || 'This field is required'
+        hasError = true
+    }
+
+    if (valueMax.value != null && valueMin.value != null && valueMax.value < valueMin.value) {
+        errors.value.valueMax = t('auth.validation.amount-max-greater-than-min' as any) || 'Maximum must be greater than or equal to minimum'
+        hasError = true
+    }
+
+    if (hasError) {
         return
     }
 
@@ -310,6 +353,10 @@ onMounted(() => {
                                 <UFormField
                                     orientation="horizontal"
                                     class="mb-2"
+                                    :error="!!errors.valueMin"
+                                    :ui="{ 
+                                        error: 'hidden',
+                                    }"
                                 >
                                     <template #label>
                                         <span class="flex items-center gap-1">
@@ -318,20 +365,35 @@ onMounted(() => {
                                         </span>
                                     </template>
 
-                                    <UInputNumber
-                                        v-model="valueMin"
-                                        required
-                                        locale="id-ID"
-                                        :format-options="{
-                                            style: 'currency',
-                                            currency: 'IDR'
-                                        }"
-                                        class="w-80 border-[#CAD5E2] font-reguler focus:border-[#F26524]"
-                                    />
+                                    <div class="w-80">
+                                        <UInputNumber
+                                            v-model="valueMin"
+                                            required
+                                            locale="id-ID"
+                                            :format-options="{
+                                                style: 'currency',
+                                                currency: 'IDR'
+                                            }"
+                                            class="w-full font-reguler"
+                                            :ui="{
+                                                base: errors.valueMin
+                                                    ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
+                                                    : ''
+                                            }"
+                                        />
+                                    </div>
+                                    <p v-if="errors.valueMin" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.valueMin }}</p>
                                 </UFormField>
 
                                 <!-- MAXIMUM -->
-                                <UFormField orientation="horizontal" class="mb-2" >
+                                <UFormField
+                                    orientation="horizontal"
+                                    class="mb-2"
+                                    :error="!!errors.valueMax"
+                                    :ui="{ 
+                                        error: 'hidden',
+                                    }"
+                                >
                                     <template #label>
                                         <span class="flex items-center gap-1">
                                             {{ t('text.limit-management-pg.input-new-maximum') || 'Maximum' }}
@@ -339,19 +401,34 @@ onMounted(() => {
                                         </span>
                                     </template>
 
-                                    <UInputNumber
-                                        v-model="valueMax"
-                                        locale="id-ID"
-                                        :format-options="{
-                                            style: 'currency',
-                                            currency: 'IDR'
-                                        }"
-                                        class="w-80 border-[#CAD5E2] font-reguler focus:border-[#F26524] "
-                                    />
+                                    <div class="w-80">
+                                        <UInputNumber
+                                            v-model="valueMax"
+                                            locale="id-ID"
+                                            :format-options="{
+                                                style: 'currency',
+                                                currency: 'IDR'
+                                            }"
+                                            class="w-full font-reguler"
+                                            :ui="{
+                                                base: errors.valueMin
+                                                    ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
+                                                    : ''
+                                            }"
+                                        />
+                                        <p v-if="errors.valueMax" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.valueMax }}</p>
+                                    </div>
                                 </UFormField>
 
                                 <!-- START DATE -->
-                                <UFormField orientation="horizontal" class="mb-2" >
+                                <UFormField
+                                    orientation="horizontal"
+                                    class="mb-2"
+                                    :error="!!errors.startDate"
+                                    :ui="{ 
+                                        error: 'hidden',
+                                    }"
+                                >
                                     <template #label>
                                         <span class="flex items-center gap-1">
                                             {{ t('text.limit-management-pg.input-new-start-date') || 'Start Date' }}
@@ -359,41 +436,56 @@ onMounted(() => {
                                         </span>
                                     </template>
 
-                                    <UInputDate
-                                        ref="inputStartDate"
-                                        v-model="modelValueStart"
-                                        locale="id-ID" format="dd/mm/yyyy"
-                                        :max-value="modelValueEnd"
-                                        :disabled="editMode"
-                                        class="w-80 border-[#CAD5E2] font-reguler focus:border-[#F26524]"
-                                    >
-                                        <template #trailing>
-                                            <UPopover v-model:open="isPopoverFormStartDateOpen">
-                                                <UButton
-                                                    color="neutral"
-                                                    variant="link"
-                                                    size="sm"
-                                                    icon="i-lucide-calendar"
-                                                    aria-label="Select a date"
-                                                    class="px-0"
-                                                    :disabled="editMode"
-                                                />
-
-                                                <template #content>
-                                                    <UCalendar
-                                                        v-model="modelValueStart"
-                                                        :max-value="modelValueEnd"
-                                                        class="p-2"
-                                                        @update:model-value="isPopoverFormStartDateOpen = false"
+                                    <div class="w-80">
+                                        <UInputDate
+                                            ref="inputStartDate"
+                                            v-model="modelValueStart"
+                                            locale="id-ID" format="dd/mm/yyyy"
+                                            :max-value="modelValueEnd"
+                                            :disabled="editMode"
+                                            class="w-full font-reguler"
+                                            :ui="{
+                                                base: errors.startDate
+                                                    ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
+                                                    : ''
+                                            }"
+                                        >
+                                            <template #trailing>
+                                                <UPopover v-model:open="isPopoverFormStartDateOpen">
+                                                    <UButton
+                                                        color="neutral"
+                                                        variant="link"
+                                                        size="sm"
+                                                        icon="i-lucide-calendar"
+                                                        aria-label="Select a date"
+                                                        class="px-0"
+                                                        :disabled="editMode"
                                                     />
-                                                </template>
-                                            </UPopover>
-                                        </template>
-                                    </UInputDate>
+
+                                                    <template #content>
+                                                        <UCalendar
+                                                            v-model="modelValueStart"
+                                                            :max-value="modelValueEnd"
+                                                            class="p-2"
+                                                            @update:model-value="isPopoverFormStartDateOpen = false"
+                                                        />
+                                                    </template>
+                                                </UPopover>
+                                            </template>
+                                        </UInputDate>
+                                        <p v-if="errors.startDate" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.startDate }}</p>
+                                    </div>
                                 </UFormField>
 
                                 <!-- END DATE -->
-                                <UFormField orientation="horizontal" class="mb-2" >
+                                <UFormField
+                                    orientation="horizontal"
+                                    class="mb-2"
+                                    :error="!!errors.endDate"
+                                    :ui="{ 
+                                        error: 'hidden',
+                                    }"
+                                >
                                     <template #label>
                                         <span class="flex items-center gap-1">
                                             {{ t('text.limit-management-pg.input-new-end-date') || 'End Date' }}
@@ -401,38 +493,46 @@ onMounted(() => {
                                         </span>
                                     </template>
 
-                                    <UInputDate
-                                        ref="inputEndDate"
-                                        v-model="modelValueEnd"
-                                        locale="id-ID"
-                                        format="dd/mm/yyyy"
-                                        :min-value="modelValueStart"
-                                        :disabled="editMode"
-                                        class="w-80 border-[#CAD5E2] font-reguler focus:border-[#F26524]"
-                                    >
-                                        <template #trailing>
-                                            <UPopover v-model:open="isPopoverFormEndDateOpen">
-                                                <UButton
-                                                    color="neutral"
-                                                    variant="link"
-                                                    size="sm"
-                                                    icon="i-lucide-calendar"
-                                                    aria-label="Select a date"
-                                                    class="px-0"
-                                                    :disabled="editMode"
-                                                />
-
-                                                <template #content>
-                                                    <UCalendar
-                                                        v-model="modelValueEnd"
-                                                        :min-value="modelValueStart"
-                                                        class="p-2"
-                                                        @update:model-value="isPopoverFormEndDateOpen = false"
+                                    <div class="w-80">
+                                        <UInputDate
+                                            ref="inputEndDate"
+                                            v-model="modelValueEnd"
+                                            locale="id-ID"
+                                            format="dd/mm/yyyy"
+                                            :min-value="modelValueStart"
+                                            :disabled="editMode"
+                                            class="w-full font-reguler"
+                                            :ui="{
+                                                base: errors.endDate
+                                                    ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
+                                                    : ''
+                                            }"
+                                        >
+                                            <template #trailing>
+                                                <UPopover v-model:open="isPopoverFormEndDateOpen">
+                                                    <UButton
+                                                        color="neutral"
+                                                        variant="link"
+                                                        size="sm"
+                                                        icon="i-lucide-calendar"
+                                                        aria-label="Select a date"
+                                                        class="px-0"
+                                                        :disabled="editMode"
                                                     />
-                                                </template>
-                                            </UPopover>
-                                        </template>
-                                    </UInputDate>
+
+                                                    <template #content>
+                                                        <UCalendar
+                                                            v-model="modelValueEnd"
+                                                            :min-value="modelValueStart"
+                                                            class="p-2"
+                                                            @update:model-value="isPopoverFormEndDateOpen = false"
+                                                        />
+                                                    </template>
+                                                </UPopover>
+                                            </template>
+                                        </UInputDate>
+                                        <p v-if="errors.endDate" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.endDate }}</p>
+                                    </div>
                                 </UFormField>
 
                                 <!-- STATUS -->
