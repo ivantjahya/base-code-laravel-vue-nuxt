@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'python' => [
+        'masterdata_endpoint' => env('PYTHON_MODULE_MASTERDATA_ENDPOINT', 'http://127.0.0.1:9101'),
+        'transaction_endpoint' => env('PYTHON_MODULE_TRANSACTION_ENDPOINT', 'http://127.0.0.1:9102'),
+        'report_endpoint' => env('PYTHON_MODULE_REPORT_ENDPOINT', 'http://127.0.0.1:9103'),
+    ],
+
 ];

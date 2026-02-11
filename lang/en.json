@@ -174,7 +174,8 @@
         "new": "New",
         "find": "Find",
         "clear": "Clear",
-        "submit": "Submit"
+        "submit": "Submit",
+        "edit": "Edit"
     },
     "input-field": {
       "username": "Username",
@@ -195,6 +196,13 @@
     "dropdown": {
       "select-language": "Select language"
     },
+    "table": {
+      "rows-per-page": "Rows per page",
+      "showing": "Showing",
+      "to": "to",
+      "of": "of",
+      "entries": "entries"
+    },
     "table-column": {
       "column-no": "No",
       "column-limit-code": "Limit Code",
@@ -208,7 +216,13 @@
       "to-navigate": "to navigate",
       "to-select": "to select",
       "to-close": "to close",
-      "no-results-found": "No results found"
+      "no-results-found": "No results found",
+      "no-data": "No data",
+      "success": "Success!",
+      "failed-to-save-data": "Failed to save data!",
+      "data-saved-msg": "The data has been saved successfully!",
+      "data-updated-msg": "The data has been updated successfully!",
+      "failed-to-save-data-msg": "Failed to save the data. An error occurred."
     }
   },
   "auth": {

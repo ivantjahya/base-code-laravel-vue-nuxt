@@ -16,6 +16,10 @@ export const useApiStore = defineStore('api', {
         /** API request */
         postTokenLogout: '/api/v1/post-token-revoke',
         appConst: '/api/v1/post-app-const',
+        getLimitList: '/api/v1/masterdata/limit/list',
+        getLimitDetail: '/api/v1/masterdata/limit/detail/', // + id
+        postLimitCreate: '/api/v1/masterdata/limit/create',
+        postLimitUpdate: '/api/v1/masterdata/limit/update/', // + id
     }),
 });
 
@@ -123,6 +127,19 @@ export const useMainStore = defineStore('main', {
                 }
             });
 
+            // Check if API token exists and is not expired
+            // const token = localStorage.getItem('api_token');
+            // const expiresAt = localStorage.getItem('token_expires_at');
+            // if (token && expiresAt) {
+            //     const expiryDate = new Date(expiresAt);
+            //     if (expiryDate < new Date()) {
+            //         // Token expired, remove it
+            //         console.warn('API token expired, removing...');
+            //         localStorage.removeItem('api_token');
+            //         localStorage.removeItem('token_expires_at');
+            //     }
+            // }
+
             /** Get Constant */
             axios
                 .post(api.appConst)
@@ -156,5 +173,45 @@ export const useMainStore = defineStore('main', {
                 console.log('csrf cookie init');
             });
         },
+
+        // /**
+        //  * Get API token for authenticated requests
+        //  * Call this after user logs in via web session
+        //  */
+        // async getApiToken(username: string, password: string) {
+        //     try {
+        //         const response = await axios.post('/api/post-token', {
+        //             username,
+        //             password,
+        //         });
+                
+        //         if (response.data.access_token) {
+        //             localStorage.setItem('api_token', response.data.access_token);
+        //             localStorage.setItem('token_expires_at', response.data.expires_at);
+        //             console.log('API token stored successfully');
+        //             return response.data;
+        //         }
+        //     } catch (error) {
+        //         console.error('Failed to get API token:', error);
+        //         throw error;
+        //     }
+        // },
+
+        // /**
+        //  * Revoke API token on logout
+        //  */
+        // async revokeApiToken() {
+        //     try {
+        //         await axios.post('/api/post-token-revoke');
+        //         localStorage.removeItem('api_token');
+        //         localStorage.removeItem('token_expires_at');
+        //         console.log('API token revoked successfully');
+        //     } catch (error) {
+        //         console.error('Failed to revoke API token:', error);
+        //         // Remove token anyway
+        //         localStorage.removeItem('api_token');
+        //         localStorage.removeItem('token_expires_at');
+        //     }
+        // },
     },
 });
