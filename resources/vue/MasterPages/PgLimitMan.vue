@@ -133,7 +133,7 @@ const getLimitList = async () => {
             search: globalSearchQuery.value, // For global search, server-side
         }
         const response = await axios.get(api.getLimitList, { params });
-        
+
         limitData.value = response.data.data?.items.map((item: any) => ({
             ...item,
             status: item.status === 1 ? 'Active' : 'Inactive'
@@ -198,11 +198,12 @@ onMounted(() => {
             <UCard class="mb-3">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-4">
+
                         <!-- BUTTON NEW -->
                         <UButton type="button" @click="showModal" class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[16px] px-5">
                             {{ t('text.button.new').toUpperCase() || 'NEW' }}
                         </UButton>
-                        
+
                         <!-- TITLE -->
                         <h1 class="text-lg font-semibold text-gray-900 dark:text-white">
                             {{ t('text.limit-management-pg.list') || 'List of Limits' }}
@@ -212,7 +213,7 @@ onMounted(() => {
             </UCard>
 
             <!-- MODAL -->
-            <DialogFormLimit 
+            <DialogFormLimit
                 :open="modalSubmitOpen"
                 :title="modalTitle"
                 :edit-mode="editMode"

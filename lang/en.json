@@ -85,22 +85,13 @@
     "profile-management-pg": {
         "list": "List of Profiles",
         "add-new-profile": "Add New Profile",
-
         "input-new-profile-name": "Profile Name",
         "input-new-profile-name-placeholder": "Enter profile name",
         "input-new-description": "Description",
         "input-new-profile-source": "Profile Source",
         "input-new-access-right": "Access Right",
-
-        "input-filter-profile-code": "Profile Code",
-        "placeholder-filter-profile-code": "Enter profile code",
-        "input-filter-profile-name": "Profile Name",
-        "placeholder-filter-profile-name": "Enter profile name",
-        "input-filter-profile-source": "Profile Source",
-        "placeholder-filter-profile-source": "Select profile source",
-        "input-filter-status": "Status",
-        "placeholder-filter-status": "Select status"
-
+        "input-new-status": "Status",
+        "edit-limit": "Edit Limit"
     },
     "functional-profile-management-pg": {
         "list": "List of Functional Profiles",
@@ -183,6 +174,7 @@
       "password": "Password",
       "search": "Search",
       "more-filters": "More Filters",
+
       "limit-code": "Limit Code",
       "limit-code-placeholder": "Enter limit code",
       "min-amount": "Minimum",
@@ -191,6 +183,17 @@
       "max-amount-placeholder": "Enter maximum",
       "start-date": "Start Date",
       "end-date": "End Date",
+
+        "profile-code": "Profile Code",
+        "profile-code-placeholder": "Enter profile code",
+        "profile-source": "Profile Source",
+        "profile-source-placeholder": "Select profile source",
+        "profile-name": "Profile Name",
+        "profile-name-placeholder": "Enter profile name",
+
+        "status": "Status",
+        "status-placeholder": "Select status",
+
       "search-menu-placeholder": "Type a command or search..."
     },
     "dropdown": {
