@@ -133,9 +133,9 @@ class PythonModuleMasterDataService
             fn () => Http::acceptJson()
                 ->connectTimeout(3)
                 ->timeout(30)
-                ->post("{$this->baseUrl}/limit/create", $data)
+                ->post("{$this->baseUrl}/limit/post_create", $data)
                 ->throw(),
-            '/masterdata/limit/create',
+            '/masterdata/limit/post_create',
             'Failed to create limit',
             ['request_data' => $data]
         );
@@ -150,9 +150,9 @@ class PythonModuleMasterDataService
             fn () => Http::acceptJson()
                 ->connectTimeout(3)
                 ->timeout(30)
-                ->put("{$this->baseUrl}/limit/{$id}", $data)
+                ->put("{$this->baseUrl}/limit/post_update/{$id}", $data)
                 ->throw(),
-            "/masterdata/limit/{$id}",
+            "/masterdata/limit/post_update/{$id}",
             'Failed to update limit',
             ['limit_id' => $id, 'request_data' => $data]
         );
