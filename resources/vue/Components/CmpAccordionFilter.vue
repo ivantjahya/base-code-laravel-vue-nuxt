@@ -30,7 +30,7 @@ const accordionItems = computed(() => [
 </script>
 
 <template>
-    <div class="mb-6">
+    <div class="mb-3">
         <UAccordion
             :items="accordionItems"
             class="w-full border-1 border-gray-200 dark:border-gray-700 rounded-lg px-4"

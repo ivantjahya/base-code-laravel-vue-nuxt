@@ -205,7 +205,7 @@ const tableColumns = computed<TableColumn<any>[]>(() => {
                   ? 'i-lucide-arrow-up-narrow-wide'
                   : 'i-lucide-arrow-down-wide-narrow'
                 : 'i-lucide-arrow-up-down',
-              class: '-mx-2.5',
+              class: '-mx-2.5 text-xs md:text-sm lg:text-base',
               onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
             })
           )
@@ -255,7 +255,7 @@ const tableColumns = computed<TableColumn<any>[]>(() => {
       cell: ({ row }) => {
         return h(
           'div',
-          { class: 'text-right' },
+          { class: 'text-center' },
           h(
             UDropdownMenu,
             {
@@ -294,7 +294,7 @@ watch(rowSelection, (newVal) => {
 <template>
   <div class="custom-table-wrapper">
     <!-- Global Search Filter -->
-    <div v-if="showFilters" class="mb-4">
+    <div v-if="showFilters" class="mb-3">
       <UInput
         v-model="searchQuery"
         icon="i-lucide-search"
@@ -315,10 +315,13 @@ watch(rowSelection, (newVal) => {
         class="shrink-0"
         :ui="{
           base: 'table-fixed border-separate border-spacing-0',
-          thead: '[&>tr]:bg-elevated/50 [&>tr]:after:content-none',
-          tbody: '[&>tr]:last:[&>td]:border-b-0',
-          th: 'py-2 first:rounded-l-lg last:rounded-r-lg border-y border-default first:border-l last:border-r',
-          td: 'border-b border-default',
+          thead: '[&>tr]:bg-elevated/50 [&>tr]:after:content-none text-left',
+          tbody: `
+            [&>tr:last-child>td:first-child]:rounded-bl-lg 
+            [&>tr:last-child>td:last-child]:rounded-br-lg
+          `,
+          th: 'py-2 border-y border-default border-1 first:rounded-tl-lg last:rounded-tr-lg',
+          td: 'border-b border-default border-1 first:border-l last:border-r',
           separator: 'h-0'
         }"
       >
@@ -341,7 +344,7 @@ watch(rowSelection, (newVal) => {
     <!-- Footer with Pagination -->
     <div 
       v-if="showPagination" 
-      class="flex items-center justify-between gap-3 border-t border-default pt-4 mt-auto"
+      class="flex items-center justify-between gap-3 pt-4 mt-auto"
     >
       <div class="flex items-center gap-4">        
         <!-- Data Info -->

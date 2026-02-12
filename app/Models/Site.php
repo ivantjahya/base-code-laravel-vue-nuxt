@@ -29,6 +29,9 @@ class Site extends Model
      * company_name_ebs: string, nullable
      * start_date: date
      * end_date: date
+     * regional_code_kontrabon: string(10), nullable
+     * regional_init_kontrabon: string(10), nullable
+     * regional_name_kontrabon: string, nullable
      * created_at: timestamp
      * updated_at: timestamp
      */
@@ -55,6 +58,9 @@ class Site extends Model
         'company_name_ebs',
         'start_date',
         'end_date',
+        'regional_code_kontrabon',
+        'regional_init_kontrabon',
+        'regional_name_kontrabon',
     ];
 
     /**

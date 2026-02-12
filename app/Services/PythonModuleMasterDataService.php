@@ -85,21 +85,11 @@ class PythonModuleMasterDataService
      */
     public function getLimitList(array $params = []): array
     {
-        $temp = [
-            'code' => $params['limit_code'] ?? null,
-            'min_value' => $params['min_value'] ?? null,
-            'max_value' => $params['max_value'] ?? null,
-            'start_date' => $params['start_date'] ?? null,
-            'end_date' => $params['end_date'] ?? null,
-            'skip' => $params['skip'] ?? null,
-            'limit' => $params['limit'] ?? null,
-        ];
-
         return $this->handleApiRequest(
             fn () => Http::acceptJson()
                 ->connectTimeout(3)
                 ->timeout(60)
-                ->get("{$this->baseUrl}/limit/get_list", $temp)
+                ->get("{$this->baseUrl}/limit/get_list", $params)
                 ->throw(),
             '/masterdata/limit/get_list',
             'Failed to get limit list',
