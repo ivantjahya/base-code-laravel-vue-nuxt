@@ -72,7 +72,7 @@ const onFind = () => {
                     <UInputDate
                         :model-value="startDate"
                         @update:model-value="$emit('update:startDate', $event)"
-                        locale="id-ID" 
+                        locale="en-GB"
                         format="dd/mm/yyyy"
                         :max-value="endDate"
                         class="w-full border-[#CAD5E2] font-reguler focus:border-[#F26524]"
@@ -130,7 +130,7 @@ const onFind = () => {
                     <UInputDate
                         :model-value="endDate"
                         @update:model-value="$emit('update:endDate', $event)"
-                        locale="id-ID" 
+                        locale="en-GB"
                         format="dd/mm/yyyy"
                         :min-value="startDate"
                         class="w-full border-[#CAD5E2] font-reguler focus:border-[#F26524]"

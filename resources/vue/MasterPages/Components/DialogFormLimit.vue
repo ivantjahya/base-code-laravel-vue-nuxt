@@ -278,7 +278,8 @@ const isOpen = computed({
                     <UInputDate
                         ref="inputStartDate"
                         v-model="modelValueStart"
-                        locale="id-ID" format="dd/mm/yyyy"
+                        locale="en-GB"
+                        format="dd/mm/yyyy"
                         :max-value="modelValueEnd"
                         :disabled="editMode"
                         class="w-full font-reguler"
@@ -335,7 +336,7 @@ const isOpen = computed({
                     <UInputDate
                         ref="inputEndDate"
                         v-model="modelValueEnd"
-                        locale="id-ID"
+                        locale="en-GB"
                         format="dd/mm/yyyy"
                         :min-value="modelValueStart"
                         :disabled="editMode"

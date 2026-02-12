@@ -76,11 +76,6 @@ const columns = computed(() => [
         sortable: true,
         formatter: (value: string) => formatDate(value)
     },
-    {
-        key: 'actions',
-        label: '',
-        sortable: false,
-    }
 ])
 
 const actions = computed(() => [
@@ -124,8 +119,8 @@ const getLimitList = async () => {
     try {
         const params = {
             limit_code: limitCodeFilter.value,
-            min_amount: minFilter.value,
-            max_amount: maxFilter.value,
+            min_value: minFilter.value,
+            max_value: maxFilter.value,
             start_date: getDateString(ModelStartDateFilter.value),
             end_date: getDateString(ModelEndDateFilter.value),
             skip: (currentPage.value - 1) * itemPerPage.value,
@@ -195,7 +190,7 @@ onMounted(() => {
         <div class="flex-1 overflow-auto p-3">
 
             <!-- Title Section -->
-            <UCard class="mb-3">
+            <UCard class="mb-3" :ui="{ body: 'sm:py-4 sm:px-6' }">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-4">
                         <!-- BUTTON NEW -->

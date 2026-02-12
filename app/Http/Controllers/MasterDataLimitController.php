@@ -51,12 +51,24 @@ class MasterDataLimitController extends Controller
             'end_date' => ['nullable', 'date'],
             'skip' => ['nullable', 'integer', 'min:0'],
             'limit' => ['nullable', 'integer', 'min:1'],
+            'search' => ['nullable', 'string'],
         ]);
         if ($validate->fails()) {
             throw new ValidationException($validate);
         }
+        (array) $validated = $validate->validated();
+
         try {
-            $params = $request->only(['limit_code', 'min_value', 'max_value', 'start_date', 'end_date', 'skip', 'limit']);
+            $params = [
+                'code' => $validated['limit_code'] ?? null,
+                'min_value' => $validated['min_value'] ?? null,
+                'max_value' => $validated['max_value'] ?? null,
+                'start_date' => $validated['start_date'] ?? null,
+                'end_date' => $validated['end_date'] ?? null,
+                'search' => $validated['search'] ?? null,
+                'skip' => $validated['skip'] ?? null,
+                'limit' => $validated['limit'] ?? null,
+            ];
             $data = $this->moduleMasterDataService->getLimitList($params);
 
             return response()->json($data);
@@ -145,8 +157,6 @@ class MasterDataLimitController extends Controller
         $validate = Validator::make($request->all(), [
             'min_value' => ['required', 'numeric', 'min:0'],
             'max_value' => ['required', 'numeric', 'min:0', 'gte:min_value'],
-            'start_date' => ['required', 'date'],
-            'end_date' => ['required', 'date', 'after_or_equal:start_date'],
         ]);
         if ($validate->fails()) {
             throw new ValidationException($validate);
@@ -157,8 +167,6 @@ class MasterDataLimitController extends Controller
             $params = [
                 'min_value' => $validated['min_value'],
                 'max_value' => $validated['max_value'],
-                'start_date' => $validated['start_date'],
-                'end_date' => $validated['end_date'],
                 'user_id' => $user?->id,
             ];
             $data = $this->moduleMasterDataService->updateLimit($id, $params);

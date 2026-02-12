@@ -9,7 +9,6 @@ use Illuminate\View\View;
 
 class MasterDataUserGuideController extends Controller
 {
-
     /**
      * GET request for user guide management page
      */
@@ -22,5 +21,4 @@ class MasterDataUserGuideController extends Controller
             'title' => __('app.page.user-guide-management'),
         ]);
     }
-
 }
