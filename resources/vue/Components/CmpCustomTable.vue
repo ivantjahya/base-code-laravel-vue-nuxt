@@ -2,6 +2,7 @@
 import { ref, computed, h, resolveComponent, watch } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
 import { useI18n } from '../composables/useI18n'
+import CmpLoadingOverlay from './CmpLoadingOverlay.vue'
 
 const { t } = useI18n()
 
@@ -304,35 +305,39 @@ watch(rowSelection, (newVal) => {
     </div>
 
     <!-- Table -->
-    <UTable
-      ref="table"
-      v-model:row-selection="rowSelection"
-      :data="filteredData"
-      :columns="tableColumns"
-      :loading="loading"
-      class="shrink-0"
-      :ui="{
-        base: 'table-fixed border-separate border-spacing-0',
-        thead: '[&>tr]:bg-elevated/50 [&>tr]:after:content-none',
-        tbody: '[&>tr]:last:[&>td]:border-b-0',
-        th: 'py-2 first:rounded-l-lg last:rounded-r-lg border-y border-default first:border-l last:border-r',
-        td: 'border-b border-default',
-        separator: 'h-0'
-      }"
-    >
-      <template #loading>
-        <div v-if="showLoadingOverlay" class="text-center text-gray-500">
-          <UIcon name="i-lucide-loader-2" class="animate-spin inline-block mr-2" />
-          {{ t('text.message.loading') || 'Loading...' }}
-        </div>
-      </template>
-      <template #empty>
-        <div class="text-center text-gray-500">
-          {{ t('text.message.no-data') || 'No data available.' }}
-        </div>
-      </template>
-    </UTable>
-    
+    <CmpLoadingOverlay :show-loading="showLoadingOverlay" :loading="loading">
+      <UTable
+        ref="table"
+        v-model:row-selection="rowSelection"
+        :data="filteredData"
+        :columns="tableColumns"
+        :loading="loading"
+        class="shrink-0"
+        :ui="{
+          base: 'table-fixed border-separate border-spacing-0',
+          thead: '[&>tr]:bg-elevated/50 [&>tr]:after:content-none',
+          tbody: '[&>tr]:last:[&>td]:border-b-0',
+          th: 'py-2 first:rounded-l-lg last:rounded-r-lg border-y border-default first:border-l last:border-r',
+          td: 'border-b border-default',
+          separator: 'h-0'
+        }"
+      >
+        <!-- The template #loading only works if the data was empty first -->
+        <!-- <template #loading>
+          <div v-if="showLoadingOverlay" class="text-center text-gray-500">
+            <UIcon name="i-lucide-loader-2" class="animate-spin inline-block mr-2" />
+            {{ t('text.message.loading') || 'Loading...' }}
+          </div>
+        </template> -->
+
+        <template #empty>
+          <div class="text-center text-gray-500">
+            {{ t('text.message.no-data') || 'No data available.' }}
+          </div>
+        </template>
+      </UTable>
+    </CmpLoadingOverlay>
+
     <!-- Footer with Pagination -->
     <div 
       v-if="showPagination" 

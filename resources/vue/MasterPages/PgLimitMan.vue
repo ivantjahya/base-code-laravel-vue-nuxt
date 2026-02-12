@@ -53,7 +53,7 @@ const currentPage = ref(1)
 const itemPerPage = ref(10)
 const countTotalData = ref(0)
 const loadingTable = ref(false)
-const showLoadingOverlay = ref(false)
+const showLoadingOverlay = ref(true)
 
 const columns = computed(() => [
     {
@@ -247,7 +247,7 @@ const postSubmitLimit = async () => {
 }
 
 const getLimitList = async () => {
-    limitData.value = showLoadingOverlay.value ? [] : limitData.value;
+    // limitData.value = showLoadingOverlay.value ? [] : limitData.value; // Clear data only when showing loading overlay (use table template #loading)
     loadingTable.value = true;
 
     try {
