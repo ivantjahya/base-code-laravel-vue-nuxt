@@ -78,13 +78,12 @@ const columns = computed(() => [
         formatter: (value: string) => formatDate(value)
     },
     {
-        key: 'status',
+        key: 'is_active',
         label: t('text.table-column.column-status'),
         sortable: false,
         cellRenderer: (value: any, row: any) => {
-            const isActive = value === 1
-            const statusText = isActive ? 'Active' : 'Not Active'
-            const badgeColor = isActive ? 'success' : 'primary'
+            const statusText = value ? 'Active' : 'Not Active'
+            const badgeColor = value ? 'success' : 'primary'
             
             return h(UBadge, { 
                 variant: 'subtle', 
@@ -100,7 +99,14 @@ const actions = computed(() => [
         {
             label: t('text.button.edit' as any) || 'Edit',
             icon: 'i-lucide-pencil',
-            onSelect: (row) => handleEdit(row)
+            show: (row: any) => row.is_active === true,
+            onSelect: (row: any) => handleEdit(row)
+        },
+        {
+            label: t('text.button.extend' as any) || 'Extend',
+            icon: 'i-lucide-clock',
+            show: (row: any) => row.is_active === false,
+            onSelect: (row: any) => handleExtend(row)
         }
     ]
 ])
@@ -109,12 +115,14 @@ const actions = computed(() => [
 const modalTitle = ref('')
 const modalSubmitOpen = ref(false)
 const editMode = ref(false)
+const extendMode = ref(false)
 const editingId = ref<string | null>(null)
 const editData = ref({})
 
 const showModal = () => {
     modalTitle.value = t('text.limit-management-pg.add-new-limit' as any) || 'Create New Limit'
     editMode.value = false
+    extendMode.value = false
     editingId.value = null
     editData.value = {}
     modalSubmitOpen.value = true
@@ -143,6 +151,7 @@ const getLimitList = async () => {
             skip: (currentPage.value - 1) * itemPerPage.value,
             limit: itemPerPage.value,
             search: globalSearchQuery.value, // For global search, server-side
+            sort_by: 'code',
         }
         const response = await axios.get(api.getLimitList, { params });
         
@@ -186,6 +195,16 @@ const handleSearch = (query: string) => { // For global search, server-side
 const handleEdit = (data: any) => {
     modalTitle.value = t('text.limit-management-pg.edit-limit' as any) || 'Edit Limit'
     editMode.value = true
+    extendMode.value = false
+    editingId.value = data.id
+    editData.value = data
+    modalSubmitOpen.value = true
+}
+
+const handleExtend = (data: any) => {
+    modalTitle.value = t('text.limit-management-pg.extend-limit' as any) || 'Extend Limit'
+    editMode.value = false
+    extendMode.value = true
     editingId.value = data.id
     editData.value = data
     modalSubmitOpen.value = true
@@ -204,7 +223,7 @@ onMounted(() => {
         <div class="flex-1 overflow-auto p-3">
 
             <!-- Title Section -->
-            <UCard class="mb-3" :ui="{ body: 'sm:py-4 sm:px-6' }">
+            <UCard class="mb-3" :ui="{ body: 'sm:py-3 sm:px-6' }">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-4">
                         <!-- BUTTON NEW -->
@@ -225,6 +244,7 @@ onMounted(() => {
                 :open="modalSubmitOpen"
                 :title="modalTitle"
                 :edit-mode="editMode"
+                :extend-mode="extendMode"
                 :editing-id="editingId"
                 :initial-data="editData"
                 @update:open="modalSubmitOpen = $event"

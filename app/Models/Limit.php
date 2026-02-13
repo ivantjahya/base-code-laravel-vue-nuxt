@@ -18,7 +18,6 @@ class Limit extends Model
      * max_value: integer
      * start_date: date
      * end_date: date
-     * status: integer
      * created_at: timestamp
      * updated_at: timestamp
      * created_by: uuid
@@ -36,7 +35,6 @@ class Limit extends Model
         'max_value',
         'start_date',
         'end_date',
-        'status',
         'created_by',
         'updated_by',
     ];

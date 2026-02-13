@@ -80,7 +80,8 @@
         "input-new-start-date": "Start Date",
         "input-new-end-date": "End Date",
         "input-new-status": "Status",
-        "edit-limit": "Edit Limit"
+        "edit-limit": "Edit Limit",
+        "extend-limit": "Extend Limit"
     },
     "profile-management-pg": {
         "list": "List of Profiles",
@@ -175,7 +176,8 @@
         "find": "Find",
         "clear": "Clear",
         "submit": "Submit",
-        "edit": "Edit"
+        "edit": "Edit",
+        "extend": "Extend"
     },
     "input-field": {
       "username": "Username",

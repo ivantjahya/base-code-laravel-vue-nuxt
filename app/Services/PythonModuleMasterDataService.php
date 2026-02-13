@@ -147,4 +147,21 @@ class PythonModuleMasterDataService
             ['limit_id' => $id, 'request_data' => $data]
         );
     }
+
+    /**
+     * Extend limit in Python API
+     */
+    public function extendLimit(string $id, array $data): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(30)
+                ->put("{$this->baseUrl}/limit/post_extend/{$id}", $data)
+                ->throw(),
+            "/masterdata/limit/post_extend/{$id}",
+            'Failed to extend limit',
+            ['limit_id' => $id, 'request_data' => $data]
+        );
+    }
 }

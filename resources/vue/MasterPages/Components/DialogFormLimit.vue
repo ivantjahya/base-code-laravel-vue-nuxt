@@ -20,6 +20,10 @@ const props = defineProps({
         type: Boolean,
         default: false
     },
+    extendMode: {
+        type: Boolean,
+        default: false
+    },
     editingId: {
         type: String,
         default: null
@@ -49,8 +53,6 @@ const modelValueEnd = shallowRef<CalendarDate>()
 const isPopoverFormStartDateOpen = ref(false)
 const isPopoverFormEndDateOpen = ref(false)
 
-const valueSwitch = ref(true)
-
 // Validation error states
 const errors = ref({
     valueMin: '',
@@ -64,7 +66,6 @@ const resetForm = () => {
     valueMax.value = null
     modelValueStart.value = undefined
     modelValueEnd.value = undefined
-    valueSwitch.value = true
     errors.value = {
         valueMin: '',
         valueMax: '',
@@ -80,12 +81,11 @@ const closeModal = () => {
 
 watch(() => props.open, (newVal) => {
     if (newVal) {
-        if (props.editMode && props.initialData) {
+        if ((props.editMode || props.extendMode) && props.initialData) {
             valueMin.value = props.initialData.min_value
             valueMax.value = props.initialData.max_value
             modelValueStart.value = stringToCalendarDate(props.initialData.start_date)
             modelValueEnd.value = stringToCalendarDate(props.initialData.end_date)
-            valueSwitch.value = props.initialData.is_active
         } else {
             resetForm()
         }
@@ -146,10 +146,17 @@ const postSubmitLimit = async () => {
             const payload = {
                 min_value: valueMin.value,
                 max_value: valueMax.value,
-                status: valueSwitch.value ? 1 : 0
             }
 
             response = await axios.put(`${api.postLimitUpdate}${props.editingId}`, payload)
+        } else if (props.extendMode && props.editingId) {
+            // Extend existing limit
+            const payload = {
+                start_date: startDate,
+                end_date: endDate,
+            }
+
+            response = await axios.put(`${api.postLimitExtend}${props.editingId}`, payload)
         } else {
             // Create new limit
             const payload = {
@@ -157,7 +164,6 @@ const postSubmitLimit = async () => {
                 max_value: valueMax.value,
                 start_date: startDate,
                 end_date: endDate,
-                status: valueSwitch.value ? 1 : 0
             }
             
             response = await axios.post(api.postLimitCreate, payload)
@@ -166,7 +172,11 @@ const postSubmitLimit = async () => {
         Swal?.fire({
             icon: 'success',
             title: t('text.message.success' as any) || 'Success!',
-            text: props.editMode ? t('text.message.data-updated-msg' as any) || 'The data has been updated successfully!' : t('text.message.data-saved-msg' as any) || 'The data has been saved successfully!',
+            text: props.editMode
+                ? t('text.message.data-updated-msg' as any) || 'The data has been updated successfully!'
+                : props.extendMode
+                ? t('text.message.data-updated-msg' as any) || 'The data has been updated successfully!'
+                : t('text.message.data-saved-msg' as any) || 'The data has been saved successfully!',
             confirmButtonText: 'OK'
         })
 
@@ -215,6 +225,7 @@ const isOpen = computed({
                         v-model="valueMin"
                         required
                         locale="id-ID"
+                        :disabled="extendMode"
                         :format-options="{
                             style: 'currency',
                             currency: 'IDR'
@@ -250,6 +261,7 @@ const isOpen = computed({
                     <UInputNumber
                         v-model="valueMax"
                         locale="id-ID"
+                        :disabled="extendMode"
                         :format-options="{
                             style: 'currency',
                             currency: 'IDR'
@@ -288,7 +300,7 @@ const isOpen = computed({
                         locale="en-GB"
                         format="dd/mm/yyyy"
                         :max-value="modelValueEnd"
-                        :disabled="editMode"
+                        :disabled="editMode || extendMode"
                         class="w-full font-reguler"
                         :ui="{
                             base: errors.startDate
@@ -305,7 +317,7 @@ const isOpen = computed({
                                     icon="i-lucide-calendar"
                                     aria-label="Select a date"
                                     class="px-0"
-                                    :disabled="editMode"
+                                    :disabled="editMode || extendMode"
                                 />
 
                                 <template #content>
@@ -380,24 +392,11 @@ const isOpen = computed({
                     <p v-if="errors.endDate" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.endDate }}</p>
                 </div>
             </UFormField>
-
-            <!-- STATUS -->
-            <UFormField orientation="horizontal" class="mb-2" >
-                <template #label>
-                    <span class="flex items-center gap-1">
-                        {{ t('text.limit-management-pg.input-new-status') || 'Status' }}
-                    </span>
-                </template>
-
-                <div class="flex justify-start w-80">
-                    <USwitch v-model="valueSwitch" />
-                </div>
-            </UFormField>
         </template>
 
         <template #footer>
             <UButton
-                v-if="!editMode"
+                v-if="!editMode && !extendMode"
                 class="bg-[#FEE9D6] text-[#F26524] hover:bg-[#FBD0AD] hover:text-[#E34613] active:bg-[#FBD0AD] active:text-[#E34613] text-[14px] px-5"
                 :disabled="isSubmitting"
                 @click="resetForm"

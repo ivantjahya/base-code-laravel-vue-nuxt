@@ -25,6 +25,7 @@ Route::prefix('v1')->middleware([XssProtection::class])->group(function () {
                 Route::get('/detail/{id}', [MasterDataLimitController::class, 'getLimitDetail'])->name('get-limit-detail');
                 Route::post('/create', [MasterDataLimitController::class, 'postLimitCreate'])->name('post-limit-create');
                 Route::put('/update/{id}', [MasterDataLimitController::class, 'postLimitUpdate'])->name('post-limit-update');
+                Route::put('/extend/{id}', [MasterDataLimitController::class, 'postLimitExtend'])->name('post-limit-extend');
             });
         });
     });

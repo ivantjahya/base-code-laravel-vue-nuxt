@@ -20,6 +20,7 @@ export const useApiStore = defineStore('api', {
         getLimitDetail: '/api/v1/masterdata/limit/detail/', // + id
         postLimitCreate: '/api/v1/masterdata/limit/create',
         postLimitUpdate: '/api/v1/masterdata/limit/update/', // + id
+        postLimitExtend: '/api/v1/masterdata/limit/extend/', // + id
     }),
 });
 
