@@ -140,19 +140,26 @@ const postSubmitLimit = async () => {
         const startDate = getDateString(modelValueStart.value)
         const endDate = getDateString(modelValueEnd.value)
 
-        const payload = {
-            min_value: valueMin.value,
-            max_value: valueMax.value,
-            start_date: startDate,
-            end_date: endDate,
-        }
-
         let response
         if (props.editMode && props.editingId) {
             // Update existing limit
+            const payload = {
+                min_value: valueMin.value,
+                max_value: valueMax.value,
+                status: valueSwitch.value ? 1 : 0
+            }
+
             response = await axios.put(`${api.postLimitUpdate}${props.editingId}`, payload)
         } else {
             // Create new limit
+            const payload = {
+                min_value: valueMin.value,
+                max_value: valueMax.value,
+                start_date: startDate,
+                end_date: endDate,
+                status: valueSwitch.value ? 1 : 0
+            }
+            
             response = await axios.post(api.postLimitCreate, payload)
         }
 

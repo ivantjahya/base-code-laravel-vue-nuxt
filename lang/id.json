@@ -207,7 +207,8 @@
       "column-minimum-amount": "Minimum",
       "column-maximum-amount": "Maksimum",
       "column-start-date": "Tanggal Mulai",
-      "column-end-date": "Tanggal Berakhir"
+      "column-end-date": "Tanggal Berakhir",
+      "column-status": "Status"
     },
     "message": {
       "navigation": "Navigasi",
