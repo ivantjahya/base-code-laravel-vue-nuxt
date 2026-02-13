@@ -208,6 +208,7 @@ onMounted(() => {
                         <h1 class="text-lg font-semibold text-gray-900 dark:text-white">
                             {{ t('text.limit-management-pg.list') || 'List of Limits' }}
                         </h1>
+
                     </div>
                 </div>
             </UCard>

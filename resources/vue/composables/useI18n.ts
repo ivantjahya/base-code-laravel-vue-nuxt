@@ -1,21 +1,21 @@
 /**
  * useI18n Composable
- * 
+ *
  * This composable provides internationalization (i18n) functionality for the application.
- * 
+ *
  * SINGLE SOURCE OF TRUTH: Translation files are located at:
  * - resources/vue/locales/en.json (English translations)
  * - resources/vue/locales/id.json (Indonesian translations)
- * 
+ *
  * Both frontend (Vue) and backend (Laravel) use these same JSON files:
  * - Frontend: Imported directly at build time
  * - Backend: Loaded dynamically via lang/xx/app.php loaders
- * 
+ *
  * When updating translations:
  * 1. Edit the JSON files (resources/vue/locales/xx.json)
  * 2. Add the TypeScript type in TranslationKey (if new key)
  * 3. Both frontend and backend will automatically use the updated translations
- * 
+ *
  * Translation keys use dot notation (e.g., 'menu.home', 'text.button.new')
  */
 import { computed } from 'vue'
@@ -26,7 +26,7 @@ import enTranslations from '../../../lang/en.json'
 import idTranslations from '../../../lang/id.json'
 
 // Define translation type
-type TranslationKey = 
+type TranslationKey =
   | 'menu.home'
   | 'menu.master-data'
   | 'menu.new-registration'
@@ -78,6 +78,20 @@ type TranslationKey =
   | 'text.table-column.column-maximum-amount'
   | 'text.table-column.column-start-date'
   | 'text.table-column.column-end-date'
+  | 'text.table-column.column-profile-code'
+  | 'text.table-column.column-profile-name'
+  | 'text.table-column.column-profile-source'
+  | 'text.table-column.column-functional-profile-code'
+  | 'text.table-column.column-functional-profile-name'
+  | 'text.table-column.column-profile'
+  | 'text.table-column.column-division'
+  | 'text.table-column.column-limit'
+  | 'text.table-column.column-username'
+  | 'text.table-column.column-name'
+  | 'text.table-column.column-category'
+  | 'text.table-column.column-site'
+  | 'text.table-column.column-validity-date'
+  | 'text.table-column.column-status'
   | 'auth.login-success.title'
   | 'auth.login-success.message'
   | 'auth.logout-success.title'
@@ -96,18 +110,18 @@ type Translations = Record<string, string>
 // Flatten nested object to dot notation
 function flattenObject(obj: any, prefix = ''): Translations {
   const flattened: Translations = {}
-  
+
   for (const key in obj) {
     const value = obj[key]
     const newKey = prefix ? `${prefix}.${key}` : key
-    
+
     if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
       Object.assign(flattened, flattenObject(value, newKey))
     } else {
       flattened[newKey] = String(value)
     }
   }
-  
+
   return flattened
 }
 

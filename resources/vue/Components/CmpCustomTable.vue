@@ -39,30 +39,30 @@ interface Props {
   // Data
   data: any[]
   columns: Column[]
-  
+
   // Actions
   actions?: Action[][]
   showActions?: boolean
-  
+
   // Filters
   showFilters?: boolean
   filters?: Filter[]
   filterTitle?: string
   onFilter?: (filters: Record<string, any>) => void
-  
+
   // Pagination
   showPagination?: boolean
   pageSize?: number
   currentPage?: number
   countTotalData?: number
-  
+
   // Selection
   showSelection?: boolean
-  
+
   // Styling
   showNumberColumn?: boolean
   emptyText?: string
-  
+
   // Loading
   loading?: boolean
   showLoadingOverlay?: boolean
@@ -123,7 +123,7 @@ watch(searchQuery, (newQuery) => {
   if (searchDebounceTimer) {
     clearTimeout(searchDebounceTimer)
   }
-  
+
   // Debounce search to avoid too many API calls
   searchDebounceTimer = setTimeout(() => {
     console.log('CmpCustomTable - Emitting search:', newQuery)
@@ -139,9 +139,9 @@ const filteredData = computed(() => props.data)
 //   if (!searchQuery.value || !props.showFilters) {
 //     return props.data
 //   }
-  
+
 //   const query = searchQuery.value.toLowerCase()
-  
+
 //   return props.data.filter((row) => {
 //     return props.columns.some((col) => {
 //       const value = row[col.key]
@@ -154,8 +154,8 @@ const filteredData = computed(() => props.data)
 // Get row actions
 const getRowActions = (row: any) => {
   if (!props.actions || !props.showActions) return []
-  
-  return props.actions.map(group => 
+
+  return props.actions.map(group =>
     group.map(action => ({
       ...action,
       disabled: action.disabled ? action.disabled(row.original) : false,
@@ -167,7 +167,7 @@ const getRowActions = (row: any) => {
 // Build table columns
 const tableColumns = computed<TableColumn<any>[]>(() => {
   const cols: TableColumn<any>[] = []
-  
+
   // Number column
   if (props.showNumberColumn) {
     cols.push({
@@ -180,19 +180,19 @@ const tableColumns = computed<TableColumn<any>[]>(() => {
       }
     })
   }
-  
+
   // Data columns
   props.columns.forEach(col => {
     // Determine alignment class
     const alignHeaderClass = col.alignHeader === 'right' ? 'text-right' : col.alignHeader === 'center' ? 'text-center' : 'text-left'
     const alignBodyClass = col.alignBody === 'right' ? 'text-right' : col.alignBody === 'center' ? 'text-center' : 'text-left'
-    
+
     if (col.sortable) {
       cols.push({
         accessorKey: col.key,
         header: ({ column }) => {
           const isSorted = column.getIsSorted()
-          
+
           return h(
             'div',
             { class: alignHeaderClass },
@@ -213,7 +213,7 @@ const tableColumns = computed<TableColumn<any>[]>(() => {
         cell: ({ row }) => {
           const value = row.getValue(col.key)
           let content
-          
+
           if (col.cellRenderer) {
             content = col.cellRenderer(value, row.original)
           } else if (col.formatter) {
@@ -221,7 +221,7 @@ const tableColumns = computed<TableColumn<any>[]>(() => {
           } else {
             content = value
           }
-          
+
           return h('div', { class: alignBodyClass }, content)
         }
       })
@@ -232,7 +232,7 @@ const tableColumns = computed<TableColumn<any>[]>(() => {
         cell: ({ row }) => {
           const value = row.getValue(col.key)
           let content
-          
+
           if (col.cellRenderer) {
             content = col.cellRenderer(value, row.original)
           } else if (col.formatter) {
@@ -240,13 +240,13 @@ const tableColumns = computed<TableColumn<any>[]>(() => {
           } else {
             content = value
           }
-          
+
           return h('div', { class: alignBodyClass }, content)
         }
       })
     }
   })
-  
+
   // Actions column
   if (props.showActions && props.actions && props.actions.length > 0) {
     cols.push({
@@ -276,7 +276,7 @@ const tableColumns = computed<TableColumn<any>[]>(() => {
       }
     })
   }
-  
+
   return cols
 })
 
@@ -294,13 +294,13 @@ watch(rowSelection, (newVal) => {
 <template>
   <div class="custom-table-wrapper">
     <!-- Global Search Filter -->
-    <div v-if="showFilters" class="mb-4">
+    <div v-if="showFilters" class="mb-2">
       <UInput
         v-model="searchQuery"
         icon="i-lucide-search"
         :placeholder="t('text.input-field.search')"
         size="lg"
-        class="max-w-xs w-full"
+        class="max-w-xs w-full rounded-lg"
       />
     </div>
 
@@ -339,11 +339,11 @@ watch(rowSelection, (newVal) => {
     </CmpLoadingOverlay>
 
     <!-- Footer with Pagination -->
-    <div 
-      v-if="showPagination" 
+    <div
+      v-if="showPagination"
       class="flex items-center justify-between gap-3 border-t border-default pt-4 mt-auto"
     >
-      <div class="flex items-center gap-4">        
+      <div class="flex items-center gap-4">
         <!-- Data Info -->
         <div class="text-sm text-muted">
           <template v-if="showSelection">
@@ -381,7 +381,7 @@ watch(rowSelection, (newVal) => {
         />
       </div>
     </div>
-    
+
   </div>
 </template>
 

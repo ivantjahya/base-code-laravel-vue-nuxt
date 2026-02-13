@@ -91,32 +91,21 @@
         "input-new-profile-source": "Profile Source",
         "input-new-access-right": "Access Right",
         "input-new-status": "Status",
-        "edit-limit": "Edit Limit"
+        "edit-profile": "Edit Profile"
     },
     "functional-profile-management-pg": {
         "list": "List of Functional Profiles",
         "add-new-functional-profile": "Add New Functional Profile",
 
-        "input-new-functional-profile-name": "Functional Profile Name",
+        "input-new-functional-profile-name": "Func. Prof. Name",
         "input-new-functional-profile-name-placeholder": "Enter functional profile name",
         "input-new-profile": "Profile",
         "input-new-profile-placeholder": "Select profile",
         "input-new-division": "Division",
         "input-new-limit": "Limit",
         "input-new-limit-placeholder": "Select limit",
-
-        "input-filter-functional-profile-code": "Func. Profile Code",
-        "placeholder-filter-functional-profile-code": "Enter functional profile code",
-        "input-filter-functional-profile-name": "Func. Profile Name",
-        "placeholder-filter-functional-profile-name": "Enter functional profile name",
-        "input-filter-profile": "Profile",
-        "placeholder-filter-profile": "Select profile",
-        "input-filter-division": "Division",
-        "placeholder-filter-division": "Select division",
-        "input-filter-limit": "Limit",
-        "placeholder-filter-limit": "Select limit",
-        "input-filter-status": "Status",
-        "placeholder-filter-status": "Select status"
+        "input-new-status": "Status",
+        "edit-profile": "Edit Profile"
 
     },
     "user-management-pg": {
@@ -135,17 +124,8 @@
         "input-new-site": "Site",
         "input-new-site-placeholder": "Select site",
         "input-new-validity-date": "Validity Date",
-
-        "input-filter-username": "Username",
-        "placeholder-filter-username": "Enter username",
-        "input-filter-name": "Name",
-        "placeholder-filter-name": "Enter name",
-        "input-filter-profile": "Profile",
-        "placeholder-filter-profile": "Select profile",
-        "input-filter-category": "Category",
-        "placeholder-filter-category": "Select category",
-        "input-filter-status": "Status",
-        "placeholder-filter-status": "Select status"
+        "input-new-status": "Status",
+        "edit-user": "Edit User"
     },
     "user-guide-management-pg": {
         "list": "List of User Guides",
@@ -169,20 +149,20 @@
         "edit": "Edit"
     },
     "input-field": {
-      "username": "Username",
-      "username-placeholder": "Enter username",
-      "password": "Password",
-      "search": "Search",
-      "more-filters": "More Filters",
+        "username": "Username",
+        "username-placeholder": "Enter username",
+        "password": "Password",
+        "search": "Search",
+        "more-filters": "More Filters",
 
-      "limit-code": "Limit Code",
-      "limit-code-placeholder": "Enter limit code",
-      "min-amount": "Minimum",
-      "min-amount-placeholder": "Enter minimum",
-      "max-amount": "Maximum",
-      "max-amount-placeholder": "Enter maximum",
-      "start-date": "Start Date",
-      "end-date": "End Date",
+        "limit-code": "Limit Code",
+        "limit-code-placeholder": "Enter limit code",
+        "min-amount": "Minimum",
+        "min-amount-placeholder": "Enter minimum",
+        "max-amount": "Maximum",
+        "max-amount-placeholder": "Enter maximum",
+        "start-date": "Start Date",
+        "end-date": "End Date",
 
         "profile-code": "Profile Code",
         "profile-code-placeholder": "Enter profile code",
@@ -191,10 +171,30 @@
         "profile-name": "Profile Name",
         "profile-name-placeholder": "Enter profile name",
 
+        "functional-profile-code": "Func. Profile Code",
+        "functional-profile-code-placeholder": "Enter functional profile code",
+        "functional-profile-name": "Func. Profile Name",
+        "functional-profile-name-placeholder": "Enter functional profile name",
+        "profile": "Profile",
+        "profile-placeholder": "Select profile",
+        "division": "Division",
+        "division-placeholder": "Select division",
+        "limit": "Limit",
+        "limit-placeholder": "Select limit",
+
+        "usernames": "Username",
+        "usernames-placeholder": "Enter username",
+        "name": "Name",
+        "name-placeholder": "Enter name",
+        "category": "Category",
+        "category-placeholder": "Select category",
+        "site": "Site",
+        "site-placeholder": "Select site",
+
         "status": "Status",
         "status-placeholder": "Select status",
 
-      "search-menu-placeholder": "Type a command or search..."
+        "search-menu-placeholder": "Type a command or search..."
     },
     "dropdown": {
       "select-language": "Select language"
@@ -207,12 +207,31 @@
       "entries": "entries"
     },
     "table-column": {
-      "column-no": "No",
-      "column-limit-code": "Limit Code",
-      "column-minimum-amount": "Minimum",
-      "column-maximum-amount": "Maximum",
-      "column-start-date": "Start Date",
-      "column-end-date": "End Date"
+        "column-no": "No",
+
+        "column-limit-code": "Limit Code",
+        "column-minimum-amount": "Minimum",
+        "column-maximum-amount": "Maximum",
+        "column-start-date": "Start Date",
+        "column-end-date": "End Date",
+
+        "column-profile-code": "Profile Code",
+        "column-profile-name": "Profile Name",
+        "column-profile-source": "Profile Source",
+
+        "column-functional-profile-code": "Func. Profile Code",
+        "column-functional-profile-name": "Func. Profile Name",
+        "column-profile": "Profile",
+        "column-division": "Division",
+        "column-limit": "Limit",
+
+        "column-username": "Username",
+        "column-name": "Name",
+        "column-category": "Category",
+        "column-site": "Site",
+        "column-validity-date": "Validity Date",
+
+        "column-status": "Status"
     },
     "message": {
       "navigation": "Navigation",
