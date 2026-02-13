@@ -31,6 +31,7 @@ interface Action {
   label: string
   icon: string
   color?: string
+  show?: (row: any) => boolean
   disabled?: (row: any) => boolean
   onSelect: (row: any) => void
 }
@@ -155,12 +156,15 @@ const filteredData = computed(() => props.data)
 const getRowActions = (row: any) => {
   if (!props.actions || !props.showActions) return []
   
-  return props.actions.map(group => 
-    group.map(action => ({
-      ...action,
-      disabled: action.disabled ? action.disabled(row.original) : false,
-      onSelect: () => action.onSelect(row.original)
-    }))
+  return props.actions.map(group =>
+    group
+      .filter(action => typeof action.show === 'function' ? action.show(row.original) : true) // Filter out actions based on the custom 'show' logic
+      .filter(action => typeof action.disabled === 'function' ? !action.disabled(row.original) : true) // Filter out disabled actions
+      .map(action => ({
+        ...action,
+        disabled: action.disabled ? action.disabled(row.original) : false,
+        onSelect: () => action.onSelect(row.original)
+      }))
   )
 }
 
@@ -261,6 +265,11 @@ const tableColumns = computed<TableColumn<any>[]>(() => {
             {
               content: {
                 align: 'end'
+              },
+              ui: {
+                content: 'min-w-36 border-1 border-gray-200 dark:border-gray-700',
+                item: 'px-2 gap-2',   // Change the horizontal gap between the icon and text
+                itemLeadingIcon: 'size-4.5' // Change icon size specifically
               },
               items: getRowActions(row)
             },

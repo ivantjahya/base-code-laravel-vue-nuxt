@@ -52,6 +52,7 @@ class MasterDataLimitController extends Controller
             'skip' => ['nullable', 'integer', 'min:0'],
             'limit' => ['nullable', 'integer', 'min:1'],
             'search' => ['nullable', 'string'],
+            'sort_by' => ['nullable', 'string'],
         ]);
         if ($validate->fails()) {
             throw new ValidationException($validate);
@@ -68,6 +69,7 @@ class MasterDataLimitController extends Controller
                 'search' => $validated['search'] ?? null,
                 'skip' => $validated['skip'] ?? null,
                 'limit' => $validated['limit'] ?? null,
+                'sort_by' => $validated['sort_by'] ?? null,
             ];
             $data = $this->moduleMasterDataService->getLimitList($params);
 
@@ -115,7 +117,6 @@ class MasterDataLimitController extends Controller
             'max_value' => ['required', 'numeric', 'min:0', 'gte:min_value'],
             'start_date' => ['required', 'date'],
             'end_date' => ['required', 'date', 'after_or_equal:start_date'],
-            'status' => ['required', 'integer', 'in:0,1'],
         ]);
         if ($validate->fails()) {
             throw new ValidationException($validate);
@@ -128,7 +129,6 @@ class MasterDataLimitController extends Controller
                 'max_value' => $validated['max_value'],
                 'start_date' => $validated['start_date'],
                 'end_date' => $validated['end_date'],
-                'status' => (int) $validated['status'],
                 'user_id' => $user?->id,
             ];
             $data = $this->moduleMasterDataService->createLimit($params);
@@ -160,7 +160,6 @@ class MasterDataLimitController extends Controller
         $validate = Validator::make($request->all(), [
             'min_value' => ['required', 'numeric', 'min:0'],
             'max_value' => ['required', 'numeric', 'min:0', 'gte:min_value'],
-            'status' => ['required', 'integer', 'in:0,1'],
         ]);
         if ($validate->fails()) {
             throw new ValidationException($validate);
@@ -171,10 +170,49 @@ class MasterDataLimitController extends Controller
             $params = [
                 'min_value' => $validated['min_value'],
                 'max_value' => $validated['max_value'],
-                'status' => (int) $validated['status'],
                 'user_id' => $user?->id,
             ];
             $data = $this->moduleMasterDataService->updateLimit($idValidated['id'], $params);
+
+            return response()->json($data);
+        } catch (\Throwable $e) {
+            throw new CommonCustomException($e->getMessage(), 500, $e);
+        }
+    }
+
+    /**
+     * PUT request for extend limit
+     */
+    public function postLimitExtend(Request $request, $id): HttpJsonResponse
+    {
+        $user = Auth::user() ?? Auth::guard('api')->user();
+        Log::debug('User is requesting extend limit', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'limitId' => $id]);
+
+        /** Validate ID parameter */
+        $idValidate = Validator::make(['id' => $id], [
+            'id' => ['required', 'uuid'],
+        ]);
+        if ($idValidate->fails()) {
+            throw new ValidationException($idValidate);
+        }
+        (array) $idValidated = $idValidate->validated();
+
+        /** Validate Input */
+        $validate = Validator::make($request->all(), [
+            'start_date' => ['required', 'date'],
+            'end_date' => ['required', 'date', 'after_or_equal:start_date'],
+        ]);
+        if ($validate->fails()) {
+            throw new ValidationException($validate);
+        }
+        (array) $validated = $validate->validated();
+
+        try {
+            $params = [
+                'end_date' => $validated['end_date'],
+                'user_id' => $user?->id,
+            ];
+            $data = $this->moduleMasterDataService->extendLimit($idValidated['id'], $params);
 
             return response()->json($data);
         } catch (\Throwable $e) {

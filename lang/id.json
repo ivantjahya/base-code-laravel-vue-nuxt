@@ -80,7 +80,8 @@
         "input-new-start-date": "Tanggal Mulai",
         "input-new-end-date": "Tanggal Berakhir",
         "input-new-status": "Status",
-        "edit-limit": "Edit Limit"
+        "edit-limit": "Edit Limit",
+        "extend-limit": "Perpanjang Limit"
     },
     "profile-management-pg": {
         "list": "Daftar Data Profil",
@@ -173,7 +174,8 @@
         "find": "Cari",
         "clear": "Kosongkan",
         "submit": "Simpan",
-        "edit": "Ubah Data"
+        "edit": "Ubah Data",
+        "extend": "Perpanjang"
     },
     "input-field": {
       "username": "ID Pengguna",
