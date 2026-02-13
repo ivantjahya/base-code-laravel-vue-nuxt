@@ -78,6 +78,7 @@ type TranslationKey =
   | 'text.table-column.column-maximum-amount'
   | 'text.table-column.column-start-date'
   | 'text.table-column.column-end-date'
+  | 'text.table-column.column-status'
   | 'auth.login-success.title'
   | 'auth.login-success.message'
   | 'auth.logout-success.title'

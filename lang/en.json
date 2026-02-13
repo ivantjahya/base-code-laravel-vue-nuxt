@@ -209,7 +209,8 @@
       "column-minimum-amount": "Minimum",
       "column-maximum-amount": "Maximum",
       "column-start-date": "Start Date",
-      "column-end-date": "End Date"
+      "column-end-date": "End Date",
+      "column-status": "Status"
     },
     "message": {
       "navigation": "Navigation",

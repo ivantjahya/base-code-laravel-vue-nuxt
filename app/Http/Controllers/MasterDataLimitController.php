@@ -115,6 +115,7 @@ class MasterDataLimitController extends Controller
             'max_value' => ['required', 'numeric', 'min:0', 'gte:min_value'],
             'start_date' => ['required', 'date'],
             'end_date' => ['required', 'date', 'after_or_equal:start_date'],
+            'status' => ['required', 'integer', 'in:0,1'],
         ]);
         if ($validate->fails()) {
             throw new ValidationException($validate);
@@ -127,6 +128,7 @@ class MasterDataLimitController extends Controller
                 'max_value' => $validated['max_value'],
                 'start_date' => $validated['start_date'],
                 'end_date' => $validated['end_date'],
+                'status' => (int) $validated['status'],
                 'user_id' => $user?->id,
             ];
             $data = $this->moduleMasterDataService->createLimit($params);
@@ -152,11 +154,13 @@ class MasterDataLimitController extends Controller
         if ($idValidate->fails()) {
             throw new ValidationException($idValidate);
         }
+        (array) $idValidated = $idValidate->validated();
 
         /** Validate Input */
         $validate = Validator::make($request->all(), [
             'min_value' => ['required', 'numeric', 'min:0'],
             'max_value' => ['required', 'numeric', 'min:0', 'gte:min_value'],
+            'status' => ['required', 'integer', 'in:0,1'],
         ]);
         if ($validate->fails()) {
             throw new ValidationException($validate);
@@ -167,9 +171,10 @@ class MasterDataLimitController extends Controller
             $params = [
                 'min_value' => $validated['min_value'],
                 'max_value' => $validated['max_value'],
+                'status' => (int) $validated['status'],
                 'user_id' => $user?->id,
             ];
-            $data = $this->moduleMasterDataService->updateLimit($id, $params);
+            $data = $this->moduleMasterDataService->updateLimit($idValidated['id'], $params);
 
             return response()->json($data);
         } catch (\Throwable $e) {

@@ -19,6 +19,7 @@ const api = useApiStore()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
 const UButton = resolveComponent('UButton')
+const UBadge = resolveComponent('UBadge')
 
 // ========================= FILTER =========================
 const limitCodeFilter = ref('')
@@ -76,6 +77,22 @@ const columns = computed(() => [
         sortable: true,
         formatter: (value: string) => formatDate(value)
     },
+    {
+        key: 'status',
+        label: t('text.table-column.column-status'),
+        sortable: false,
+        cellRenderer: (value: any, row: any) => {
+            const isActive = value === 1
+            const statusText = isActive ? 'Active' : 'Not Active'
+            const badgeColor = isActive ? 'success' : 'primary'
+            
+            return h(UBadge, { 
+                variant: 'subtle', 
+                color: badgeColor,
+                class: 'text-xs'
+            }, () => statusText)
+        }
+    },
 ])
 
 const actions = computed(() => [
@@ -129,10 +146,7 @@ const getLimitList = async () => {
         }
         const response = await axios.get(api.getLimitList, { params });
         
-        limitData.value = response.data.data?.items.map((item: any) => ({
-            ...item,
-            status: item.status === 1 ? 'Active' : 'Inactive'
-        }));
+        limitData.value = response.data.data?.items;
         countTotalData.value = response.data.data?.total || 0;
     } catch (error) {
         console.error('Error fetching data:', error);
