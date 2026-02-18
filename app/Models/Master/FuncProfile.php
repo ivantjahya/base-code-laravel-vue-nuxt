@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Master;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
-class MerchStruct extends Model
+class FuncProfile extends Model
 {
     use HasUuids;
 
@@ -14,10 +14,10 @@ class MerchStruct extends Model
      *
      * id: uuid
      * code: string(50)
-     * min_value: integer
-     * max_value: integer
-     * start_date: date
-     * end_date: date
+     * name: string
+     * profile_id: uuid
+     * merch_struct_id: uuid
+     * limit_code: string
      * created_at: timestamp
      * updated_at: timestamp
      * created_by: uuid
@@ -31,10 +31,10 @@ class MerchStruct extends Model
      */
     protected $fillable = [
         'code',
-        'min_value',
-        'max_value',
-        'start_date',
-        'end_date',
+        'name',
+        'profile_id',
+        'merch_struct_id',
+        'limit_code',
         'created_by',
         'updated_by',
     ];

@@ -1,21 +1,22 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Middleware;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\MassPrunable as Prunable;
 use Illuminate\Database\Eloquent\Model;
 
-class MidGoldMerchStruct extends Model
+class MidEbsSite extends Model
 {
     /**
      * Column info:
      *
      * id: integer - autoincrement
-     * code: string(50)
-     * description: string
-     * parent_code: string(50), nullable
-     * parent_description: string, nullable
+     * code: string(10)
+     * initial: string(10)
+     * name: string
+     * company_code: string
+     * company_name: string
      * created_at: timestamp
      * updated_at: timestamp
      */
@@ -25,7 +26,7 @@ class MidGoldMerchStruct extends Model
      *
      * @var string
      */
-    protected $table = 'mid_gold_merch_structs';
+    protected $table = 'mid_ebs_sites';
 
     /**
      * Get the prunable model query.
@@ -42,8 +43,9 @@ class MidGoldMerchStruct extends Model
      */
     protected $fillable = [
         'code',
-        'description',
-        'parent_code',
-        'parent_description',
+        'initial',
+        'name',
+        'company_code',
+        'company_name',
     ];
 }

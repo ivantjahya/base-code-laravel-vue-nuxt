@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Passport;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Laravel\Passport\DeviceCode;

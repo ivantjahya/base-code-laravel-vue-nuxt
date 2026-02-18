@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Master;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
-class SiteNetwork extends Model
+class Limit extends Model
 {
     use HasUuids;
 
@@ -13,14 +13,15 @@ class SiteNetwork extends Model
      * Column info:
      *
      * id: uuid
-     * parent_code: integer
-     * child_code: integer
-     * type: string
-     * comm_network: string
-     * comm_network_desc: string
-     * site_class: integer
+     * code: string(50)
+     * min_value: integer
+     * max_value: integer
+     * start_date: date
+     * end_date: date
      * created_at: timestamp
      * updated_at: timestamp
+     * created_by: uuid
+     * updated_by: uuid
      */
 
     /**
@@ -29,11 +30,12 @@ class SiteNetwork extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'parent_code',
-        'child_code',
-        'type',
-        'comm_network',
-        'comm_network_desc',
-        'site_class',
+        'code',
+        'min_value',
+        'max_value',
+        'start_date',
+        'end_date',
+        'created_by',
+        'updated_by',
     ];
 }

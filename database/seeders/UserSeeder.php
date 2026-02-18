@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Interfaces\InterfaceClass;
-use App\Models\Profile;
+use App\Models\Master\Profile;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;

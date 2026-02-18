@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\PassportClient;
+use App\Models\Passport\PassportClient;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;

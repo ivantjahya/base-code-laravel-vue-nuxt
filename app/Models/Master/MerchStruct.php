@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Master;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
-class Status extends Model
+class MerchStruct extends Model
 {
     use HasUuids;
 
@@ -14,11 +14,14 @@ class Status extends Model
      *
      * id: uuid
      * code: string(50)
-     * description: string
-     * used_for: string(100), nullable
-     * status_group: string(100), nullable
+     * min_value: integer
+     * max_value: integer
+     * start_date: date
+     * end_date: date
      * created_at: timestamp
      * updated_at: timestamp
+     * created_by: uuid
+     * updated_by: uuid
      */
 
     /**
@@ -28,8 +31,11 @@ class Status extends Model
      */
     protected $fillable = [
         'code',
-        'description',
-        'used_for',
-        'status_group',
+        'min_value',
+        'max_value',
+        'start_date',
+        'end_date',
+        'created_by',
+        'updated_by',
     ];
 }

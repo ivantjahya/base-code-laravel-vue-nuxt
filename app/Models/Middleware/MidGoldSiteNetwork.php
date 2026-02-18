@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Middleware;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\MassPrunable as Prunable;

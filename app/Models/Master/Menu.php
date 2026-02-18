@@ -1,19 +1,24 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Master;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
-class ProfileMenu extends Model
+class Menu extends Model
 {
     use HasUuids;
 
     /**
      * Column info:
      *
-     * profile_id: uuid
-     * menu_id: uuid
+     * id: uuid
+     * name: string(100)
+     * url: string(100)
+     * icon: string(100), nullable
+     * parent_id: uuid, nullable
+     * code: integer, nullable
+     * name_code: string(100), nullable
      * created_at: timestamp
      * updated_at: timestamp
      */
@@ -24,7 +29,11 @@ class ProfileMenu extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'profile_id',
-        'menu_id',
+        'name',
+        'url',
+        'icon',
+        'parent_id',
+        'code',
+        'name_code',
     ];
 }

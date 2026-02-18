@@ -1,21 +1,21 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Master;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
-class UserSite extends Model
+class MenuAccControl extends Model
 {
     use HasUuids;
 
     /**
      * Column info:
      *
-     * user_id: uuid
-     * site_id: uuid
+     * menu_id: uuid
+     * acc_control_id: uuid
      * created_at: timestamp
-     * updated_at: timestamp, nullable
+     * updated_at: timestamp
      */
 
     /**
@@ -34,7 +34,7 @@ class UserSite extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'user_id',
-        'site_id',
+        'menu_id',
+        'acc_control_id',
     ];
 }

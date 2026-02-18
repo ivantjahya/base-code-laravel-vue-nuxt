@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\AccessControl;
-use App\Models\Menu;
+use App\Models\Master\AccessControl;
+use App\Models\Master\Menu;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Master;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
-class Menu extends Model
+class AccessControl extends Model
 {
     use HasUuids;
 
@@ -13,12 +13,8 @@ class Menu extends Model
      * Column info:
      *
      * id: uuid
-     * name: string(100)
-     * url: string(100)
-     * icon: string(100), nullable
-     * parent_id: uuid, nullable
-     * code: integer, nullable
-     * name_code: string(100), nullable
+     * code: string(50)
+     * name: string
      * created_at: timestamp
      * updated_at: timestamp
      */
@@ -29,11 +25,7 @@ class Menu extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'url',
-        'icon',
-        'parent_id',
         'code',
-        'name_code',
+        'name',
     ];
 }
