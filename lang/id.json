@@ -86,21 +86,13 @@
     "profile-management-pg": {
         "list": "Daftar Data Profil",
         "add-new-profile": "Tambah Profil Baru",
-
         "input-new-profile-name": "Nama Profil",
         "input-new-profile-name-placeholder": "Masukkan nama profil",
         "input-new-description": "Deskripsi",
         "input-new-profile-source": "Sumber Profil",
         "input-new-access-right": "Hak Akses",
-
-        "input-filter-profile-code": "Kode Profil",
-        "placeholder-filter-profile-code": "Masukkan kode profil",
-        "input-filter-profile-name": "Nama Profil",
-        "placeholder-filter-profile-name": "Masukkan nama profil",
-        "input-filter-profile-source": "Sumber Profil",
-        "placeholder-filter-profile-source": "Pilih sumber profil",
-        "input-filter-status": "Status",
-        "placeholder-filter-status": "Pilih status"
+        "input-new-status": "Status",
+        "edit-limit": "Edit Limit"
     },
     "functional-profile-management-pg": {
         "list": "Daftar Data Profil Fungsional",
@@ -178,20 +170,32 @@
         "extend": "Perpanjang"
     },
     "input-field": {
-      "username": "ID Pengguna",
-      "username-placeholder": "Masukkan ID pengguna",
-      "password": "Kata Sandi",
-      "search": "Cari",
-      "more-filters": "Filter Lainnya",
-      "limit-code": "Kode Limit",
-      "limit-code-placeholder": "Masukkan kode limit",
-      "min-amount": "Minimum",
-      "min-amount-placeholder": "Masukkan minimum",
-      "max-amount": "Maksimum",
-      "max-amount-placeholder": "Masukkan maksimum",
-      "start-date": "Tanggal Mulai",
-      "end-date": "Tanggal Berakhir",
-      "search-menu-placeholder": "Ketik perintah atau cari..."
+        "username": "ID Pengguna",
+        "username-placeholder": "Masukkan ID pengguna",
+        "password": "Kata Sandi",
+        "search": "Cari",
+        "more-filters": "Filter Lainnya",
+
+        "limit-code": "Kode Limit",
+        "limit-code-placeholder": "Masukkan kode limit",
+        "min-amount": "Minimum",
+        "min-amount-placeholder": "Masukkan minimum",
+        "max-amount": "Maksimum",
+        "max-amount-placeholder": "Masukkan maksimum",
+        "start-date": "Tanggal Mulai",
+        "end-date": "Tanggal Berakhir",
+
+        "profile-code": "Kode Profil",
+        "profile-code-placeholder": "Masukkan kode profil",
+        "profile-name": "Nama Profil",
+        "profile-name-placeholder": "Masukkan nama profil",
+        "profile-source": "Sumber Profil",
+        "profile-source-placeholder": "Pilih sumber profil",
+
+        "status": "Status",
+        "status-placeholder": "Pilih status",
+
+        "search-menu-placeholder": "Ketik perintah atau cari..."
     },
     "dropdown": {
       "select-language": "Pilih bahasa"
