@@ -316,7 +316,6 @@ watch(rowSelection, (newVal) => {
         :placeholder="t('text.input-field.search')"
         size="lg"
         class="max-w-xs w-full rounded-lg"
-        class="max-w-xs w-full rounded-lg"
       />
     </div>
 
