@@ -84,9 +84,9 @@ const columns = computed(() => [
         cellRenderer: (value: any, row: any) => {
             const statusText = value ? 'Active' : 'Not Active'
             const badgeColor = value ? 'success' : 'primary'
-            
-            return h(UBadge, { 
-                variant: 'subtle', 
+
+            return h(UBadge, {
+                variant: 'subtle',
                 color: badgeColor,
                 class: 'text-xs'
             }, () => statusText)
@@ -154,7 +154,7 @@ const getLimitList = async () => {
             sort_by: 'code',
         }
         const response = await axios.get(api.getLimitList, { params });
-        
+
         limitData.value = response.data.data?.items;
         countTotalData.value = response.data.data?.total || 0;
     } catch (error) {
@@ -226,21 +226,23 @@ onMounted(() => {
             <UCard class="mb-3" :ui="{ body: 'sm:py-3 sm:px-6' }">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-4">
+
                         <!-- BUTTON NEW -->
                         <UButton type="button" @click="showModal" class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[16px] px-5">
                             {{ t('text.button.new').toUpperCase() || 'NEW' }}
                         </UButton>
-                        
+
                         <!-- TITLE -->
                         <h1 class="text-lg font-semibold text-gray-900 dark:text-white">
                             {{ t('text.limit-management-pg.list') || 'List of Limits' }}
                         </h1>
+
                     </div>
                 </div>
             </UCard>
 
             <!-- MODAL -->
-            <DialogFormLimit 
+            <DialogFormLimit
                 :open="modalSubmitOpen"
                 :title="modalTitle"
                 :edit-mode="editMode"

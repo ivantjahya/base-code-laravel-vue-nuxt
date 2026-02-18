@@ -86,46 +86,27 @@
     "profile-management-pg": {
         "list": "Daftar Data Profil",
         "add-new-profile": "Tambah Profil Baru",
-
         "input-new-profile-name": "Nama Profil",
         "input-new-profile-name-placeholder": "Masukkan nama profil",
         "input-new-description": "Deskripsi",
         "input-new-profile-source": "Sumber Profil",
         "input-new-access-right": "Hak Akses",
-
-        "input-filter-profile-code": "Kode Profil",
-        "placeholder-filter-profile-code": "Masukkan kode profil",
-        "input-filter-profile-name": "Nama Profil",
-        "placeholder-filter-profile-name": "Masukkan nama profil",
-        "input-filter-profile-source": "Sumber Profil",
-        "placeholder-filter-profile-source": "Pilih sumber profil",
-        "input-filter-status": "Status",
-        "placeholder-filter-status": "Pilih status"
+        "input-new-status": "Status",
+        "edit-profile": "Edit Profil"
     },
     "functional-profile-management-pg": {
         "list": "Daftar Data Profil Fungsional",
         "add-new-functional-profile": "Tambah Profil Fungsional Baru",
 
-        "input-new-functional-profile-name": "Nama Profil Fungsional",
+        "input-new-functional-profile-name": "Nama Prof. Fungsional",
         "input-new-functional-profile-name-placeholder": "Masukkan nama profil fungsional",
         "input-new-profile": "Profil",
         "input-new-profile-placeholder": "Pilih profil",
         "input-new-division": "Divisi",
         "input-new-limit": "Limit",
         "input-new-limit-placeholder": "Pilih limit",
-
-        "input-filter-functional-profile-code": "Kode Profil Fung.",
-        "placeholder-filter-functional-profile-code": "Masukkan kode profil fungsional",
-        "input-filter-functional-profile-name": "Nama Profil Fung.",
-        "placeholder-filter-functional-profile-name": "Masukkan nama profil fungsional",
-        "input-filter-profile": "Profil",
-        "placeholder-filter-profile": "Pilih profil",
-        "input-filter-division": "Divisi",
-        "placeholder-filter-division": "Pilih divisi",
-        "input-filter-limit": "Limit",
-        "placeholder-filter-limit": "Pilih limit",
-        "input-filter-status": "Status",
-        "placeholder-filter-status": "Pilih status"
+        "input-new-status": "Status",
+        "edit-profile": "Edit Profil"
     },
     "user-management-pg": {
         "list": "Daftar Data Pengguna",
@@ -143,17 +124,8 @@
         "input-new-site": "Lokasi",
         "input-new-site-placeholder": "Pilih lokasi",
         "input-new-validity-date": "Tanggal Berlaku",
-
-        "input-filter-username": "ID Pengguna",
-        "placeholder-filter-username": "Masukkan ID pengguna",
-        "input-filter-name": "Nama",
-        "placeholder-filter-name": "Masukkan nama",
-        "input-filter-profile": "Profil",
-        "placeholder-filter-profile": "Pilih profil",
-        "input-filter-category": "Kategori",
-        "placeholder-filter-category": "Pilih kategori",
-        "input-filter-status": "Status",
-        "placeholder-filter-status": "Pilih status"
+        "input-new-status": "Status",
+        "edit-user": "Edit User"
     },
     "user-guide-management-pg": {
         "list": "Daftar Panduan Pengguna",
@@ -178,20 +150,52 @@
         "extend": "Perpanjang"
     },
     "input-field": {
-      "username": "ID Pengguna",
-      "username-placeholder": "Masukkan ID pengguna",
-      "password": "Kata Sandi",
-      "search": "Cari",
-      "more-filters": "Filter Lainnya",
-      "limit-code": "Kode Limit",
-      "limit-code-placeholder": "Masukkan kode limit",
-      "min-amount": "Minimum",
-      "min-amount-placeholder": "Masukkan minimum",
-      "max-amount": "Maksimum",
-      "max-amount-placeholder": "Masukkan maksimum",
-      "start-date": "Tanggal Mulai",
-      "end-date": "Tanggal Berakhir",
-      "search-menu-placeholder": "Ketik perintah atau cari..."
+        "username": "ID Pengguna",
+        "username-placeholder": "Masukkan ID pengguna",
+        "password": "Kata Sandi",
+        "search": "Cari",
+        "more-filters": "Filter Lainnya",
+
+        "limit-code": "Kode Limit",
+        "limit-code-placeholder": "Masukkan kode limit",
+        "min-amount": "Minimum",
+        "min-amount-placeholder": "Masukkan minimum",
+        "max-amount": "Maksimum",
+        "max-amount-placeholder": "Masukkan maksimum",
+        "start-date": "Tanggal Mulai",
+        "end-date": "Tanggal Berakhir",
+
+        "profile-code": "Kode Profil",
+        "profile-code-placeholder": "Masukkan kode profil",
+        "profile-name": "Nama Profil",
+        "profile-name-placeholder": "Masukkan nama profil",
+        "profile-source": "Sumber Profil",
+        "profile-source-placeholder": "Pilih sumber profil",
+
+        "functional-profile-code": "Kode Profil Fung.",
+        "functional-profile-code-placeholder": "Masukkan kode profil fungsional",
+        "functional-profile-name": "Nama Profil Fung.",
+        "functional-profile-name-placeholder": "Masukkan nama profil fungsional",
+        "profile": "Profil",
+        "profile-placeholder": "Pilih profil",
+        "division": "Divisi",
+        "division-placeholder": "Pilih divisi",
+        "limit": "Limit",
+        "limit-placeholder": "Pilih limit",
+
+        "usernames": "ID Pengguna",
+        "usernames-placeholder": "Masukkan ID pengguna",
+        "name": "Nama",
+        "name-placeholder": "Masukkan nama",
+        "category": "Kategori",
+        "category-placeholder": "Pilih kategori",
+        "site": "Lokasi",
+        "site-placeholder": "Pilih lokasi",
+
+        "status": "Status",
+        "status-placeholder": "Pilih status",
+
+        "search-menu-placeholder": "Ketik perintah atau cari..."
     },
     "dropdown": {
       "select-language": "Pilih bahasa"
@@ -204,13 +208,31 @@
       "entries": "entri"
     },
     "table-column": {
-      "column-no": "No",
-      "column-limit-code": "Kode Limit",
-      "column-minimum-amount": "Minimum",
-      "column-maximum-amount": "Maksimum",
-      "column-start-date": "Tanggal Mulai",
-      "column-end-date": "Tanggal Berakhir",
-      "column-status": "Status"
+        "column-no": "No",
+
+        "column-limit-code": "Kode Limit",
+        "column-minimum-amount": "Minimum",
+        "column-maximum-amount": "Maksimum",
+        "column-start-date": "Tanggal Mulai",
+        "column-end-date": "Tanggal Berakhir",
+
+        "column-profile-code": "Kode Profil",
+        "column-profile-name": "Nama Profil",
+        "column-profile-source": "Sumber Profil",
+
+        "column-functional-profile-code": "Kode Profil Fung.",
+        "column-functional-profile-name": "Nama Profil Fung.",
+        "column-profile": "Profil",
+        "column-division": "Divisi",
+        "column-limit": "Limit",
+
+        "column-username": "ID Pengguna",
+        "column-name": "Nama",
+        "column-category": "Kategori",
+        "column-site": "Lokasi",
+        "column-validity-date": "Tanggal Berlaku",
+
+        "column-status": "Status"
     },
     "message": {
       "navigation": "Navigasi",
