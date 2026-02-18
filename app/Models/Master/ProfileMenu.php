@@ -1,27 +1,22 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Master;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
-class UserGuide extends Model
+class ProfileMenu extends Model
 {
     use HasUuids;
 
     /**
      * Column info:
      *
-     * id: uuid
+     * profile_id: uuid
      * menu_id: uuid
-     * name: string(100)
-     * description: string
-     * filename: string
-     * filepath: string
+     * acc_control_id: uuid
      * created_at: timestamp
      * updated_at: timestamp
-     * created_by: uuid
-     * updated_by: uuid
      */
 
     /**
@@ -30,12 +25,8 @@ class UserGuide extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'profile_id',
         'menu_id',
-        'name',
-        'description',
-        'filename',
-        'filepath',
-        'created_by',
-        'updated_by',
+        'acc_control_id',
     ];
 }

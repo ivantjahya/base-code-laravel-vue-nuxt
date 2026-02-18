@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Master;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
-class ApprovalPoFlow extends Model
+class UserGuide extends Model
 {
     use HasUuids;
 
@@ -13,13 +13,11 @@ class ApprovalPoFlow extends Model
      * Column info:
      *
      * id: uuid
-     * code: string(50)
-     * name: string
-     * merch_struct_id: uuid
-     * limit_id: uuid
-     * po_status_id: uuid
-     * next_profile_id: uuid
-     * next_po_status_id: uuid
+     * menu_id: uuid
+     * name: string(100)
+     * description: string
+     * filename: string
+     * filepath: string
      * created_at: timestamp
      * updated_at: timestamp
      * created_by: uuid
@@ -32,13 +30,11 @@ class ApprovalPoFlow extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'code',
+        'menu_id',
         'name',
-        'merch_struct_id',
-        'limit_id',
-        'po_status_id',
-        'next_profile_id',
-        'next_po_status_id',
+        'description',
+        'filename',
+        'filepath',
         'created_by',
         'updated_by',
     ];

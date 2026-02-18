@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Master;
 
 use App\Exceptions\CommonCustomException;
+use App\Http\Controllers\Controller;
 use App\Services\PythonModuleMasterDataService;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;

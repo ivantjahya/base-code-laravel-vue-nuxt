@@ -2,11 +2,11 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\MasterDataFunctionalProfileController;
-use App\Http\Controllers\MasterDataLimitController;
-use App\Http\Controllers\MasterDataProfileController;
-use App\Http\Controllers\MasterDataUserController;
-use App\Http\Controllers\MasterDataUserGuideController;
+use App\Http\Controllers\Master\MasterDataFunctionalProfileController;
+use App\Http\Controllers\Master\MasterDataLimitController;
+use App\Http\Controllers\Master\MasterDataProfileController;
+use App\Http\Controllers\Master\MasterDataUserController;
+use App\Http\Controllers\Master\MasterDataUserGuideController;
 use Illuminate\Support\Facades\Route;
 
 /** Route for login redirect */

@@ -3,10 +3,10 @@
 namespace App\Providers;
 
 use App\Interfaces\InterfaceClass;
-use App\Models\PassportAuthCode;
-use App\Models\PassportClient;
-use App\Models\PassportRefreshToken;
-use App\Models\PassportToken;
+use App\Models\Passport\PassportAuthCode;
+use App\Models\Passport\PassportClient;
+use App\Models\Passport\PassportRefreshToken;
+use App\Models\Passport\PassportToken;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Laravel\Passport\Passport;
 

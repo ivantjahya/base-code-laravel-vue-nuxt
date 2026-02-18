@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\AccessControl;
+use App\Models\Master\AccessControl;
 use Illuminate\Database\Seeder;
 
 class AccessControlSeeder extends Seeder

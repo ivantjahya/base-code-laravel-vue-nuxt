@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Master;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
-class AccessControl extends Model
+class Profile extends Model
 {
     use HasUuids;
 
@@ -15,8 +15,13 @@ class AccessControl extends Model
      * id: uuid
      * code: string(50)
      * name: string
+     * description: string
+     * is_internal: integer, default 1
+     * status: integer, default 1
      * created_at: timestamp
      * updated_at: timestamp
+     * created_by: uuid
+     * updated_by: uuid
      */
 
     /**
@@ -27,5 +32,10 @@ class AccessControl extends Model
     protected $fillable = [
         'code',
         'name',
+        'description',
+        'is_internal',
+        'status',
+        'created_by',
+        'updated_by',
     ];
 }

@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\AppConstController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\MasterDataLimitController;
+use App\Http\Controllers\Master\MasterDataLimitController;
 use App\Http\Middleware\XssProtection;
 use Illuminate\Support\Facades\Route;
 
