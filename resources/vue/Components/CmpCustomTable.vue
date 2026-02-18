@@ -41,9 +41,11 @@ interface Props {
   data: any[]
   columns: Column[]
 
+
   // Actions
   actions?: Action[][]
   showActions?: boolean
+
 
   // Filters
   showFilters?: boolean
@@ -51,18 +53,22 @@ interface Props {
   filterTitle?: string
   onFilter?: (filters: Record<string, any>) => void
 
+
   // Pagination
   showPagination?: boolean
   pageSize?: number
   currentPage?: number
   countTotalData?: number
 
+
   // Selection
   showSelection?: boolean
+
 
   // Styling
   showNumberColumn?: boolean
   emptyText?: string
+
 
   // Loading
   loading?: boolean
@@ -309,6 +315,7 @@ watch(rowSelection, (newVal) => {
         icon="i-lucide-search"
         :placeholder="t('text.input-field.search')"
         size="lg"
+        class="max-w-xs w-full rounded-lg"
         class="max-w-xs w-full rounded-lg"
       />
     </div>
