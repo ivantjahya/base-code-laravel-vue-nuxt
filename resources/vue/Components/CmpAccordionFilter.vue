@@ -30,10 +30,10 @@ const accordionItems = computed(() => [
 </script>
 
 <template>
-    <div class="mb-3">
+    <div class="mb-5">
         <UAccordion
             :items="accordionItems"
-            class="w-full border-1 border-gray-200 dark:border-gray-700 rounded-lg px-4"
+            class="w-full border-1 border-gray-300 dark:border-gray-700 rounded-lg px-4"
             :ui="{
                 wrapper: 'w-full',
                 item: {
