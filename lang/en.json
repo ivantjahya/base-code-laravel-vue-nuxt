@@ -136,11 +136,8 @@
         "input-new-name-placeholder": "Enter user guide name",
         "input-new-menu": "Menu",
         "input-new-menu-placeholder": "Select menu",
-
-        "input-filter-name": "User Guide Name",
-        "placeholder-filter-name": "Enter user guide name",
-        "input-filter-menu": "Menu",
-        "placeholder-filter-menu": "Select menu"
+        "input-new-status": "Status",
+        "edit-user": "Edit User"
     },
     "button": {
         "new": "New",
@@ -193,6 +190,13 @@
         "site": "Site",
         "site-placeholder": "Select site",
 
+        "user-guide-code": "User Guide Code",
+        "user-guide-code-placeholder": "Enter user guide code",
+        "user-guide-name": "User Guide Name",
+        "user-guide-name-placeholder": "Enter user guide name",
+        "menu": "Menu",
+        "menu-placeholder": "Select menu",
+
         "status": "Status",
         "status-placeholder": "Select status",
 
@@ -232,6 +236,10 @@
         "column-category": "Category",
         "column-site": "Site",
         "column-validity-date": "Validity Date",
+
+        "column-user-guide-code": "User Guide Code",
+        "column-user-guide-name": "User Guide Name",
+        "column-user-guide-menu": "Menu",
 
         "column-status": "Status"
     },
