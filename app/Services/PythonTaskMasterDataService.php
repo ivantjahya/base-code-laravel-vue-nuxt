@@ -89,9 +89,9 @@ class PythonTaskMasterDataService
             fn () => Http::acceptJson()
                 ->connectTimeout(3)
                 ->timeout(60)
-                ->get("{$this->baseUrl}/process_middleware_ms/sync")
+                ->get("{$this->baseUrl}/merch_struct/process_middleware_ms/sync")
                 ->throw(),
-            '/process_middleware_ms/sync',
+            '/merch_struct/process_middleware_ms/sync',
             'Failed to process middleware merchandise structure',
             []
         );
