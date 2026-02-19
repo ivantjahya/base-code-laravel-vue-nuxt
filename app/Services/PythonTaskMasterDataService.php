@@ -96,4 +96,21 @@ class PythonTaskMasterDataService
             []
         );
     }
+
+    /**
+     * Process data in middleware site gold from Python API
+     */
+    public function processMiddlewareSiteGold(): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(60)
+                ->post("{$this->baseUrl}/regional_site/process_middleware_site_gold/sync")
+                ->throw(),
+            '/regional_site/process_middleware_site_gold/sync',
+            'Failed to process middleware site gold',
+            []
+        );
+    }
 }
