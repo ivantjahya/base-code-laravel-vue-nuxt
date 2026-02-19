@@ -1,142 +1,178 @@
 <script setup lang="ts">
-import { ref, computed, h, resolveComponent, shallowRef, watch } from 'vue'
+import { ref, computed, h, resolveComponent, shallowRef, onMounted } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
-import { getPaginationRowModel } from '@tanstack/table-core'
 import { CalendarDate, DateFormatter, getLocalTimeZone, today } from '@internationalized/date'
 import { useI18n } from '../composables/useI18n'
+import { useFormatters } from '../composables/useFormatters'
+import { useApiStore } from '../AppState'
+import axios from 'axios'
+import { getCurrentInstance } from 'vue'
 import CmpLayout from '../Components/CmpLayout.vue'
-import type { SelectMenuItem } from '@nuxt/ui'
+import CmpCustomTable from '../Components/CmpCustomTable.vue'
+import CmpAccordionFilter from '../Components/CmpAccordionFilter.vue'
+import DialogFormUserGuide from './Components/DialogFormUserGuide.vue'
+import FormFilterUserGuide from './Components/FormFilterUserGuide.vue'
 
 const { t } = useI18n()
+const { formatDate, formatCurrency, getDateString, stringToCalendarDate } = useFormatters()
+const api = useApiStore()
+const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
 const UButton = resolveComponent('UButton')
-const UDropdownMenu = resolveComponent('UDropdownMenu')
-
-// State
-const moreFilterItems = computed(() => [
-  {
-    label: t('text.input-field.more-filters'),
-    slot: 'panelMoreFilter',
-    icon: 'i-lucide-filter',
-    defaultOpen: false
-  }
-])
 
 // ========================= FILTER =========================
-const usernameFilter = ref('')
+const codeFilter = ref('')
 const nameFilter = ref('')
-
 const menuFilter = ref<string | null>(null)
-const menuValueFilter = ref<SelectMenuItem[]>([
-    {
-        type: 'label',
-        label: 'Master Data'
-    },
-    'Limit',
-    'Profile',
-    'Functional Profile',
-    'User',
-    'Approval Flow',
-    'Regional Site',
-    'User Guide',
-    {
-        type: 'separator'
-    },
-    {
-        type: 'label',
-        label: 'New Registration'
-    },
-    'Article',
-    'Supplier',
-    {
-        type: 'separator'
-    },
-    {
-        type: 'label',
-        label: 'Purchase Order'
-    },
-    'PO Status Report',
-    'PO List',
-    'PO Cross Dock',
-    'Return',
-])
-
-const statusValueFilter = ref(['Active', 'Not Active'])
 const statusFilter = ref<string | null>(null)
 
-// Actions
-const postFindData = () => {
-    console.log('Finding data with filters:', {
-        name: nameFilter.value,
-        menu: menuFilter.value,
-        status: statusFilter.value
-    })
+const resetFilter = () => {
+    codeFilter.value = ''
+    nameFilter.value = ''
+    menuFilter.value = null
+    statusFilter.value = null
 }
 
-// ========================= MODAL =========================
-const name = ref<string>('')
+// ========================= TABLE =========================
+const userGuideData = ref([])
+const currentPage = ref(1)
+const itemPerPage = ref(10)
+const countTotalData = ref(0)
+const loadingTable = ref(false)
+const showLoadingOverlay = ref(true)
+const globalSearchQuery = ref('') // For global search, server-side
 
-const menu = ref<string | null>(null)
-const menuValue = ref<SelectMenuItem[]>([
+const columns = computed(() => [
     {
-        type: 'label',
-        label: 'Master Data'
-    },
-    'Limit',
-    'Profile',
-    'Functional Profile',
-    'User',
-    'Approval Flow',
-    'Regional Site',
-    'User Guide',
-    {
-        type: 'separator'
+        key: 'code',
+        label: t('text.table-column.column-user-guide-code'),
+        sortable: true
     },
     {
-        type: 'label',
-        label: 'New Registration'
-    },
-    'Article',
-    'Supplier',
-    {
-        type: 'separator'
+        key: 'name',
+        label: t('text.table-column.column-user-guide-name'),
+        sortable: true
     },
     {
-        type: 'label',
-        label: 'Purchase Order'
+        key: 'menu',
+        label: t('text.table-column.column-user-guide-menu'),
+        sortable: true
     },
-    'PO Status Report',
-    'PO List',
-    'PO Cross Dock',
-    'Return',
+    {
+        key: 'status',
+        label: t('text.table-column.column-status'),
+        sortable: true,
+        formatter: (value: number) => value === 1 ? 'Active' : 'Inactive'
+    },
+    {
+        key: 'actions',
+        label: '',
+        sortable: false,
+    }
 ])
 
-const files = ref<File[]>([])
-// const MAX_SIZE = 2 * 1024 * 1024 // 2MB
-// const toastchild = ref<InstanceType<typeof CmpToast> | null>(null);
+const actions = computed(() => [
+    [
+        {
+            label: t('text.button.edit' as any) || 'Edit',
+            icon: 'i-lucide-pencil',
+            onSelect: (row) => handleEdit(row)
+        }
+    ]
+])
 
-// watch(files, (newFiles) => {
-//   const validFiles = newFiles.filter(file => file.size <= MAX_SIZE)
+// ========================= MODAL =========================
+const modalTitle = ref('')
+const modalSubmitOpen = ref(false)
+const editMode = ref(false)
+const editingId = ref<string | null>(null)
+const editData = ref({})
 
-//   if (validFiles.length !== newFiles.length) {
-//     toastchild.value?.toastDisplay({
-//         type: 'error',
-//         summary: 'File terlalu besar',
-//         detail: 'Ukuran file maksimal 2MB',
-//     });
-//   }
-
-//   files.value = validFiles
-// })
-
-const valueSwitch = ref(true)
-
-const resetForm = () => {
-    name.value = ''
-    menu.value = null
-    valueSwitch.value = true
-    files.value = []
+const showModal = () => {
+    modalTitle.value = t('text.user-guide-management-pg.add-new-user-guide' as any) || 'Create New User Guide'
+    editMode.value = false
+    editingId.value = null
+    editData.value = {}
+    modalSubmitOpen.value = true
 }
+
+const closeModal = () => {
+    modalSubmitOpen.value = false
+}
+
+const onSubmitted = async () => {
+    await getUserGuideList()
+}
+
+// ========================= ACTION =========================
+const getUserGuideList = async () => {
+    // userGuideData.value = showLoadingOverlay.value ? [] : userGuideData.value; // Clear data only when showing loading overlay (use table template #loading)
+    loadingTable.value = true;
+
+    try {
+        const params = {
+            user_guide_code: codeFilter.value,
+            user_guide_name: nameFilter.value,
+            user_guide_menu: menuFilter.value,
+            status: statusFilter.value,
+            skip: (currentPage.value - 1) * itemPerPage.value,
+            userGuide: itemPerPage.value,
+            search: globalSearchQuery.value, // For global search, server-side
+        }
+        const response = await axios.get(api.getUserGuideList, { params });
+
+        userGuideData.value = response.data.data?.items.map((item: any) => ({
+            ...item,
+            status: item.status === 1 ? 'Active' : 'Inactive'
+        }));
+        countTotalData.value = response.data.data?.total || 0;
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        Swal?.fire({
+            icon: 'error',
+            title: t('text.message.error' as any) || 'Error!',
+            text: t('text.message.failed-to-load-data-msg' as any) || 'Failed to load data.',
+            confirmButtonText: 'OK'
+        });
+    } finally {
+        loadingTable.value = false;
+    }
+}
+
+const onClickFindButton = () => {
+    currentPage.value = 1
+    getUserGuideList()
+}
+
+const handlePageChange = (page: number) => {
+    currentPage.value = page
+    getUserGuideList()
+}
+
+const handlePageSizeChange = (size: number) => {
+    itemPerPage.value = size
+    currentPage.value = 1 // Reset to first page when changing page size
+    getUserGuideList()
+}
+
+const handleSearch = (query: string) => { // For global search, server-side
+    globalSearchQuery.value = query
+    currentPage.value = 1 // Reset to first page when searching
+    getUserGuideList()
+}
+
+const handleEdit = (data: any) => {
+    modalTitle.value = t('text.user-guide-management-pg.edit-user-guide' as any) || 'Edit user guide'
+    editMode.value = true
+    editingId.value = data.id
+    editData.value = data
+    modalSubmitOpen.value = true
+}
+
+// Fetch initial data on component mount
+onMounted(() => {
+    getUserGuideList()
+})
 
 </script>
 
@@ -153,91 +189,13 @@ const resetForm = () => {
 
                     <div class="flex items-center gap-4">
 
-                        <UModal v-model:open="open" :title="t('text.user-management-pg.add-new-user') || 'Create New User'" class="text-[16px] font-semibold" :ui="{ footer: 'justify-end' }">
-
-                            <!-- BUTTON NEW -->
-                            <UButton type="button" class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[16px] px-5">
-                                {{ t('text.button.new').toUpperCase() || 'NEW' }}
-                            </UButton>
-
-                            <template #body>
-
-                                <!-- NAME -->
-                                <UFormField orientation="horizontal" class="mb-2" >
-
-                                    <template #label>
-                                        <span class="flex items-center gap-1">
-                                            {{ t('text.user-guide-management-pg.input-new-name') || 'Name' }}
-                                            <span class="text-red-500">*</span>
-                                        </span>
-                                    </template>
-
-                                    <UInput v-model="name" :placeholder="t('text.user-guide-management-pg.input-new-name-placeholder') || 'Enter user guide name'" class="w-80 border-[#CAD5E2] font-light"/>
-
-                                </UFormField>
-
-                                <!-- MENU -->
-                                <UFormField orientation="horizontal" class="mb-2" >
-
-                                    <template #label>
-                                        <span class="flex items-center gap-1">
-                                            {{ t('text.user-guide-management-pg.input-new-menu') || 'Menu' }}
-                                            <span class="text-red-500">*</span>
-                                        </span>
-                                    </template>
-
-                                    <USelectMenu v-model="menu" :items="menuValue" :placeholder="t('text.user-guide-management-pg.input-new-menu-placeholder') || 'Select menu'" class="w-80 font-light"/>
-
-                                </UFormField>
-
-                                <!-- STATUS -->
-                                <UFormField orientation="horizontal" class="mb-2" >
-
-                                    <template #label>
-                                        <span class="flex items-center gap-1">
-                                            {{ t('text.limit-management-pg.input-new-status') || 'Status' }}
-                                        </span>
-                                    </template>
-
-                                    <div class="flex justify-start w-80">
-                                        <USwitch v-model="valueSwitch" />
-                                    </div>
-
-                                </UFormField>
-
-                                <UFileUpload
-                                    v-model="files"
-                                    position="inside"
-                                    layout="list"
-                                    multiple
-                                    label="Drop your file here"
-                                    description="PDF or DOCX (max. 2MB)"
-                                    class="w-full"
-                                    accept=".pdf,.docx"
-                                    :ui="{ base: 'min-h-48' }"
-                                />
-
-                            </template>
-
-                            <template #footer>
-
-                                <UButton
-                                    class="bg-[#FEE9D6] text-[#F26524] hover:bg-[#FBD0AD] hover:text-[#E34613] active:bg-[#FBD0AD] active:text-[#E34613] text-[14px] px-5"
-                                    @click="resetForm"
-                                >{{ t('text.button.clear') || 'Clear' }}</UButton>
-
-                                <UButton label="Submit" class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[14px] px-5">
-                                    {{ t('text.button.submit') || 'Submit' }}
-                                </UButton>
-
-                            </template>
-
-                        </UModal>
+                        <!-- BUTTON NEW -->
+                        <UButton type="button" @click="showModal" class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[16px] px-5">
+                            {{ t('text.button.new').toUpperCase() || 'NEW' }}
+                        </UButton>
 
                         <h1 class="text-lg font-semibold text-gray-900 dark:text-white">
-
                             {{ t('text.user-guide-management-pg.list') || 'List of User Guides' }}
-
                         </h1>
 
                     </div>
@@ -246,105 +204,49 @@ const resetForm = () => {
 
             </UCard>
 
+            <!-- MODAL -->
+            <DialogFormUserGuide
+                :open="modalSubmitOpen"
+                :title="modalTitle"
+                :edit-mode="editMode"
+                :editing-id="editingId"
+                :initial-data="editData"
+                @update:open="modalSubmitOpen = $event"
+                @submitted="onSubmitted"
+                @close="closeModal"
+            />
+
+            <!-- MAIN CONTENT -->
             <UCard>
-
                 <!-- Filters Section with Accordion -->
-                <div class="mb-6">
+                <CmpAccordionFilter>
+                    <FormFilterUserGuide
+                        v-model:userGuideCode="codeFilter"
+                        v-model:userGuideName="nameFilter"
+                        v-model:menu="menuFilter"
+                        v-model:status="statusFilter"
+                        :loading="loadingTable"
+                        @clear="resetFilter"
+                        @find="onClickFindButton"
+                    />
+                </CmpAccordionFilter>
 
-                    <UAccordion
-                        :items="moreFilterItems"
-                        class="w-full border-1 border-gray-200 dark:border-gray-700 rounded-lg px-4"
-                        :ui="{
-                            wrapper: 'w-full',
-                            item: {
-                                base: 'border-1 border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden',
-                            }
-                        }"
-                    >
-
-                        <template #panelMoreFilter>
-
-                            <div class="py-2 space-y-4 bg-white dark:bg-gray-900">
-                                <div class="grid grid-flow-row text-sm">
-
-                                    <div class="flex flex-col md:flex-row w-full my-1 gap-2">
-
-                                        <!-- NAME -->
-                                        <div class="flex w-full">
-
-                                            <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.user-guide-management-pg.input-filter-name') || 'User Guide Name' }}</div>
-                                            <div class="flex w-full text-sm">
-                                                <UInput
-                                                    v-model="nameFilter"
-                                                    :placeholder="t('text.user-guide-management-pg.placeholder-filter-name') || 'Enter user guide name'"
-                                                    size="md"
-                                                    class="w-full font-light text-base md:text-sm"
-                                                />
-                                            </div>
-
-                                        </div>
-
-                                        <div class="px-2"></div>
-
-                                        <!-- STATUS -->
-                                        <div class="flex w-full">
-
-                                            <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.user-management-pg.input-filter-status') || 'Status' }}</div>
-                                            <div class="flex w-full text-sm">
-
-                                                <USelectMenu v-model="statusFilter" :items="statusValueFilter" :placeholder="t('text.user-management-pg.placeholder-filter-status') || 'Select status'" class="w-full font-reguler"/>
-
-                                            </div>
-
-                                        </div>
-
-                                    </div>
-
-                                    <div class="flex flex-col md:flex-row w-full my-1 gap-2">
-
-                                        <!-- MENU -->
-                                        <div class="flex w-full">
-
-                                            <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.user-guide-management-pg.input-filter-menu') || 'Menu' }}</div>
-                                            <div class="flex w-full text-sm">
-
-                                                <USelectMenu v-model="menuFilter" :items="menuValueFilter" :placeholder="t('text.user-guide-management-pg.placeholder-filter-menu') || 'Select menu'" class="w-full font-reguler"/>
-
-                                            </div>
-
-                                        </div>
-
-                                        <div class="px-2"></div>
-
-                                        <!-- BUTTON FIND -->
-                                        <div class="flex w-full mb-1">
-
-                                            <div class="w-full md:w-50 my-auto text-base md:text-sm"></div>
-                                            <div class="flex w-full text-sm">
-                                                <UButton
-                                                    @click="postFindData"
-                                                    color="primary"
-                                                    size="md"
-                                                    icon="i-lucide-search"
-                                                    class="w-full justify-center text-base md:text-sm text-white"
-                                                >
-                                                    {{ t('text.button.find') || 'Find' }}
-                                                </UButton>
-                                            </div>
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-                            </div>
-
-                        </template>
-
-                    </UAccordion>
-
-                </div>
-
+                <!-- Nuxt UI Table -->
+                <CmpCustomTable
+                    :data="userGuideData"
+                    :columns="columns"
+                    :actions="actions"
+                    :showNumberColumn="false"
+                    :showFilters="true"
+                    :loading="loadingTable"
+                    :showLoadingOverlay="showLoadingOverlay"
+                    :page-size="itemPerPage"
+                    :current-page="currentPage"
+                    :count-total-data="countTotalData"
+                    @update:currentPage="handlePageChange"
+                    @update:pageSize="handlePageSizeChange"
+                    @search="handleSearch"
+                />
             </UCard>
 
         </div>
