@@ -135,11 +135,8 @@
         "input-new-name-placeholder": "Masukkan nama panduan pengguna",
         "input-new-menu": "Menu",
         "input-new-menu-placeholder": "Pilih menu",
-
-        "input-filter-name": "Nama Panduan",
-        "placeholder-filter-name": "Masukkan nama panduan pengguna",
-        "input-filter-menu": "Menu",
-        "placeholder-filter-menu": "Pilih menu"
+        "input-new-status": "Status",
+        "edit-user": "Edit User"
     },
     "button": {
         "new": "Tambah",
@@ -192,6 +189,13 @@
         "site": "Lokasi",
         "site-placeholder": "Pilih lokasi",
 
+        "user-guide-code": "Kode Panduan",
+        "user-guide-code-placeholder": "Masukkan kode panduan pengguna",
+        "user-guide-name": "Nama Panduan",
+        "user-guide-name-placeholder": "Masukkan nama panduan pengguna",
+        "menu": "Menu",
+        "menu-placeholder": "Pilih menu",
+
         "status": "Status",
         "status-placeholder": "Pilih status",
 
@@ -231,6 +235,10 @@
         "column-category": "Kategori",
         "column-site": "Lokasi",
         "column-validity-date": "Tanggal Berlaku",
+
+        "column-user-guide-code": "Kode Panduan",
+        "column-user-guide-name": "Nama Panduan",
+        "column-menu": "Menu",
 
         "column-status": "Status"
     },
