@@ -22,7 +22,7 @@ Schedule::call(function () {
     }
 })->dailyAt('00:00')->name('middleware:master:merch-struct');
 
-/** Site Gold */
+/** Site - Gold */
 Schedule::call(function () {
     try {
         app(PythonTaskMasterDataService::class)->processMiddlewareSiteGold();
@@ -35,3 +35,17 @@ Schedule::call(function () {
         throw $e;
     }
 })->dailyAt('00:00')->name('middleware:master:site-gold');
+
+/** Site - Regional Kontrabon */
+Schedule::call(function () {
+    try {
+        app(PythonTaskMasterDataService::class)->processMiddlewareVendKontrabonRegional();
+        Log::info('Scheduled middleware:master:site-kontrabon-regional completed successfully');
+    } catch (\Throwable $e) {
+        Log::error('Scheduled middleware:master:site-kontrabon-regional failed', [
+            'error' => $e->getMessage(),
+        ]);
+
+        throw $e;
+    }
+})->dailyAt('00:00')->name('middleware:master:site-kontrabon-regional');
