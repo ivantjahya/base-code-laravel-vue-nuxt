@@ -36,10 +36,13 @@ class ProcessLog extends Model
         'message',
         'channel',
         'level',
-        'level_name',
-        'datetime',
         'context',
-        'extra',
+        'request_id',
+        'method',
+        'path',
+        'status_code',
+        'duration_ms',
+        'exception',
     ];
 
     /**

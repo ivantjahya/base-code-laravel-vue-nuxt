@@ -1,6 +1,5 @@
 <?php
 
-use App\Logging\ProcessLogHandler;
 use App\Logging\UserLogHandler;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
@@ -138,12 +137,6 @@ return [
         'userdb' => [
             'driver' => 'custom',
             'via' => UserLogHandler::class,
-            'level' => env('LOG_LEVEL', 'debug'),
-        ],
-
-        'processdb' => [
-            'driver' => 'custom',
-            'via' => ProcessLogHandler::class,
             'level' => env('LOG_LEVEL', 'debug'),
         ],
 
