@@ -46,7 +46,7 @@ const onFind = () => {
     <div class="grid grid-flow-row text-sm">
         <div class="flex flex-col md:flex-row w-full my-1 gap-2">
 
-            <!-- PROFILE CODE -->
+            <!-- SITE CODE -->
             <div class="flex w-full">
                 <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.profile-code') || 'Profile Code' }}</div>
                 <div class="flex w-full text-sm">
