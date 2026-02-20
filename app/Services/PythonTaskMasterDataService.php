@@ -113,4 +113,21 @@ class PythonTaskMasterDataService
             []
         );
     }
+
+    /**
+     * Process data in middleware venditore kontrabon regional from Python API
+     */
+    public function processMiddlewareVendKontrabonRegional(): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(60)
+                ->post("{$this->baseUrl}/regional_site/process_middleware_vend_kontrabon_regional/sync")
+                ->throw(),
+            '/regional_site/process_middleware_vend_kontrabon_regional/sync',
+            'Failed to process middleware venditore kontrabon regional',
+            []
+        );
+    }
 }
