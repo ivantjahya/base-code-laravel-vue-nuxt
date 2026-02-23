@@ -5,6 +5,7 @@ const profileManagement = '/profile-management';
 const functionalProfileManagement = '/functional-profile-management';
 const userManagement = '/user-management';
 const regionalSite = '/regional-site';
+const approvalFlowManagement = '/approval-flow-management';
 const userGuideManagement = '/user-guide-management';
 const exploreNuxt = '/explore-nuxt';
 
@@ -55,6 +56,12 @@ const routes: Array<RouteRecordRaw> = [
         meta: { title: 'Regional Site' },
     },
     {
+        path: approvalFlowManagement,
+        name: 'approvalFlowManagement',
+        component: () => import('./MasterPages/PgApprovalFlowMan.vue'),
+        meta: { title: 'Approval Flow' },
+    },
+    {
         path: userGuideManagement,
         name: 'userGuideManagement',
         component: () => import('./MasterPages/PgUserGuideMan.vue'),
@@ -99,6 +106,7 @@ export const useWebStore = defineStore('web', {
         functionalProfileManagement: functionalProfileManagement,
         userManagement: userManagement,
         regionalSite: regionalSite,
+        approvalFlowManagement: approvalFlowManagement,
         userGuideManagement: userGuideManagement,
         exploreNuxt: exploreNuxt,
     }),
