@@ -10,60 +10,62 @@ const exploreNuxt = '/explore-nuxt';
 
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import { defineStore } from 'pinia';
+import { useI18n } from './composables/useI18n';
 
 const routes: Array<RouteRecordRaw> = [
     {
         path: landingPage,
         name: 'landingPage',
         component: () => import('./AuthPages/PgLogin.vue'),
-        meta: { title: 'Login' },
+        meta: { titleKey: 'page.login', title: 'Login' },
     },
     {
         path: home,
         name: 'home',
         component: () => import('./HomePages/PgHome.vue'),
-        meta: { title: 'Home' },
+        meta: { titleKey: 'page.home', title: 'Home' },
     },
     {
         path: limitManagement,
         name: 'limitManagement',
         component: () => import('./MasterPages/PgLimitMan.vue'),
-        meta: { title: 'Limit' },
+        meta: { titleKey: 'page.limit-management', title: 'Limit' },
     },
     {
         path: profileManagement,
         name: 'profileManagement',
         component: () => import('./MasterPages/PgProfileMan.vue'),
-        meta: { title: 'Profile' },
+        meta: { titleKey: 'page.profile-management', title: 'Profile' },
     },
     {
         path: functionalProfileManagement,
         name: 'functionalProfileManagement',
         component: () => import('./MasterPages/PgFuncProfileMan.vue'),
-        meta: { title: 'Functional Profile' },
+        meta: { titleKey: 'page.functional-profile-management', title: 'Functional Profile' },
     },
     {
         path: userManagement,
         name: 'userManagement',
         component: () => import('./MasterPages/PgUserMan.vue'),
-        meta: { title: 'User' },
+        meta: { titleKey: 'page.user-management', title: 'User' },
     },
     {
         path: regionalSite,
         name: 'regionalSite',
         component: () => import('./MasterPages/PgRegionalSite.vue'),
-        meta: { title: 'Regional Site' },
+        meta: { titleKey: 'page.regional-site-management', title: 'Regional Site' },
     },
     {
         path: userGuideManagement,
         name: 'userGuideManagement',
         component: () => import('./MasterPages/PgUserGuideMan.vue'),
+        meta: { titleKey: 'page.user-guide-management', title: 'User Guide' },
     },
     {
         path: exploreNuxt,
         name: 'exploreNuxt',
         component: () => import('./HomePages/PgExploreNuxt.vue'),
-        meta: { title: 'Explore Nuxt' },
+        meta: { titleKey: 'page.explore-nuxt', title: 'Explore Nuxt' },
     },
 ];
 
@@ -74,9 +76,14 @@ export const router = createRouter({
 
 // Update page title on route changes
 router.beforeEach((to, from, next) => {
-    // Update document title if meta.title exists
-    if (to.meta.title) {
-        document.title = `${to.meta.title} - ${import.meta.env.VITE_APP_NAME}`;
+    const { t } = useI18n();
+
+    const titleKey = String(to.meta?.titleKey || '');
+    const fallbackTitle = String(to.meta?.title || '');
+    const translatedTitle = titleKey ? t(titleKey as any) : fallbackTitle;
+
+    if (translatedTitle) {
+        document.title = `${translatedTitle} - ${import.meta.env.VITE_APP_NAME}`;
     }
     next();
 });
