@@ -266,7 +266,8 @@
         "column-user-guide-name": "Nama Panduan",
         "column-menu": "Menu",
 
-        "column-status": "Status"
+        "column-status": "Status",
+        "column-description": "Deskripsi"
     },
     "message": {
       "navigation": "Navigasi",
@@ -282,7 +283,11 @@
       "failed-to-save-data-msg": "Gagal menyimpan data. Terjadi kesalahan.",
       "failed-to-load-data-msg": "Gagal memuat data.",
       "loading": "Memuat...",
-      "error": "Kesalahan!"
+      "error": "Kesalahan!",
+      "internal": "Internal",
+      "external": "Eksternal",
+      "active": "Aktif",
+      "not-active": "Tidak Aktif"
     }
   },
   "auth": {

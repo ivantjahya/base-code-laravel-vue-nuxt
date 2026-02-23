@@ -14,14 +14,10 @@ class MerchStruct extends Model
      *
      * id: uuid
      * code: string(50)
-     * min_value: integer
-     * max_value: integer
-     * start_date: date
-     * end_date: date
+     * name: string(255)
+     * parent_id: uuid (nullable)
      * created_at: timestamp
      * updated_at: timestamp
-     * created_by: uuid
-     * updated_by: uuid
      */
 
     /**
@@ -31,11 +27,7 @@ class MerchStruct extends Model
      */
     protected $fillable = [
         'code',
-        'min_value',
-        'max_value',
-        'start_date',
-        'end_date',
-        'created_by',
-        'updated_by',
+        'name',
+        'parent_id',
     ];
 }

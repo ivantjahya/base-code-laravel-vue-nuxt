@@ -1,37 +1,32 @@
 <script setup lang="ts">
-import { ref, shallowRef } from 'vue'
-import type { CalendarDate } from '@internationalized/date'
 import { useI18n } from '../../composables/useI18n'
+import { useGlobalOptions } from '../../composables/useGlobalOptions'
 
 const { t } = useI18n()
+const { profileSourceOptions, statusOptions } = useGlobalOptions()
 
-const profileSourceValueFilter = ref(['Internal', 'External'])
-const statusValueFilter = ref(['Active', 'Not Active'])
-
-const props = defineProps({
-    profileCode: {
-        type: String,
-        default: ''
-    },
-    profileName: {
-        type: String,
-        default: ''
-    },
-    profileSource: {
-        type: Array as () => string[],
-        default: () => []
-    },
-    status: {
-        type: Array as () => string[],
-        default: () => []
-    },
-    loading: {
-        type: Boolean,
-        default: false
-    }
+const props = withDefaults(defineProps<{
+    profileCode?: string
+    profileName?: string
+    profileSource?: number | null
+    status?: number | null
+    loading?: boolean
+}>(), {
+    profileCode: '',
+    profileName: '',
+    profileSource: null,
+    status: null,
+    loading: false
 })
 
-const emit = defineEmits(['update:profileCode', 'update:profileName', 'update:profileSource', 'update:status', 'clear', 'find'])
+const emit = defineEmits<{
+    (e: 'update:profileCode', value: string): void
+    (e: 'update:profileName', value: string): void
+    (e: 'update:profileSource', value: number | null): void
+    (e: 'update:status', value: number | null): void
+    (e: 'clear'): void
+    (e: 'find'): void
+}>()
 
 const onClear = () => {
     emit('clear')
@@ -71,7 +66,10 @@ const onFind = () => {
                     <USelectMenu
                         :model-value="profileSource"
                         @update:model-value="$emit('update:profileSource', $event)"
-                        :items="profileSourceValueFilter"
+                        :items="profileSourceOptions"
+                        value-key="id"
+                        value-attribute="id"
+                        option-attribute="label"
                         :placeholder="t('text.input-field.profile-source-placeholder') || 'Select profile source'"
                         class="w-full font-reguler"
                     />
@@ -110,7 +108,10 @@ const onFind = () => {
                     <USelectMenu
                         :model-value="status"
                         @update:model-value="$emit('update:status', $event)"
-                        :items="statusValueFilter"
+                        :items="statusOptions"
+                        value-key="id"
+                        value-attribute="id"
+                        option-attribute="label"
                         :placeholder="t('text.input-field.status-placeholder') || 'Select status'"
                         class="w-full font-reguler"/>
 
