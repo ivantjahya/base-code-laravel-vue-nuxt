@@ -128,6 +128,11 @@
         "input-new-status": "Status",
         "edit-user": "Edit User"
     },
+    "regional-site-pg": {
+        "list": "List of Regional Sites",
+        "add-new-regional-site": "Add New Regional Site",
+        "view-regional-site": "View Regional Site"
+    },
     "user-guide-management-pg": {
         "list": "List of User Guides",
         "add-new-user-guide": "Add New User Guide",
@@ -190,6 +195,15 @@
         "site": "Site",
         "site-placeholder": "Select site",
 
+        "site-code": "Site Code",
+        "site-code-placeholder": "Enter regional site code",
+        "site-name": "Site Name",
+        "site-name-placeholder": "Enter regional site name",
+        "regional-code": "Regional Code",
+        "regional-code-placeholder": "Enter regional code",
+        "regional-name": "Regional Name",
+        "regional-name-placeholder": "Enter regional name",
+
         "user-guide-code": "User Guide Code",
         "user-guide-code-placeholder": "Enter user guide code",
         "user-guide-name": "User Guide Name",
@@ -236,6 +250,19 @@
         "column-category": "Category",
         "column-site": "Site",
         "column-validity-date": "Validity Date",
+
+        "column-site-code": "Site Code",
+        "column-site-initial": "Site Initial",
+        "column-site-name": "Site Name",
+        "column-site-address": "Site Address",
+        "column-site-city": "Site City",
+        "column-site-region": "Site Region",
+        "column-regional-code": "Regional Code",
+        "column-regional-initial": "Regional Initial",
+        "column-regional-name": "Regional Name",
+        "column-regional-address": "Regional Address",
+        "column-regional-city": "Regional City",
+        "column-regional-region": "Regional Region",
 
         "column-user-guide-code": "User Guide Code",
         "column-user-guide-name": "User Guide Name",
