@@ -45,7 +45,7 @@ type TranslationKey =
   | 'page.functional-profile-management'
   | 'page.user-management'
   | 'page.approval-flow-management'
-  | 'page.regional-site'
+  | 'page.regional-site-management'
   | 'page.user-guide-management'
   | 'text.login-pg.welcome'
   | 'text.login-pg.welcome-msg'

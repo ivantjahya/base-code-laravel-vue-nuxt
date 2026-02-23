@@ -4,6 +4,7 @@ const limitManagement = '/limit-management';
 const profileManagement = '/profile-management';
 const functionalProfileManagement = '/functional-profile-management';
 const userManagement = '/user-management';
+const regionalSite = '/regional-site';
 const userGuideManagement = '/user-guide-management';
 const exploreNuxt = '/explore-nuxt';
 
@@ -46,6 +47,12 @@ const routes: Array<RouteRecordRaw> = [
         name: 'userManagement',
         component: () => import('./MasterPages/PgUserMan.vue'),
         meta: { title: 'User' },
+    },
+    {
+        path: regionalSite,
+        name: 'regionalSite',
+        component: () => import('./MasterPages/PgRegionalSite.vue'),
+        meta: { title: 'Regional Site' },
     },
     {
         path: userGuideManagement,
@@ -91,6 +98,7 @@ export const useWebStore = defineStore('web', {
         profileManagement: profileManagement,
         functionalProfileManagement: functionalProfileManagement,
         userManagement: userManagement,
+        regionalSite: regionalSite,
         userGuideManagement: userGuideManagement,
         exploreNuxt: exploreNuxt,
     }),

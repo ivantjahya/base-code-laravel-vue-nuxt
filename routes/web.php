@@ -7,6 +7,7 @@ use App\Http\Controllers\Master\MasterDataLimitController;
 use App\Http\Controllers\Master\MasterDataProfileController;
 use App\Http\Controllers\Master\MasterDataUserController;
 use App\Http\Controllers\Master\MasterDataUserGuideController;
+use App\Http\Controllers\Master\MasterDataRegionalSiteController;
 use Illuminate\Support\Facades\Route;
 
 /** Route for login redirect */
@@ -46,6 +47,9 @@ Route::middleware(['auth'])->group(function () {
 
         /** User */
         Route::get('/user-management', [MasterDataUserController::class, 'userManagementPage'])->name('user-management');
+
+        /** Regional Site */
+        Route::get('/regional-site', [MasterDataRegionalSiteController::class, 'regionalSitePage'])->name('regional-site');
 
         /** User Guide */
         Route::get('/user-guide-management', [MasterDataUserGuideController::class, 'userGuideManagementPage'])->name('user-guide-management');
