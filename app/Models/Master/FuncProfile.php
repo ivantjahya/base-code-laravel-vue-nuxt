@@ -18,6 +18,7 @@ class FuncProfile extends Model
      * profile_id: uuid
      * merch_struct_id: uuid
      * limit_code: string
+     * status: integer (1: Active, 0: Inactive)
      * created_at: timestamp
      * updated_at: timestamp
      * created_by: uuid
@@ -35,6 +36,7 @@ class FuncProfile extends Model
         'profile_id',
         'merch_struct_id',
         'limit_code',
+        'status',
         'created_by',
         'updated_by',
     ];
