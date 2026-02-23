@@ -9,17 +9,21 @@ const profileSourceValueFilter = ref(['Internal', 'External'])
 const statusValueFilter = ref(['Active', 'Not Active'])
 
 const props = defineProps({
-    profileCode: {
+    siteCode: {
         type: String,
         default: ''
     },
-    profileName: {
+    siteName: {
         type: String,
         default: ''
     },
-    profileSource: {
-        type: Array as () => string[],
-        default: () => []
+    regionalCode: {
+        type: String,
+        default: ''
+    },
+    regionalName: {
+        type: String,
+        default: ''
     },
     status: {
         type: Array as () => string[],
@@ -31,7 +35,7 @@ const props = defineProps({
     }
 })
 
-const emit = defineEmits(['update:profileCode', 'update:profileName', 'update:profileSource', 'update:status', 'clear', 'find'])
+const emit = defineEmits(['update:siteCode', 'update:siteName', 'update:regionalCode', 'update:regionalName', 'update:status', 'clear', 'find'])
 
 const onClear = () => {
     emit('clear')
@@ -48,12 +52,12 @@ const onFind = () => {
 
             <!-- SITE CODE -->
             <div class="flex w-full">
-                <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.profile-code') || 'Profile Code' }}</div>
+                <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.site-code') || 'Site Code' }}</div>
                 <div class="flex w-full text-sm">
                     <UInput
-                        :model-value="profileCode"
-                        @update:model-value="$emit('update:profileCode', $event)"
-                        :placeholder="t('text.input-field.profile-code-placeholder') || 'Enter profile code'"
+                        :model-value="siteCode"
+                        @update:model-value="$emit('update:siteCode', $event)"
+                        :placeholder="t('text.input-field.site-code-placeholder') || 'Enter site code'"
                         size="md"
                         class="w-full font-light text-base md:text-sm"
                     />
@@ -63,17 +67,17 @@ const onFind = () => {
 
             <div class="px-2"></div>
 
-            <!-- PROFILE SOURCE -->
+            <!-- REGIONAL NAME -->
             <div class="flex w-full">
 
-                <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.profile-source') || 'Profile Source' }}</div>
+                <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.regional-name') || 'Regional Name' }}</div>
                 <div class="flex w-full text-sm">
-                    <USelectMenu
-                        :model-value="profileSource"
-                        @update:model-value="$emit('update:profileSource', $event)"
-                        :items="profileSourceValueFilter"
-                        :placeholder="t('text.input-field.profile-source-placeholder') || 'Select profile source'"
-                        class="w-full font-reguler"
+                    <UInput
+                        :model-value="regionalName"
+                        @update:model-value="$emit('update:regionalName', $event)"
+                        :placeholder="t('text.input-field.regional-name-placeholder') || 'Enter regional name'"
+                        size="md"
+                        class="w-full font-light text-base md:text-sm"
                     />
                 </div>
 
@@ -83,15 +87,15 @@ const onFind = () => {
 
         <div class="flex flex-col md:flex-row w-full my-1 gap-2">
 
-            <!-- PROFILE NAME -->
+            <!-- SITE NAME -->
             <div class="flex w-full">
 
-                <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.profile-name') || 'Profile Name' }}</div>
+                <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.site-name') || 'Site Name' }}</div>
                 <div class="flex w-full text-sm">
                     <UInput
-                        :model-value="profileName"
-                        @update:model-value="$emit('update:profileName', $event)"
-                        :placeholder="t('text.input-field.profile-name-placeholder') || 'Enter profile name'"
+                        :model-value="siteName"
+                        @update:model-value="$emit('update:siteName', $event)"
+                        :placeholder="t('text.input-field.site-name-placeholder') || 'Enter site name'"
                         size="md"
                         class="w-full font-light text-base md:text-sm"
                     />
@@ -122,7 +126,20 @@ const onFind = () => {
 
         <div class="flex flex-col md:flex-row w-full my-1 gap-2">
 
-            <div class="flex w-full"></div>
+            <!-- REGIONAL CODE -->
+            <div class="flex w-full">
+                <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.regional-code') || 'Regional Code' }}</div>
+                <div class="flex w-full text-sm">
+                    <UInput
+                        :model-value="regionalCode"
+                        @update:model-value="$emit('update:regionalCode', $event)"
+                        :placeholder="t('text.input-field.regional-code-placeholder') || 'Enter regional code'"
+                        size="md"
+                        class="w-full font-light text-base md:text-sm"
+                    />
+                </div>
+
+            </div>
 
             <div class="px-2"></div>
 
@@ -147,6 +164,7 @@ const onFind = () => {
                     </UButton>
                 </div>
             </div>
+
         </div>
 
     </div>

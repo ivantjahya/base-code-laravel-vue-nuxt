@@ -127,6 +127,10 @@
         "input-new-status": "Status",
         "edit-user": "Edit User"
     },
+    "regional-site-pg": {
+        "list": "Daftar Lokasi Regional",
+        "view-regional-site": "Lihat Data Lokasi Regional"
+    },
     "user-guide-management-pg": {
         "list": "Daftar Panduan Pengguna",
         "add-new-user-guide": "Tambah Panduan Pengguna Baru",
@@ -189,6 +193,15 @@
         "site": "Lokasi",
         "site-placeholder": "Pilih lokasi",
 
+        "site-code": "Kode Lokasi",
+        "site-code-placeholder": "Masukkan kode lokasi regional",
+        "site-name": "Nama Lokasi",
+        "site-name-placeholder": "Masukkan nama lokasi regional",
+        "regional-code": "Kode Regional",
+        "regional-code-placeholder": "Masukkan kode regional",
+        "regional-name": "Nama Regional",
+        "regional-name-placeholder": "Masukkan nama regional",
+
         "user-guide-code": "Kode Panduan",
         "user-guide-code-placeholder": "Masukkan kode panduan pengguna",
         "user-guide-name": "Nama Panduan",
@@ -235,6 +248,19 @@
         "column-category": "Kategori",
         "column-site": "Lokasi",
         "column-validity-date": "Tanggal Berlaku",
+
+        "column-site-code": "Kode Lokasi",
+        "column-site-initial": "Inisial Lokasi",
+        "column-site-name": "Nama Lokasi",
+        "column-site-address": "Alamat Lokasi",
+        "column-site-city": "Kota Lokasi",
+        "column-site-region": "Wilayah Lokasi",
+        "column-regional-code": "Kode Lokasi",
+        "column-regional-initial": "Inisial Regional",
+        "column-regional-name": "Nama Lokasi",
+        "column-regional-address": "Alamat Lokasi",
+        "column-regional-city": "Kota Lokasi",
+        "column-regional-region": "Wilayah Lokasi",
 
         "column-user-guide-code": "Kode Panduan",
         "column-user-guide-name": "Nama Panduan",
