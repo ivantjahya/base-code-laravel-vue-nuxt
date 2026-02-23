@@ -180,8 +180,8 @@ class MasterDataProfileController extends Controller
             $params = [
                 'name' => $validated['profile_name'],
                 'description' => $validated['profile_description'],
-                'is_internal' => $validated['profile_source'],
-                'status' => $validated['status'],
+                'is_internal' => (int) $validated['profile_source'],
+                'status' => (int) $validated['status'],
                 'menu_access' => $validated['menu_access'] ?? [], // Default empty menu access, can be updated later in profile detail
                 'user_id' => $user?->id,
             ];

@@ -9,7 +9,7 @@
 
     <link rel="icon" type="image/png" href="{{ Vite::asset('resources/images/icon-venditore-plus.webp') }}"/>
 
-    <title>@yield('title') | {{ config('app.name') }}</title>
+    <!-- <title>@yield('title') | {{ config('app.name') }}</title> -->
     </head>
 
     <body>

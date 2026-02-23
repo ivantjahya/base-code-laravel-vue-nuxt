@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, getCurrentInstance, onMounted } from 'vue'
+import { ref, computed, watch, getCurrentInstance, nextTick } from 'vue'
 import { useI18n } from '../../composables/useI18n'
 import { useApiStore } from '../../AppState'
 import { useGlobalOptions } from '../../composables/useGlobalOptions'
@@ -44,13 +44,15 @@ const profileName = ref<string>('')
 const description = ref<string>('')
 const profileSource = ref<number | null>(null)
 
-const treeValue = ref<string[]>([])
+// Tree state
+const treeValue = ref<TreeItem[]>([])
 const items = ref<TreeItem[]>([])
+const treeNodeByValueMap = ref<Record<string, TreeItem>>({})
 const menuAccessMap = ref<Record<string, { menu_id: string; acc_control_id: string }>>({})
 const controlToMenuMap = ref<Record<string, string>>({})
 const menuNodeMap = ref<Record<string, string>>({})
 
-const getTreeItemKey = (item: any) => item?.value || item?.label
+const getTreeItemKey = (item: any) => item?.value
 
 const getLabel = (value: any): string => {
     if (!value || typeof value !== 'object') return ''
@@ -75,7 +77,7 @@ const getControlMenuId = (value: any): string => {
 
 const getNodeValue = (node: any, fallbackLabel: string): string => {
     if (!node || typeof node !== 'object') return fallbackLabel
-    return node.value || node.id || node.code || node.url || fallbackLabel
+    return node.value || node.name || node.id || fallbackLabel
 }
 
 const mapTreeNode = (node: any, inheritedMenuId = '', nodePath = ''): TreeItem | null => {
@@ -117,12 +119,10 @@ const mapTreeNode = (node: any, inheritedMenuId = '', nodePath = ''): TreeItem |
             const controlLabel = getLabel(control)
             if (!controlId || !controlLabel) return null
 
-            // const controlCode = control.code ? String(control.code).toUpperCase() : ''
-            // const displayLabel = controlCode ? `${controlCode} - ${controlLabel}` : controlLabel
             const controlCode = control.code ? String(control.code) : ''
             const displayLabel = controlCode ? controlCode : controlLabel
 
-            const controlValue = `acc:${currentPath}:${controlId}`
+            const controlValue = `acc:${currentPath}:${controlCode}`
             const mappedMenuId = effectiveMenuId || getControlMenuId(control)
             if (mappedMenuId) {
                 menuAccessMap.value[controlValue] = {
@@ -132,18 +132,24 @@ const mapTreeNode = (node: any, inheritedMenuId = '', nodePath = ''): TreeItem |
                 controlToMenuMap.value[controlId] = mappedMenuId
             }
 
-            return {
+            const controlNode = {
                 label: displayLabel,
                 value: controlValue
             } as TreeItem
+
+            treeNodeByValueMap.value[controlValue] = controlNode
+            return controlNode
         })
         .filter(Boolean) as TreeItem[]
 
-    return {
+    const menuNode = {
         label,
         value,
         children: [...mappedMenuChildren, ...mappedControlChildren]
-    }
+    } as TreeItem
+
+    treeNodeByValueMap.value[value] = menuNode
+    return menuNode
 }
 
 const loadMenuAccessTree = async () => {
@@ -157,8 +163,9 @@ const loadMenuAccessTree = async () => {
         menuAccessMap.value = {}
         controlToMenuMap.value = {}
         menuNodeMap.value = {}
+        treeNodeByValueMap.value = {}
         items.value = sourceArray
-            .map((node: any, index: number) => mapTreeNode(node, '', `root-${node.code ?? node.id ?? node.name ?? index}`))
+            .map((node: any, index: number) => mapTreeNode(node, '', `root`))
             .filter(Boolean) as TreeItem[]
     } catch (error: any) {
         console.error('Error loading menu access control list:', error.response?.data || error.message)
@@ -166,6 +173,7 @@ const loadMenuAccessTree = async () => {
         menuAccessMap.value = {}
         controlToMenuMap.value = {}
         menuNodeMap.value = {}
+        treeNodeByValueMap.value = {}
         Swal?.fire({
                 icon: 'error',
                 title: t('text.message.error' as any) || 'Error!',
@@ -177,16 +185,33 @@ const loadMenuAccessTree = async () => {
     }
 }
 
-const mapInitialTreeValue = (initialData: any): string[] => {
+// Utility to resolve tree nodes from values, ensuring uniqueness and filtering out invalid entries
+const resolveTreeNodes = (values: string[]): TreeItem[] => {
+    const resolved = values
+        .map((value) => treeNodeByValueMap.value[value])
+        .filter((item): item is TreeItem => !!item)
+
+    const unique = new Map<string, TreeItem>()
+    resolved.forEach((item) => {
+        const key = String(item?.value || '')
+        if (key) unique.set(key, item)
+    })
+
+    return Array.from(unique.values())
+}
+
+const mapInitialTreeValue = (initialData: any): TreeItem[] => {
     const directTreeValue = Array.isArray(initialData?.treeValue) ? initialData.treeValue : []
     if (directTreeValue.length > 0) {
-        return directTreeValue
+        const directValues = directTreeValue
             .map((entry: any) => {
                 if (typeof entry === 'string') return entry
                 if (entry && typeof entry === 'object') return String(entry.value || entry.id || '')
                 return ''
             })
             .filter((value: string) => !!value)
+
+        return resolveTreeNodes(directValues)
     }
 
     const rawMenuAccess = initialData?.menuAccess ?? initialData?.menu_access ?? []
@@ -194,6 +219,16 @@ const mapInitialTreeValue = (initialData: any): string[] => {
     if (menuAccessArray.length === 0) return []
 
     const resolvedSelection = new Set<string>()
+
+    const addMenuWithAncestors = (menuNodeKey?: string) => {
+        if (!menuNodeKey || !menuNodeKey.startsWith('menu:')) return
+
+        const menuPath = menuNodeKey.slice('menu:'.length)
+        const parts = menuPath.split('/').filter((part) => !!part)
+        for (let index = 1; index <= parts.length; index += 1) {
+            resolvedSelection.add(`menu:${parts.slice(0, index).join('/')}`)
+        }
+    }
 
     const findMenuNodeKey = (menuId: string): string | undefined => {
         if (!menuId) return undefined
@@ -210,6 +245,7 @@ const mapInitialTreeValue = (initialData: any): string[] => {
 
     menuAccessArray.forEach((entry: any) => {
         const menuId = String(entry?.menu_id || entry?.menuId || entry?.id || '')
+        const menuNodeKey = findMenuNodeKey(menuId)
         const rawControlList = [
             ...(Array.isArray(entry?.acc_controls) ? entry.acc_controls : []),
             ...(Array.isArray(entry?.access_controls) ? entry.access_controls : []),
@@ -225,6 +261,7 @@ const mapInitialTreeValue = (initialData: any): string[] => {
                     resolvedSelection.add(accessNodeKey)
                 }
             })
+            addMenuWithAncestors(menuNodeKey)
             return
         }
 
@@ -234,18 +271,18 @@ const mapInitialTreeValue = (initialData: any): string[] => {
             if (accessNodeKey) {
                 resolvedSelection.add(accessNodeKey)
             }
+            addMenuWithAncestors(menuNodeKey)
             return
         }
 
         if (menuId) {
-            const menuNodeKey = findMenuNodeKey(menuId)
             if (menuNodeKey) {
-                resolvedSelection.add(menuNodeKey)
+                addMenuWithAncestors(menuNodeKey)
             }
         }
     })
 
-    return Array.from(resolvedSelection)
+    return resolveTreeNodes(Array.from(resolvedSelection))
 }
 
 const selectedMenuAccess = computed(() => {
@@ -360,18 +397,41 @@ const closeModal = () => {
     emit('close')
 }
 
+const debugCheckKeys = () => {
+    const allGeneratedKeys = new Set();
+    const flatten = (nodes: any[]) => {
+        nodes.forEach(n => {
+            allGeneratedKeys.add(n.value);
+            if (n.children) flatten(n.children);
+        });
+    }
+    flatten(items.value);
+    
+    treeValue.value.forEach((entry: any) => {
+        const key = typeof entry === 'string' ? entry : String(entry?.value || entry?.id || '')
+        if (!key) return
+        if (!allGeneratedKeys.has(key)) {
+            console.error(`❌ Key NOT found in tree: "${key}"`);
+        } else {
+            console.log(`✅ Key found: "${key}"`);
+        }
+    });
+}
+
 watch(() => props.open, async (newVal) => {
     if (newVal) {
         if (props.editMode && props.initialData) {
             profileName.value = props.initialData.profileName || ''
             description.value = props.initialData.description || ''
-            profileSource.value = props.initialData.profileSource || null
+            profileSource.value = props.initialData.profileSource
             valueSwitch.value = props.initialData.status ?? true
         }
         await loadMenuAccessTree()
 
         if (props.editMode && props.initialData) {
+            await nextTick()
             treeValue.value = mapInitialTreeValue(props.initialData)
+            // debugCheckKeys()
         } else {
             resetForm()
         }
@@ -604,12 +664,12 @@ const isOpen = computed({
                         }"
                     >
                         <template #item-leading="{ selected, indeterminate, handleSelect }">
-                        <UCheckbox
-                            :model-value="indeterminate ? 'indeterminate' : selected"
-                            tabindex="-1"
-                            @update:model-value="handleSelect"
-                            @click.stop
-                        />
+                            <UCheckbox
+                                :model-value="indeterminate ? 'indeterminate' : selected"
+                                tabindex="-1"
+                                @update:model-value="() => handleSelect()"
+                                @click.stop
+                            />
                         </template>
                         <template #item-label="{ item, handleSelect }">
                             <button

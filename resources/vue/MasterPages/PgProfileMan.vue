@@ -190,7 +190,7 @@ const handleEdit = async (data: any) => {
         editData.value = {
             profileName: detail?.name || data?.name || '',
             description: detail?.description || data?.description || '',
-            profileSource: rawProfileSource === null || rawProfileSource === undefined || rawProfileSource === '' ? null : Number(rawProfileSource),
+            profileSource: rawProfileSource,
             status: Boolean(detail?.status ?? data?.status ?? true),
             menuAccess: rawMenuAccess
         }
