@@ -19,12 +19,13 @@ const api = useApiStore()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
 const UButton = resolveComponent('UButton')
+const UBadge = resolveComponent('UBadge')
 
 // ========================= STATE FOR FILTER =========================
 const profileCodeFilter = ref('')
 const profileNameFilter = ref('')
-const profileSourceFilter = ref<string | null>(null)
-const statusFilter = ref<string | null>(null)
+const profileSourceFilter = ref<number | null>(null)
+const statusFilter = ref<number | null>(null)
 
 const resetFilter = () => {
     profileCodeFilter.value = ''
@@ -54,21 +55,34 @@ const columns = computed(() => [
         sortable: true
     },
     {
-        key: 'source',
-        label: t('text.table-column.column-profile-source'),
+        key: 'description',
+        label: t('text.table-column.column-description'),
         sortable: true
+    },
+    {
+        key: 'is_internal',
+        label: t('text.table-column.column-profile-source'),
+        sortable: true,
+        cellRenderer: (value: any, row: any) => {
+            const statusText = value ? t('text.message.internal' as any) || 'Internal' : t('text.message.external' as any) || 'External'
+            return statusText
+        }
     },
     {
         key: 'status',
         label: t('text.table-column.column-status'),
-        sortable: true,
-        formatter: (value: number) => value === 1 ? 'Active' : 'Inactive'
-    },
-    {
-        key: 'actions',
-        label: '',
         sortable: false,
-    }
+        cellRenderer: (value: any, row: any) => {
+            const statusText = value ? t('text.message.active' as any) || 'Active' : t('text.message.not-active' as any) || 'Not Active'
+            const badgeColor = value ? 'success' : 'primary'
+
+            return h(UBadge, {
+                variant: 'subtle',
+                color: badgeColor,
+                class: 'text-xs'
+            }, () => statusText)
+        }
+    },
 ])
 
 const actions = computed(() => [
@@ -76,7 +90,7 @@ const actions = computed(() => [
         {
             label: t('text.button.edit' as any) || 'Edit',
             icon: 'i-lucide-pencil',
-            onSelect: (row) => handleEdit(row)
+            onSelect: (row : any) => handleEdit(row)
         }
     ]
 ])
@@ -116,15 +130,13 @@ const getProfileList = async () => {
             profile_source: profileSourceFilter.value,
             status: statusFilter.value,
             skip: (currentPage.value - 1) * itemPerPage.value,
-            profile: itemPerPage.value,
+            limit: itemPerPage.value,
             search: globalSearchQuery.value, // For global search, server-side
+            sort_by: 'code',
         }
         const response = await axios.get(api.getProfileList, { params });
 
-        profileData.value = response.data.data?.items.map((item: any) => ({
-            ...item,
-            status: item.status === 1 ? 'Active' : 'Inactive'
-        }));
+        profileData.value = response.data.data?.items || [];
         countTotalData.value = response.data.data?.total || 0;
     } catch (error) {
         console.error('Error fetching data:', error);
@@ -161,12 +173,39 @@ const handleSearch = (query: string) => { // For global search, server-side
     getProfileList()
 }
 
-const handleEdit = (data: any) => {
-    modalTitle.value = t('text.profile-management-pg.edit-profile' as any) || 'Edit profile'
-    editMode.value = true
-    editingId.value = data.id
-    editData.value = data
-    modalSubmitOpen.value = true
+const handleEdit = async (data: any) => {
+    const profileId = String(data?.id || '')
+    if (!profileId) return
+
+    loadingTable.value = true
+    try {
+        const response = await axios.get(`${api.getProfileDetail}${profileId}`)
+        const detail = response?.data?.data || response?.data || {}
+        const rawMenuAccess = Array.isArray(detail?.menu_access) ? detail.menu_access : []
+
+        modalTitle.value = t('text.profile-management-pg.edit-profile' as any) || 'Edit profile'
+        editMode.value = true
+        editingId.value = profileId
+        const rawProfileSource = detail?.is_internal ?? data?.is_internal ?? null
+        editData.value = {
+            profileName: detail?.name || data?.name || '',
+            description: detail?.description || data?.description || '',
+            profileSource: rawProfileSource === null || rawProfileSource === undefined || rawProfileSource === '' ? null : Number(rawProfileSource),
+            status: Boolean(detail?.status ?? data?.status ?? true),
+            menuAccess: rawMenuAccess
+        }
+        modalSubmitOpen.value = true
+    } catch (error: any) {
+        console.error('Error fetching profile detail:', error?.response?.data || error?.message)
+        Swal?.fire({
+            icon: 'error',
+            title: t('text.message.error' as any) || 'Error!',
+            text: t('text.message.failed-to-load-data-msg' as any) || 'Failed to load data.',
+            confirmButtonText: 'OK'
+        })
+    } finally {
+        loadingTable.value = false
+    }
 }
 
 // Fetch initial data on component mount
@@ -183,7 +222,7 @@ onMounted(() => {
         <div class="flex-1 overflow-auto p-3">
 
             <!-- Title Section -->
-            <UCard class="mb-3">
+            <UCard class="mb-3" :ui="{ body: 'sm:py-3 sm:px-6' }">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-4">
 

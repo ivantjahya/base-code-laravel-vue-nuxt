@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             AccessControlSeeder::class,
             MenuSeeder::class,
             StatusSeeder::class,
+            MerchStructSeeder::class,
             ProfileSeeder::class,
             UserSeeder::class,
             /** For local testing */

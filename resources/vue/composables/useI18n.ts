@@ -99,6 +99,7 @@ type TranslationKey =
   | 'text.table-column.column-user-guide-name'
   | 'text.table-column.column-user-guide-menu'
   | 'text.table-column.column-status'
+  | 'text.table-column.column-description'
   | 'auth.login-success.title'
   | 'auth.login-success.message'
   | 'auth.logout-success.title'

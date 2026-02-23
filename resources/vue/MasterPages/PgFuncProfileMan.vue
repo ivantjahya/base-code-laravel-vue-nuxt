@@ -215,7 +215,7 @@ onMounted(() => {
         <div class="flex-1 overflow-auto p-3">
 
             <!-- Title Section -->
-            <UCard class="mb-3">
+            <UCard class="mb-3" :ui="{ body: 'sm:py-3 sm:px-6' }">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-4">
 

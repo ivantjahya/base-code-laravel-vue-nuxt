@@ -268,7 +268,8 @@
         "column-user-guide-name": "User Guide Name",
         "column-user-guide-menu": "Menu",
 
-        "column-status": "Status"
+        "column-status": "Status",
+        "column-description": "Description"
     },
     "message": {
       "navigation": "Navigation",
@@ -284,7 +285,11 @@
       "failed-to-save-data-msg": "Failed to save the data. An error occurred.",
       "failed-to-load-data-msg": "Failed to load the data.",
       "loading": "Loading...",
-      "error": "Error!"
+      "error": "Error!",
+      "internal": "Internal",
+      "external": "External",
+      "active": "Active",
+      "not-active": "Not Active"
     }
   },
   "auth": {

@@ -3,6 +3,8 @@
 use App\Http\Controllers\AppConstController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Master\MasterDataLimitController;
+use App\Http\Controllers\Master\MasterDataMenuController;
+use App\Http\Controllers\Master\MasterDataProfileController;
 use App\Http\Middleware\XssProtection;
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +28,20 @@ Route::prefix('v1')->middleware([XssProtection::class])->group(function () {
                 Route::post('/create', [MasterDataLimitController::class, 'postLimitCreate'])->name('post-limit-create');
                 Route::put('/update/{id}', [MasterDataLimitController::class, 'postLimitUpdate'])->name('post-limit-update');
                 Route::put('/extend/{id}', [MasterDataLimitController::class, 'postLimitExtend'])->name('post-limit-extend');
+            });
+
+            /** Menu */
+            Route::prefix('menu')->group(function () {
+                Route::get('/list', [MasterDataMenuController::class, 'getMenuList'])->name('get-menu-list');
+                Route::get('/list_menu_acc_control', [MasterDataMenuController::class, 'getMenuAccControlList'])->name('get-menu-acc-control-list');
+            });
+
+            /** Profile */
+            Route::prefix('profile')->group(function () {
+                Route::get('/list', [MasterDataProfileController::class, 'getProfileList'])->name('get-profile-list');
+                Route::get('/detail/{id}', [MasterDataProfileController::class, 'getProfileDetail'])->name('get-profile-detail');
+                Route::post('/create', [MasterDataProfileController::class, 'postProfileCreate'])->name('post-profile-create');
+                Route::put('/update/{id}', [MasterDataProfileController::class, 'postProfileUpdate'])->name('post-profile-update');
             });
         });
     });

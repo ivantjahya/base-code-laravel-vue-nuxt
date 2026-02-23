@@ -21,6 +21,12 @@ export const useApiStore = defineStore('api', {
         postLimitCreate: '/api/v1/masterdata/limit/create',
         postLimitUpdate: '/api/v1/masterdata/limit/update/', // + id
         postLimitExtend: '/api/v1/masterdata/limit/extend/', // + id
+        getMenuList: '/api/v1/masterdata/menu/list',
+        getMenuAccControlList: '/api/v1/masterdata/menu/list_menu_acc_control',
+        getProfileList: '/api/v1/masterdata/profile/list',
+        getProfileDetail: '/api/v1/masterdata/profile/detail/', // + id
+        postProfileCreate: '/api/v1/masterdata/profile/create',
+        postProfileUpdate: '/api/v1/masterdata/profile/update/', // + id
     }),
 });
 

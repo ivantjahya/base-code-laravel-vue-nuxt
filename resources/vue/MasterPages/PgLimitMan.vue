@@ -82,7 +82,7 @@ const columns = computed(() => [
         label: t('text.table-column.column-status'),
         sortable: false,
         cellRenderer: (value: any, row: any) => {
-            const statusText = value ? 'Active' : 'Not Active'
+            const statusText = value ? t('text.message.active' as any) || 'Active' : t('text.message.not-active' as any) || 'Not Active'
             const badgeColor = value ? 'success' : 'primary'
 
             return h(UBadge, {

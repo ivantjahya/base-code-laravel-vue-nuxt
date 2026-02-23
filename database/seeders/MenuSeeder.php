@@ -22,6 +22,7 @@ class MenuSeeder extends Seeder
                 'code' => 0,
                 'name_code' => 'menu.home',
                 'submenu' => [],
+                'access_control' => [],
             ],
             [
                 'name' => 'Master Data',
@@ -76,7 +77,7 @@ class MenuSeeder extends Seeder
                         'icon' => null,
                         'code' => 1060,
                         'name_code' => 'page.regional-site',
-                        'access_control' => [],
+                        'access_control' => ['viewdetail'],
                     ],
                     [
                         'name' => 'User Guide',
@@ -87,6 +88,7 @@ class MenuSeeder extends Seeder
                         'access_control' => ['create', 'update', 'delete'],
                     ],
                 ],
+                'access_control' => [],
             ],
             [
                 'name' => 'New Registration',
@@ -112,6 +114,7 @@ class MenuSeeder extends Seeder
                         'access_control' => ['update', 'viewdetail'],
                     ],
                 ],
+                'access_control' => [],
             ],
             [
                 'name' => 'Purchase Order',
@@ -134,7 +137,7 @@ class MenuSeeder extends Seeder
                         'icon' => null,
                         'code' => 3020,
                         'name_code' => 'page.po-list',
-                        'access_control' => ['viewdetail', 'print'],
+                        'access_control' => ['viewdetail', 'print', 'approve'],
                     ],
                     [
                         'name' => 'PO Cross Dock',
@@ -142,7 +145,7 @@ class MenuSeeder extends Seeder
                         'icon' => null,
                         'code' => 3030,
                         'name_code' => 'page.po-cross-dock',
-                        'access_control' => ['update', 'print'],
+                        'access_control' => ['update', 'viewdetail', 'print'],
                     ],
                     [
                         'name' => 'Return',
@@ -153,6 +156,7 @@ class MenuSeeder extends Seeder
                         'access_control' => ['export'],
                     ],
                 ],
+                'access_control' => [],
             ],
             [
                 'name' => 'Consignment',
@@ -167,7 +171,7 @@ class MenuSeeder extends Seeder
                         'icon' => null,
                         'code' => 4010,
                         'name_code' => 'page.pengajuan-retur',
-                        'access_control' => ['create', 'update', 'delete'],
+                        'access_control' => ['create', 'update', 'delete', 'viewdetail', 'print', 'approve'],
                     ],
                     [
                         'name' => 'Pengajuan Acara',
@@ -194,6 +198,7 @@ class MenuSeeder extends Seeder
                         'access_control' => ['export', 'viewdetail'],
                     ],
                 ],
+                'access_control' => [],
             ],
             [
                 'name' => 'Principal Report',
@@ -315,13 +320,14 @@ class MenuSeeder extends Seeder
                         'access_control' => ['export'],
                     ],
                 ],
+                'access_control' => [],
             ],
             [
                 'name' => 'Finance',
                 'url' => null,
                 'icon' => 'i-lucide-wallet',
                 'code' => 6000,
-                'name_code' => 'page.finance',
+                'name_code' => 'menu.finance',
                 'submenu' => [
                     [
                         'name' => 'Payment Check',
@@ -380,13 +386,14 @@ class MenuSeeder extends Seeder
                         'access_control' => ['upload', 'export', 'viewdetail'],
                     ],
                 ],
+                'access_control' => [],
             ],
             [
                 'name' => 'DC Fee',
                 'url' => null,
                 'icon' => 'i-lucide-truck',
                 'code' => 7000,
-                'name_code' => 'page.dc-fee',
+                'name_code' => 'menu.dc-fee',
                 'submenu' => [
                     [
                         'name' => 'DC List',
@@ -445,6 +452,7 @@ class MenuSeeder extends Seeder
                         'access_control' => ['export'],
                     ],
                 ],
+                'access_control' => [],
             ],
             [
                 'name' => 'Tax Supplier Data',
@@ -453,6 +461,7 @@ class MenuSeeder extends Seeder
                 'code' => 8000,
                 'name_code' => 'menu.tax-supplier-data',
                 'submenu' => [],
+                'access_control' => ['export', 'viewdetail'],
             ],
         ];
 
@@ -488,6 +497,18 @@ class MenuSeeder extends Seeder
                             ], []
                         );
                     }
+                }
+            }
+
+            foreach ($menu['access_control'] as $code) {
+                $accessControl = AccessControl::where('code', $code)->first();
+                if ($accessControl) {
+                    DB::table('menu_acc_controls')->updateOrInsert(
+                        [
+                            'menu_id' => $parent->id,
+                            'acc_control_id' => $accessControl->id,
+                        ], []
+                    );
                 }
             }
         }

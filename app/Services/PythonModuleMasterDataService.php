@@ -80,6 +80,7 @@ class PythonModuleMasterDataService
         }
     }
 
+    /** ------------------------------------- LIMIT ------------------------------------- */
     /**
      * Get limit list from Python API
      */
@@ -162,6 +163,110 @@ class PythonModuleMasterDataService
             "/masterdata/limit/post_extend/{$id}",
             'Failed to extend limit',
             ['limit_id' => $id, 'request_data' => $data]
+        );
+    }
+
+    /** ------------------------------------- MENU ------------------------------------- */
+    /**
+     * Get menu list from Python API
+     */
+    public function getMenuList(): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(60)
+                ->get("{$this->baseUrl}/menu/get_list")
+                ->throw(),
+            '/masterdata/menu/get_list',
+            'Failed to get menu list',
+            []
+        );
+    }
+
+    /**
+     * Get menu access control list from Python API
+     */
+    public function getMenuAccControlList(): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(60)
+                ->get("{$this->baseUrl}/menu/get_menu_acc_controls")
+                ->throw(),
+            '/masterdata/menu/get_menu_acc_controls',
+            'Failed to get menu access control list',
+            []
+        );
+    }
+
+    /** ------------------------------------- PROFILE ------------------------------------- */
+    /**
+     * Get profile list from Python API
+     */
+    public function getProfileList(array $params = []): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(60)
+                ->get("{$this->baseUrl}/profile/get_list", $params)
+                ->throw(),
+            '/masterdata/profile/get_list',
+            'Failed to get profile list',
+            ['params' => $params]
+        );
+    }
+
+    /**
+     * Get profile detail by ID from Python API
+     */
+    public function getProfileDetail(string $id): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(60)
+                ->get("{$this->baseUrl}/profile/{$id}")
+                ->throw(),
+            "/masterdata/profile/{$id}",
+            'Failed to get profile detail',
+            ['profile_id' => $id]
+        );
+    }
+
+    /**
+     * Create new profile in Python API
+     */
+    public function createProfile(array $data): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(30)
+                ->post("{$this->baseUrl}/profile/post_create", $data)
+                ->throw(),
+            '/masterdata/profile/post_create',
+            'Failed to create profile',
+            ['request_data' => $data]
+        );
+    }
+
+    /**
+     * Update profile in Python API
+     */
+    public function updateProfile(string $id, array $data): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(30)
+                ->put("{$this->baseUrl}/profile/post_update/{$id}", $data)
+                ->throw(),
+            "/masterdata/profile/post_update/{$id}",
+            'Failed to update profile',
+            ['profile_id' => $id, 'request_data' => $data]
         );
     }
 }
