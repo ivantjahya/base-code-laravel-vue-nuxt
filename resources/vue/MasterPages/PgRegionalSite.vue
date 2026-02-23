@@ -236,7 +236,7 @@ onMounted(() => {
 
                         <!-- TITLE -->
                         <h1 class="text-lg font-semibold text-gray-900 dark:text-white">
-                            {{ t('text.regional-site-management-pg.list') || 'List of Regional Sites' }}
+                            {{ t('text.regional-site-pg.list') || 'List of Regional Sites' }}
                         </h1>
 
                     </div>
@@ -248,9 +248,10 @@ onMounted(() => {
                 <!-- Filters Section with Accordion -->
                 <CmpAccordionFilter>
                     <FormFilterRegionalSite
-                        v-model:regional-site-code="regionalSiteCodeFilter"
-                        v-model:regional-site-name="regionalSiteNameFilter"
-                        v-model:regional-site-source="regionalSiteSourceFilter"
+                        v-model:siteCode="siteCodeFilter"
+                        v-model:siteName="siteNameFilter"
+                        v-model:regionalCode="regionalCodeFilter"
+                        v-model:regionalName="regionalNameFilter"
                         v-model:status="statusFilter"
                         :loading="loadingTable"
                         @clear="resetFilter"
