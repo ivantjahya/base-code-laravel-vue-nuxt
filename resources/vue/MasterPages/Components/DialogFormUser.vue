@@ -29,7 +29,11 @@ const props = defineProps({
     initialData: {
         type: Object,
         default: () => ({})
-    }
+    },
+    profileOptions: {
+        type: Array as () => Array<{ label: string; value: string }>,
+        default: () => []
+    },
 })
 
 const emit = defineEmits(['update:open', 'submitted', 'close'])
@@ -339,8 +343,11 @@ const isOpen = computed({
                 <div class="w-80">
                     <USelectMenu
                         v-model="profile"
-                        :items="profileValue"
-                        placeholder="Select profile"
+                        :items="profileOptions"
+                        value-key="value"
+                        value-attribute="value"
+                        option-attribute="label"
+                        :placeholder="t('text.user-management-pg.input-new-profile-placeholder') || 'Select profile'"
                         class="w-full font-light"
                         :ui="{
                             base: errors.profile
