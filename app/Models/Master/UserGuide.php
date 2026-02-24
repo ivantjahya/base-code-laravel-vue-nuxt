@@ -18,6 +18,7 @@ class UserGuide extends Model
      * description: string
      * filename: string
      * filepath: string
+     * status: integer
      * created_at: timestamp
      * updated_at: timestamp
      * created_by: uuid
@@ -35,6 +36,7 @@ class UserGuide extends Model
         'description',
         'filename',
         'filepath',
+        'status',
         'created_by',
         'updated_by',
     ];

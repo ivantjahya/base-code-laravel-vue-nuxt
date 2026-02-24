@@ -55,7 +55,6 @@ const functionalProfileName = ref<string>('')
 const profile = ref<string | null>(null)
 const limit = ref<string | null>(null)
 const selectDivision = ref<string | null>(null)
-
 const valueSwitch = ref(true)
 
 // Validation error states
@@ -89,11 +88,11 @@ const closeModal = () => {
 watch(() => props.open, (newVal) => {
     if (newVal) {
         if (props.editMode && props.initialData) {
-            functionalProfileName.value = props.initialData.functionalProfileName || ''
-            profile.value = props.initialData.profile || null
-            limit.value = props.initialData.limit || null
-            selectDivision.value = props.initialData.division || props.initialData.division_id || null
-            valueSwitch.value = props.initialData.status ?? true
+            functionalProfileName.value = props.initialData.name || ''
+            profile.value = props.initialData.profile?.id || null
+            limit.value = props.initialData.limit?.code || null
+            selectDivision.value = props.initialData.merch_struct?.id || null
+            valueSwitch.value = Boolean(props.initialData.status ?? true)
         } else {
             resetForm()
         }
@@ -142,9 +141,9 @@ const postSubmitFuncProfile = async () => {
 
         const payload = {
             name: functionalProfileName.value,
-            profile_id: profile.value,
-            limit_id: limit.value,
-            merch_struct_id: selectDivision.value,
+            profile: profile.value,
+            limit: limit.value,
+            merch_struct: selectDivision.value,
             status: valueSwitch.value ? 1 : 0
         }
 
