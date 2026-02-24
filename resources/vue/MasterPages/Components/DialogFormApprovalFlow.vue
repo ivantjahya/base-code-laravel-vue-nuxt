@@ -215,7 +215,6 @@ const isOpen = computed({
 
                 <div class="w-80">
                     <USelectMenu
-                        multiple
                         v-model="division"
                         :items="divisionValue"
                         placeholder="Select division"
