@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schedule;
 
 /** ---------- Packages Cron ---------- */
-Schedule::command('model:prune')->dailyAt('00:00');
+Schedule::command('model:prune')->dailyAt('03:00');
 
 /** ---------- Task Master Data ---------- */
 /** Merchandise Structure */
