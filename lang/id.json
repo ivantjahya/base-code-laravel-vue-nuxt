@@ -127,6 +127,18 @@
         "input-new-status": "Status",
         "edit-user": "Edit User"
     },
+    "approval-flow-management-pg": {
+        "list": "Daftar Data Alur Persetujuan",
+        "add-new-approval-flow": "Tambah Alur Persetujuan Baru",
+
+        "input-new-profile": "Profil",
+        "input-new-profile-placeholder": "Pilih profil",
+        "input-new-division": "Divisi",
+        "input-new-division-placeholder": "Pilih divisi",
+        "input-new-description": "Deskripsi",
+        "input-new-status": "Status",
+        "edit-approval-flow": "Edit Alur Persetujuan"
+    },
     "regional-site-pg": {
         "list": "Daftar Lokasi Regional",
         "view-regional-site": "Lihat Data Lokasi Regional"
@@ -193,6 +205,9 @@
         "site": "Lokasi",
         "site-placeholder": "Pilih lokasi",
 
+        "approval-code": "Kode Alur Persetujuan",
+        "approval-flow-code-placeholder": "Masukkan kode alur persetujuan",
+
         "site-code": "Kode Lokasi",
         "site-code-placeholder": "Masukkan kode lokasi regional",
         "site-name": "Nama Lokasi",
@@ -248,6 +263,8 @@
         "column-category": "Kategori",
         "column-site": "Lokasi",
         "column-validity-date": "Tanggal Berlaku",
+
+        "column-approval-flow-code": "Kode Panduan",
 
         "column-site-code": "Kode Lokasi",
         "column-site-initial": "Inisial Lokasi",
