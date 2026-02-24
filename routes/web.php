@@ -8,11 +8,7 @@ use App\Http\Controllers\Master\MasterDataProfileController;
 use App\Http\Controllers\Master\MasterDataRegionalSiteController;
 use App\Http\Controllers\Master\MasterDataUserController;
 use App\Http\Controllers\Master\MasterDataUserGuideController;
-use App\Http\Controllers\Master\MasterDataRegionalSiteController;
-<<<<<<< HEAD
-=======
 use App\Http\Controllers\Master\MasterDataApprovalFlowController;
->>>>>>> cb11a36 (done)
 use Illuminate\Support\Facades\Route;
 
 /** Route for login redirect */

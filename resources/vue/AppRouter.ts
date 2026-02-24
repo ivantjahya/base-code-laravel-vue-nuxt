@@ -63,6 +63,12 @@ const routes: Array<RouteRecordRaw> = [
         meta: { title: 'Approval Flow' },
     },
     {
+        path: approvalFlowManagement,
+        name: 'approvalFlowManagement',
+        component: () => import('./MasterPages/PgApprovalFlowMan.vue'),
+        meta: { title: 'Approval Flow' },
+    },
+    {
         path: userGuideManagement,
         name: 'userGuideManagement',
         component: () => import('./MasterPages/PgUserGuideMan.vue'),
