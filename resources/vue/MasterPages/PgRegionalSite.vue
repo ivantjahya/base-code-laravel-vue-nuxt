@@ -45,84 +45,80 @@ const globalSearchQuery = ref('') // For global search, server-side
 
 const columns = computed(() => [
     {
-        key: 'site_code',
+        key: 'code',
         label: t('text.table-column.column-site-code'),
         sortable: true
     },
     {
-        key: 'site_initial',
+        key: 'initial',
         label: t('text.table-column.column-site-initial'),
         sortable: true
     },
     {
-        key: 'site_name',
+        key: 'name',
         label: t('text.table-column.column-site-name'),
         sortable: true
     },
     {
-        key: 'site_address',
+        key: 'address',
         label: t('text.table-column.column-site-address'),
         sortable: true
     },
     {
-        key: 'site_city',
+        key: 'city',
         label: t('text.table-column.column-site-city'),
         sortable: true
     },
     {
-        key: 'site_region',
+        key: 'region',
         label: t('text.table-column.column-site-region'),
         sortable: true
     },
     {
-        key: 'regional_code',
+        key: 'regional_code_kontrabon',
         label: t('text.table-column.column-regional-code'),
         sortable: true
     },
     {
-        key: 'regional_initial',
+        key: 'regional_init_kontrabon',
         label: t('text.table-column.column-regional-initial'),
         sortable: true
     },
     {
-        key: 'regional_name',
+        key: 'regional_name_kontrabon',
         label: t('text.table-column.column-regional-name'),
         sortable: true
     },
-    {
-        key: 'regional_address',
-        label: t('text.table-column.column-regional-address'),
-        sortable: true
-    },
-    {
-        key: 'regional_city',
-        label: t('text.table-column.column-regional-city'),
-        sortable: true
-    },
-    {
-        key: 'regional_region',
-        label: t('text.table-column.column-regional-region'),
-        sortable: true
-    },
+    // {
+    //     key: 'regional_address',
+    //     label: t('text.table-column.column-regional-address'),
+    //     sortable: true
+    // },
+    // {
+    //     key: 'regional_city',
+    //     label: t('text.table-column.column-regional-city'),
+    //     sortable: true
+    // },
+    // {
+    //     key: 'regional_region',
+    //     label: t('text.table-column.column-regional-region'),
+    //     sortable: true
+    // },
     {
         key: 'status',
         label: t('text.table-column.column-status'),
         sortable: true,
         formatter: (value: number) => value === 1 ? 'Active' : 'Inactive'
-    },
-    {
-        key: 'actions',
-        label: '',
-        sortable: false,
     }
 ])
 
 const actions = computed(() => [
     [
         {
-            label: t('text.button.edit' as any) || 'Edit',
-            icon: 'i-lucide-pencil',
-            onSelect: (row) => handleEdit(row)
+            label: t('text.button.view' as any) || 'View',
+            icon: 'i-lucide-eye',
+            show: (row: any) => row.is_active === true,
+            onSelect: (row: any) => handleView(row)
         }
     ]
 ])
@@ -147,11 +143,11 @@ const closeModal = () => {
 }
 
 const onSubmitted = async () => {
-    await getRegionalSiteList()
+    await getSiteList()
 }
 
 // ========================= ACTION =========================
-const getRegionalSiteList = async () => {
+const getSiteList = async () => {
     // regionalSiteData.value = showLoadingOverlay.value ? [] : regionalSiteData.value; // Clear data only when showing loading overlay (use table template #loading)
     loadingTable.value = true;
 
@@ -163,16 +159,19 @@ const getRegionalSiteList = async () => {
             regional_name: regionalNameFilter.value,
             status: statusFilter.value,
             skip: (currentPage.value - 1) * itemPerPage.value,
-            profile: itemPerPage.value,
+            limit: itemPerPage.value,
             search: globalSearchQuery.value, // For global search, server-side
+            sort_by: 'code',
         }
-        const response = await axios.get(api.getRegionalSiteList, { params });
+        const response = await axios.get(api.getSiteList, { params });
 
-        regionalSiteData.value = response.data.data?.items.map((item: any) => ({
-            ...item,
-            status: item.status === 1 ? 'Active' : 'Inactive'
-        }));
+        regionalSiteData.value = response.data?.items;
+        console.log(regionalSiteData.value);
         countTotalData.value = response.data.data?.total || 0;
+
+        console.log(response);
+
+
     } catch (error) {
         console.error('Error fetching data:', error);
         Swal?.fire({
@@ -188,24 +187,24 @@ const getRegionalSiteList = async () => {
 
 const onClickFindButton = () => {
     currentPage.value = 1
-    getRegionalSiteList()
+    getSiteList()
 }
 
 const handlePageChange = (page: number) => {
     currentPage.value = page
-    getRegionalSiteList()
+    getSiteList()
 }
 
 const handlePageSizeChange = (size: number) => {
     itemPerPage.value = size
     currentPage.value = 1 // Reset to first page when changing page size
-    getRegionalSiteList()
+    getSiteList()
 }
 
 const handleSearch = (query: string) => { // For global search, server-side
     globalSearchQuery.value = query
     currentPage.value = 1 // Reset to first page when searching
-    getRegionalSiteList()
+    getSiteList()
 }
 
 const handleEdit = (data: any) => {
@@ -218,7 +217,7 @@ const handleEdit = (data: any) => {
 
 // Fetch initial data on component mount
 onMounted(() => {
-    getRegionalSiteList()
+    getSiteList()
 })
 
 </script>
