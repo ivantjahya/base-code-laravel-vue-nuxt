@@ -20,6 +20,7 @@ class ApprovalPoFlow extends Model
      * po_status_id: uuid
      * next_profile_id: uuid
      * next_po_status_id: uuid
+     * status: integer
      * created_at: timestamp
      * updated_at: timestamp
      * created_by: uuid
@@ -39,6 +40,7 @@ class ApprovalPoFlow extends Model
         'po_status_id',
         'next_profile_id',
         'next_po_status_id',
+        'status',
         'created_by',
         'updated_by',
     ];

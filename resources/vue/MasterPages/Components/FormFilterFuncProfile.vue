@@ -14,20 +14,24 @@ const props = defineProps({
         default: ''
     },
     profile: {
-        type: Array as () => string[],
-        default: () => []
+        type: String as () => string | null,
+        default: null
     },
     division: {
-        type: Array as () => string[],
-        default: () => []
+        type: String as () => string | null,
+        default: null
     },
     limit: {
-        type: Array as () => string[],
-        default: () => []
+        type: String as () => string | null,
+        default: null
     },
     status: {
-        type: Array as () => string[],
-        default: () => []
+        type: Number as () => number | null,
+        default: null
+    },
+    loading: {
+        type: Boolean,
+        default: false
     },
     limitOptions: {
         type: Array as () => Array<{ label: string; value: string }>,
@@ -44,10 +48,6 @@ const props = defineProps({
     divisionOptions: {
         type: Array as () => Array<{ label: string; value: string }>,
         default: () => []
-    },
-    loading: {
-        type: Boolean,
-        default: false
     }
 })
 
@@ -90,6 +90,9 @@ const onFind = () => {
                         :model-value="division"
                         @update:model-value="$emit('update:division', $event)"
                         :items="divisionOptions"
+                        value-key="value"
+                        value-attribute="value"
+                        option-attribute="label"
                         :placeholder="t('text.input-field.division-placeholder') || 'Select division'"
                         class="w-full font-reguler"
                     />

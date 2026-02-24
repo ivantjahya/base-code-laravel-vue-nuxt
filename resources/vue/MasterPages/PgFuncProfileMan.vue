@@ -65,17 +65,20 @@ const columns = computed(() => [
     {
         key: 'profile',
         label: t('text.table-column.column-profile'),
-        sortable: true
+        sortable: true,
+        cellRenderer: (_value: any, row: any) => row.profile ? row.profile?.name : '-'
     },
     {
         key: 'division',
         label: t('text.table-column.column-division'),
-        sortable: true
+        sortable: true,
+        cellRenderer: (_value: any, row: any) => row.merch_struct ? row.merch_struct?.code + ' - ' + row.merch_struct?.name : '-'
     },
     {
         key: 'limit',
         label: t('text.table-column.column-limit'),
-        sortable: true
+        sortable: true,
+        cellRenderer: (_value: any, row: any) => row.limit ? row.limit?.code : '-'
     },
     {
         key: 'status',
@@ -138,18 +141,16 @@ const getFuncProfileList = async () => {
             name: functionalProfileNameFilter.value,
             profile: profileFilter.value,
             division: divisionFilter.value,
-            limit: limitFilter.value,
+            limit_code: limitFilter.value,
             status: statusFilter.value,
             skip: (currentPage.value - 1) * itemPerPage.value,
-            functionalProfile: itemPerPage.value,
+            limiit: itemPerPage.value,
             search: globalSearchQuery.value, // For global search, server-side
+            sort_by: 'code',
         }
         const response = await axios.get(api.getFuncProfileList, { params });
 
-        functionalProfileData.value = response.data.data?.items.map((item: any) => ({
-            ...item,
-            status: item.status === 1 ? 'Active' : 'Inactive'
-        }));
+        functionalProfileData.value = response.data.data?.items || [];
         countTotalData.value = response.data.data?.total || 0;
     } catch (error) {
         console.error('Error fetching data:', error);
@@ -185,7 +186,7 @@ const getLimitOptions = async () => {
         const uniqueOptions = new Map<string, { label: string; value: string }>()
         activeData.forEach((item: any) => {
             const label = String(item?.code).trim()
-            const value = String(item?.id).trim()
+            const value = String(item?.code).trim()
 
             if (!value) return
             uniqueOptions.set(value, {
@@ -293,7 +294,7 @@ const handleSearch = (query: string) => { // For global search, server-side
 }
 
 const handleEdit = (data: any) => {
-    modalTitle.value = t('text.profile-management-pg.edit-profile' as any) || 'Edit profile'
+    modalTitle.value = t('text.functional-profile-management-pg.edit-profile' as any) || 'Edit Functional Profile'
     editMode.value = true
     editingId.value = data.id
     editData.value = data
@@ -305,7 +306,8 @@ onMounted(async () => {
     await Promise.all([
         getLimitOptions(),
         getProfileOptions(),
-        getDivisionOptions()
+        getDivisionOptions(),
+        getFuncProfileList()
     ]).catch((error) => {
         console.error('Error during initial data fetch:', error)
         Swal?.fire({
@@ -314,8 +316,6 @@ onMounted(async () => {
             text: t('text.message.failed-to-load-data-msg' as any) || 'Failed to load data.',
             confirmButtonText: 'OK'
         });
-    }).finally(() => {
-        getFuncProfileList() // Fetch list after options are loaded
     })
 })
 </script>

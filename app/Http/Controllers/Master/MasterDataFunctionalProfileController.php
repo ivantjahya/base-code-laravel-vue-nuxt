@@ -38,23 +38,24 @@ class MasterDataFunctionalProfileController extends Controller
     /**
      * GET request for get profile list
      */
-    public function getProfileList(Request $request): HttpJsonResponse
+    public function getFuncProfileList(Request $request): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User is requesting get profile list', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
         /** Validate Input */
         $validate = Validator::make($request->all(), [
-            'func_profile_code' => ['nullable', 'string'],
-            'func_profile_name' => ['nullable', 'string'],
-            'profile_id' => ['nullable', 'uuid'],
+            'code' => ['nullable', 'string'],
+            'name' => ['nullable', 'string'],
+            'profile' => ['nullable', 'uuid'],
             'division' => ['nullable', 'uuid'],
-            'limit_id' => ['nullable', 'uuid'],
+            'limit_code' => ['nullable', 'string'],
             'status' => ['nullable', 'integer', 'in:0,1'],
             'skip' => ['nullable', 'integer', 'min:0'],
             'limit' => ['nullable', 'integer', 'min:1'],
             'search' => ['nullable', 'string'],
             'sort_by' => ['nullable', 'string'],
+            'sort_order' => ['nullable', 'string', 'in:asc,desc'],
         ]);
         if ($validate->fails()) {
             throw new ValidationException($validate);
@@ -63,16 +64,17 @@ class MasterDataFunctionalProfileController extends Controller
 
         try {
             $params = [
-                'code' => $validated['func_profile_code'] ?? null,
-                'name' => $validated['func_profile_name'] ?? null,
-                'profile_id' => $validated['profile_id'] ?? null,
-                'division' => $validated['division'] ?? null,
-                'limit_id' => $validated['limit_id'] ?? null,
+                'code' => $validated['code'] ?? null,
+                'name' => $validated['name'] ?? null,
+                'profile_id' => $validated['profile'] ?? null,
+                'merch_struct_id' => $validated['division'] ?? null,
+                'limit_code' => $validated['limit_code'] ?? null,
                 'status' => $validated['status'] ?? null,
                 'search' => $validated['search'] ?? null,
                 'skip' => $validated['skip'] ?? null,
                 'limit' => $validated['limit'] ?? null,
                 'sort_by' => $validated['sort_by'] ?? null,
+                'sort_order' => $validated['sort_order'] ?? null,
             ];
             $data = $this->moduleMasterDataService->getFuncProfileList($params);
 
@@ -117,9 +119,9 @@ class MasterDataFunctionalProfileController extends Controller
         /** Validate Input */
         $validate = Validator::make($request->all(), [
             'name' => ['required', 'string'],
-            'profile_id' => ['required', 'uuid', 'exists:App\Models\Master\Profile,id'],
-            'limit_id' => ['required', 'uuid', 'exists:App\Models\Master\Limit,id'],
-            'merch_struct_id' => ['required', 'uuid', 'exists:App\Models\Master\MerchStruct,id'],
+            'profile' => ['required', 'uuid', 'exists:App\Models\Master\Profile,id'],
+            'limit' => ['required', 'string', 'exists:App\Models\Master\Limit,code'],
+            'merch_struct' => ['required', 'uuid', 'exists:App\Models\Master\MerchStruct,id'],
             'status' => ['required', 'integer', 'in:0,1'],
         ]);
         if ($validate->fails()) {
@@ -130,9 +132,9 @@ class MasterDataFunctionalProfileController extends Controller
         try {
             $params = [
                 'name' => $validated['name'],
-                'profile_id' => $validated['profile_id'],
-                'limit_code' => $validated['limit_id'],
-                'merch_struct_id' => $validated['merch_struct_id'],
+                'profile_id' => $validated['profile'],
+                'limit_code' => $validated['limit'],
+                'merch_struct_id' => $validated['merch_struct'],
                 'status' => (int) $validated['status'],
                 'user_id' => $user?->id,
             ];
@@ -164,9 +166,9 @@ class MasterDataFunctionalProfileController extends Controller
         /** Validate Input */
         $validate = Validator::make($request->all(), [
             'name' => ['required', 'string'],
-            'profile_id' => ['required', 'uuid', 'exists:App\Models\Master\Profile,id'],
-            'limit_id' => ['required', 'uuid', 'exists:App\Models\Master\Limit,id'],
-            'merch_struct_id' => ['required', 'uuid', 'exists:App\Models\Master\MerchStruct,id'],
+            'profile' => ['required', 'uuid', 'exists:App\Models\Master\Profile,id'],
+            'limit' => ['required', 'string', 'exists:App\Models\Master\Limit,code'],
+            'merch_struct' => ['required', 'uuid', 'exists:App\Models\Master\MerchStruct,id'],
             'status' => ['required', 'integer', 'in:0,1'],
         ]);
         if ($validate->fails()) {
@@ -177,9 +179,9 @@ class MasterDataFunctionalProfileController extends Controller
         try {
             $params = [
                 'name' => $validated['name'],
-                'profile_id' => $validated['profile_id'],
-                'limit_code' => $validated['limit_id'],
-                'merch_struct_id' => $validated['merch_struct_id'],
+                'profile_id' => $validated['profile'],
+                'limit_code' => $validated['limit'],
+                'merch_struct_id' => $validated['merch_struct'],
                 'status' => (int) $validated['status'],
                 'user_id' => $user?->id,
             ];
