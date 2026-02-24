@@ -54,6 +54,7 @@ class MasterDataLimitController extends Controller
             'limit' => ['nullable', 'integer', 'min:1'],
             'search' => ['nullable', 'string'],
             'sort_by' => ['nullable', 'string'],
+            'sort_order' => ['nullable', 'string', 'in:asc,desc'],
         ]);
         if ($validate->fails()) {
             throw new ValidationException($validate);
@@ -71,6 +72,7 @@ class MasterDataLimitController extends Controller
                 'skip' => $validated['skip'] ?? null,
                 'limit' => $validated['limit'] ?? null,
                 'sort_by' => $validated['sort_by'] ?? null,
+                'sort_order' => $validated['sort_order'] ?? null,
             ];
             $data = $this->moduleMasterDataService->getLimitList($params);
 

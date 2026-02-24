@@ -80,6 +80,24 @@ class PythonModuleMasterDataService
         }
     }
 
+    /** ------------------------------------- MERCH STRUCT ------------------------------------- */
+    /**
+     * Get merch struct div cat list from Python API
+     */
+    public function getMerchStructDivCatList(): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(60)
+                ->get("{$this->baseUrl}/merch_struct/get_merch_struct_div_cat")
+                ->throw(),
+            '/masterdata/merch_struct/get_merch_struct_div_cat',
+            'Failed to get merch struct div cat list',
+            []
+        );
+    }
+
     /** ------------------------------------- LIMIT ------------------------------------- */
     /**
      * Get limit list from Python API
@@ -267,6 +285,75 @@ class PythonModuleMasterDataService
             "/masterdata/profile/post_update/{$id}",
             'Failed to update profile',
             ['profile_id' => $id, 'request_data' => $data]
+        );
+    }
+
+    /** ------------------------------------- FUNCTIONAL PROFILE ------------------------------------- */
+    /**
+     * Get functional profile list from Python API
+     */
+    public function getFuncProfileList(array $params = []): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(60)
+                ->get("{$this->baseUrl}/func_profile/get_list", $params)
+                ->throw(),
+            '/masterdata/func_profile/get_list',
+            'Failed to get functional profile list',
+            ['params' => $params]
+        );
+    }
+
+    /**
+     * Get functional profile detail by ID from Python API
+     */
+    public function getFuncProfileDetail(string $id): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(60)
+                ->get("{$this->baseUrl}/func_profile/{$id}")
+                ->throw(),
+            "/masterdata/func_profile/{$id}",
+            'Failed to get functional profile detail',
+            ['func_profile_id' => $id]
+        );
+    }
+
+    /**
+     * Create new functional profile in Python API
+     */
+    public function createFuncProfile(array $data): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(30)
+                ->post("{$this->baseUrl}/func_profile/post_create", $data)
+                ->throw(),
+            '/masterdata/func_profile/post_create',
+            'Failed to create functional profile',
+            ['request_data' => $data]
+        );
+    }
+
+    /**
+     * Update functional profile in Python API
+     */
+    public function updateFuncProfile(string $id, array $data): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(30)
+                ->put("{$this->baseUrl}/func_profile/post_update/{$id}", $data)
+                ->throw(),
+            "/masterdata/func_profile/post_update/{$id}",
+            'Failed to update functional profile',
+            ['func_profile_id' => $id, 'request_data' => $data]
         );
     }
 }

@@ -1,13 +1,8 @@
 <script setup lang="ts">
-import { ref, computed, h, resolveComponent, shallowRef, onMounted, watch, getCurrentInstance } from 'vue'
-import type { TableColumn } from '@nuxt/ui'
-import { CalendarDate, DateFormatter, getLocalTimeZone, today } from '@internationalized/date'
-import { useI18n } from '../../composables/useI18n'
-import { useFormatters } from '../../composables/useFormatters'
-import { useApiStore } from '../../AppState'
+import { ref, computed, watch, getCurrentInstance } from 'vue'
 import axios from 'axios'
-import type { TreeItemSelectEvent } from 'reka-ui'
-import type { TreeItem } from '@nuxt/ui'
+import { useI18n } from '../../composables/useI18n'
+import { useApiStore } from '../../AppState'
 
 const props = defineProps({
     open: {
@@ -29,64 +24,36 @@ const props = defineProps({
     initialData: {
         type: Object,
         default: () => ({})
+    },
+    limitOptions: {
+        type: Array as () => Array<{ label: string; value: string }>,
+        default: () => []
+    },
+    profileOptions: {
+        type: Array as () => Array<{ label: string; value: string }>,
+        default: () => []
+    },
+    divisionOptions: {
+        type: Array as () => Array<{ label: string; value: string }>,
+        default: () => []
+    },
+    divisionLoading: {
+        type: Boolean,
+        default: false
     }
 })
 
 const emit = defineEmits(['update:open', 'submitted', 'close'])
 
 const { t } = useI18n()
-const { formatDate, formatCurrency, getDateString, stringToCalendarDate } = useFormatters()
 const api = useApiStore()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
 const isSubmitting = ref(false)
 
-
 const functionalProfileName = ref<string>('')
-const profileValue = ref(['SUPERADMIN', 'ADMIN', 'MD FASHION', 'MD FRESH'])
 const profile = ref<string | null>(null)
-const limitValue = ref(['L001', 'L002', 'L003'])
 const limit = ref<string | null>(null)
-
-type DivisionItem = {
-  label: string
-  value?: string
-  children?: DivisionItem[]
-}
-
-const items: TreeItem[] = [
-  {
-    label: 'A - LADIES',
-    children: [
-        { label: 'A1 - MISSY', },
-        { label: 'A2 - YOUNG', },
-        { label: 'A3 - INTIMATE', },
-        { label: 'A4 - BRANDED OUTRIGHT NORMAL', },
-        { label: 'A5 - SPECIAL BRAND',  }
-    ]
-  },
-  {
-    label: 'B - MENS',
-    children: [
-        { label: 'B1 - FORMAL', },
-        { label: 'B2 - ADULT', },
-        { label: 'B3 - YOUTH', },
-        { label: 'B4 - MENS NEEDS', },
-        { label: 'B5 - MOSLEM WEAR',  }
-    ]
-  },
-  {
-    label: 'C  - BABY AND KIDS',
-    children: [
-        { label: 'C1 - KIDS BOYS', },
-        { label: 'C2 - KIDS GIRLS', },
-        { label: 'C3  - SCHOOL UNIFORM', },
-        { label: 'C4 - TODDLER BOYS', },
-        { label: 'C5 - TODDLER GIRLS',  }
-    ]
-  },
-]
-
 const selectDivision = ref<string | null>(null)
 
 const valueSwitch = ref(true)
@@ -95,19 +62,22 @@ const valueSwitch = ref(true)
 const errors = ref({
     functionalProfileName: '',
     profile: '',
-    limit: ''
+    limit: '',
+    division: ''
 })
 
 const resetForm = () => {
     functionalProfileName.value = ''
     profile.value = null
     limit.value = null
+    selectDivision.value = null
     valueSwitch.value = true
 
     errors.value = {
         functionalProfileName: '',
         profile: '',
-        limit: ''
+        limit: '',
+        division: ''
     }
 }
 
@@ -122,6 +92,7 @@ watch(() => props.open, (newVal) => {
             functionalProfileName.value = props.initialData.functionalProfileName || ''
             profile.value = props.initialData.profile || null
             limit.value = props.initialData.limit || null
+            selectDivision.value = props.initialData.division || props.initialData.division_id || null
             valueSwitch.value = props.initialData.status ?? true
         } else {
             resetForm()
@@ -130,12 +101,13 @@ watch(() => props.open, (newVal) => {
 })
 
 // Submit create/update profile
-const postSubmitProfile = async () => {
+const postSubmitFuncProfile = async () => {
     // Reset errors
     errors.value = {
         functionalProfileName: '',
         profile: '',
-        limit: ''
+        limit: '',
+        division: ''
     }
 
     // Validation
@@ -156,6 +128,11 @@ const postSubmitProfile = async () => {
         hasError = true
     }
 
+    if (!selectDivision.value) {
+        errors.value.division = t('auth.validation.required' as any) || 'This field is required'
+        hasError = true
+    }
+
     if (hasError) {
         return
     }
@@ -164,20 +141,18 @@ const postSubmitProfile = async () => {
     try {
 
         const payload = {
-            functional_profile_name: functionalProfileName.value,
-            profile: profile.value,
-            limit: limit.value,
+            name: functionalProfileName.value,
+            profile_id: profile.value,
+            limit_id: limit.value,
+            merch_struct_id: selectDivision.value,
             status: valueSwitch.value ? 1 : 0
         }
 
-        // let response
-        // if (props.editMode && props.editingId) {
-        //     // Update existing profile
-        //     response = await axios.put(`${api.postProfileUpdate}${props.editingId}`, payload)
-        // } else {
-        //     // Create new profile
-        //     response = await axios.post(api.postProfileCreate, payload)
-        // }
+        if (props.editMode && props.editingId) {
+            await axios.put(`${api.postFuncProfileUpdate}${props.editingId}`, payload)
+        } else {
+            await axios.post(api.postFuncProfileCreate, payload)
+        }
 
         Swal?.fire({
             icon: 'success',
@@ -220,14 +195,12 @@ const isOpen = computed({
                     error: 'hidden',
                 }"
             >
-
                 <template #label>
                     <span class="flex items-center gap-1">
                         {{ t('text.functional-profile-management-pg.input-new-functional-profile-name') || 'Functional Profile Name' }}
                         <span class="text-red-500">*</span>
                     </span>
                 </template>
-
                 <div class="w-80">
                     <UInput
                         v-model="functionalProfileName"
@@ -242,7 +215,6 @@ const isOpen = computed({
                     />
                     <p v-if="errors.functionalProfileName" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.functionalProfileName }}</p>
                 </div>
-
             </UFormField>
 
             <!-- PROFILE -->
@@ -254,17 +226,19 @@ const isOpen = computed({
                     error: 'hidden',
                 }"
             >
-
                 <template #label>
                     <span class="flex items-center gap-1">
                         {{ t('text.functional-profile-management-pg.input-new-profile') || 'Profile' }}
+                        <span class="text-red-500">*</span>
                     </span>
                 </template>
-
                 <div class="w-80">
                     <USelectMenu
                         v-model="profile"
-                        :items="profileValue"
+                        :items="profileOptions"
+                        value-key="value"
+                        value-attribute="value"
+                        option-attribute="label"
                         :placeholder="t('text.functional-profile-management-pg.input-new-profile-placeholder') || 'Select profile'"
                         class="w-80 font-light"
                         :ui="{
@@ -275,7 +249,6 @@ const isOpen = computed({
                     />
                     <p v-if="errors.profile" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.profile }}</p>
                 </div>
-
             </UFormField>
 
             <!-- LIMIT -->
@@ -287,59 +260,57 @@ const isOpen = computed({
                     error: 'hidden',
                 }"
             >
-
                 <template #label>
                     <span class="flex items-center gap-1">
                         {{ t('text.functional-profile-management-pg.input-new-limit') || 'Limit' }}
                         <span class="text-red-500">*</span>
                     </span>
                 </template>
-
                 <div class="w-80">
                     <USelectMenu
                         v-model="limit"
-                        :items="limitValue"
+                        :items="limitOptions"
+                        value-key="value"
+                        value-attribute="value"
+                        option-attribute="label"
                         :placeholder="t('text.functional-profile-management-pg.input-new-limit-placeholder') || 'Select limit'"
                         class="w-80 font-light"
+                        :ui="{
+                            base: errors.profile
+                                ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
+                                : ''
+                        }"
                     />
                     <p v-if="errors.limit" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.limit }}</p>
                 </div>
-
             </UFormField>
 
             <!-- DIVISION -->
             <UFormField
                 orientation="horizontal"
                 class="mb-2"
-                :error="!!errors.accessRight"
+                :error="!!errors.division"
                 :ui="{
                     error: 'hidden',
                 }"
             >
-
                 <template #label>
                     <span class="flex items-center gap-1">
                         {{ t('text.functional-profile-management-pg.input-new-division') || 'Division' }}
                         <span class="text-red-500">*</span>
                     </span>
                 </template>
-
-                <div class="w-80 font-light max-h-70 overflow-y-auto border border-gray-300 rounded-md p-2 dark:border-gray-700">
-                    <UTree
+                <div class="w-80 font-light max-h-48 overflow-y-auto border border-gray-300 rounded-md p-2 dark:border-gray-700">
+                    <p v-if="divisionLoading" class="text-xs md:text-sm text-gray-500">{{ t('text.message.loading') || 'Loading...' }}</p>
+                    <URadioGroup
                         v-model="selectDivision"
-                        :as="{ link: 'div' }"
-                        :items="items"
-                        @select="onSelect"
-                    >
-                        <template #item-leading="{ selected, handleSelect }">
-                            <URadioGroup :model-value="selected"
-                                @update:model-value="handleSelect"
-                                @click.stop
-                            />
-                        </template>
-                    </UTree>
+                        :items="divisionOptions"
+                        value-key="value"
+                        option-attribute="label"
+                        :disabled="divisionLoading || isSubmitting"
+                    />
                 </div>
-
+                <p v-if="errors.division" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.division }}</p>
             </UFormField>
 
             <!-- STATUS -->
@@ -347,9 +318,9 @@ const isOpen = computed({
                 <template #label>
                     <span class="flex items-center gap-1">
                         {{ t('text.functional-profile-management-pg.input-new-status') || 'Status' }}
+                        <span class="text-red-500">*</span>
                     </span>
                 </template>
-
                 <div class="flex justify-start w-80">
                     <USwitch v-model="valueSwitch" />
                 </div>
@@ -368,7 +339,7 @@ const isOpen = computed({
                 class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[14px] px-5"
                 :loading="isSubmitting"
                 :disabled="isSubmitting"
-                @click="postSubmitProfile"
+                @click="postSubmitFuncProfile"
             >
                 {{ t('text.button.submit') || 'Submit' }}
             </UButton>

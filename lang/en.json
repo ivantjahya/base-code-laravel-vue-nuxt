@@ -107,7 +107,6 @@
         "input-new-limit-placeholder": "Select limit",
         "input-new-status": "Status",
         "edit-profile": "Edit Profile"
-
     },
     "user-management-pg": {
         "list": "List of Users",
@@ -269,7 +268,8 @@
         "column-user-guide-menu": "Menu",
 
         "column-status": "Status",
-        "column-description": "Description"
+        "column-description": "Description",
+        "column-code": "Code"
     },
     "message": {
       "navigation": "Navigation",

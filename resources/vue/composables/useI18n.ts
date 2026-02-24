@@ -100,6 +100,7 @@ type TranslationKey =
   | 'text.table-column.column-user-guide-menu'
   | 'text.table-column.column-status'
   | 'text.table-column.column-description'
+  | 'text.table-column.column-code'
   | 'auth.login-success.title'
   | 'auth.login-success.message'
   | 'auth.logout-success.title'

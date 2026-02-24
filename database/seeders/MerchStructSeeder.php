@@ -13,7 +13,7 @@ class MerchStructSeeder extends Seeder
     public function run(): void
     {
         $data = [
-            [ 'code' => '0', 'name' => 'ALL', 'parent_id' => null, ],
+            ['code' => '0', 'name' => 'ALL', 'parent_id' => null],
         ];
 
         foreach ($data as $item) {

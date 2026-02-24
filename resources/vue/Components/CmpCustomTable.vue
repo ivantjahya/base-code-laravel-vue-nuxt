@@ -327,7 +327,7 @@ watch(rowSelection, (newVal) => {
         :data="filteredData"
         :columns="tableColumns"
         :loading="loading"
-        class="shrink-0"
+        class="shrink-0 border border-default rounded-lg overflow-hidden"
         :ui="{
           base: 'table-fixed border-separate border-spacing-0',
           thead: '[&>tr]:bg-elevated/50 [&>tr]:after:content-none text-left',

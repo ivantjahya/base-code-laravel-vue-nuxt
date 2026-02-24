@@ -267,7 +267,8 @@
         "column-menu": "Menu",
 
         "column-status": "Status",
-        "column-description": "Deskripsi"
+        "column-description": "Deskripsi",
+        "column-code": "Kode"
     },
     "message": {
       "navigation": "Navigasi",

@@ -22,11 +22,16 @@ export const useApiStore = defineStore('api', {
         postLimitUpdate: '/api/v1/masterdata/limit/update/', // + id
         postLimitExtend: '/api/v1/masterdata/limit/extend/', // + id
         getMenuList: '/api/v1/masterdata/menu/list',
-        getMenuAccControlList: '/api/v1/masterdata/menu/list_menu_acc_control',
+        getMenuAccControlList: '/api/v1/masterdata/menu/list-menu-acc-control',
         getProfileList: '/api/v1/masterdata/profile/list',
         getProfileDetail: '/api/v1/masterdata/profile/detail/', // + id
         postProfileCreate: '/api/v1/masterdata/profile/create',
         postProfileUpdate: '/api/v1/masterdata/profile/update/', // + id
+        getFuncProfileList: '/api/v1/masterdata/func-profile/list',
+        getFuncProfileDetail: '/api/v1/masterdata/func-profile/detail/', // + id
+        postFuncProfileCreate: '/api/v1/masterdata/func-profile/create',
+        postFuncProfileUpdate: '/api/v1/masterdata/func-profile/update/', // + id
+        getMerchStructDivCatList: '/api/v1/masterdata/merch-struct/list-merch-struct-div-cat',
     }),
 });
 

@@ -1,48 +1,37 @@
 <script setup lang="ts">
-import { ref, computed, h, resolveComponent, shallowRef, onMounted } from 'vue'
-import type { TableColumn } from '@nuxt/ui'
-import { CalendarDate, DateFormatter, getLocalTimeZone, today } from '@internationalized/date'
+import { ref, computed, h, resolveComponent, onMounted } from 'vue'
 import { useI18n } from '../composables/useI18n'
-import { useFormatters } from '../composables/useFormatters'
 import { useApiStore } from '../AppState'
 import axios from 'axios'
 import { getCurrentInstance } from 'vue'
+import { useGlobalOptions } from '../composables/useGlobalOptions'
 import CmpLayout from '../Components/CmpLayout.vue'
 import CmpCustomTable from '../Components/CmpCustomTable.vue'
 import CmpAccordionFilter from '../Components/CmpAccordionFilter.vue'
 import DialogFormFuncProfile from './Components/DialogFormFuncProfile.vue'
 import FormFilterFuncProfile from './Components/FormFilterFuncProfile.vue'
-import type { TreeItemSelectEvent } from 'reka-ui'
-import type { TreeItem } from '@nuxt/ui'
 
 const { t } = useI18n()
-const { formatDate, formatCurrency, getDateString, stringToCalendarDate } = useFormatters()
+const { statusOptions } = useGlobalOptions()
 const api = useApiStore()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
 const UButton = resolveComponent('UButton')
-// const UDropdownMenu = resolveComponent('UDropdownMenu')
-
-// State
-const moreFilterItems = computed(() => [
-  {
-    label: t('text.input-field.more-filters'),
-    slot: 'panelMoreFilter',
-    icon: 'i-lucide-filter',
-    defaultOpen: false
-  }
-])
+const UBadge = resolveComponent('UBadge')
 
 // ========================= FILTER =========================
 const functionalProfileCodeFilter = ref('')
 const functionalProfileNameFilter = ref('')
 const profileFilter = ref<string | null>(null)
-const divisionValueFilter = ref(['FASHION', 'NON FOOD', 'FRESH'])
 const divisionFilter = ref<string | null>(null)
-const limitValueFilter = ref(['L001', 'L002', 'L003'])
 const limitFilter = ref<string | null>(null)
-const statusValueFilter = ref(['Active', 'Not Active'])
 const statusFilter = ref<string | null>(null)
+
+// For select options
+const limitOptions = ref<{ label: string; value: string }[]>([])
+const profileOptions = ref<{ label: string; value: string }[]>([])
+const divisionOptions = ref<{ label: string; value: string }[]>([])
+const divisionOptionsLoading = ref(false)
 
 const resetFilter = () => {
     functionalProfileCodeFilter.value = ''
@@ -65,12 +54,12 @@ const globalSearchQuery = ref('') // For global search, server-side
 const columns = computed(() => [
     {
         key: 'code',
-        label: t('text.table-column.column-functional-profile-code'),
+        label: t('text.table-column.column-code'),
         sortable: true
     },
     {
         key: 'name',
-        label: t('text.table-column.column-functional-profile-name'),
+        label: t('text.table-column.column-name'),
         sortable: true
     },
     {
@@ -91,14 +80,18 @@ const columns = computed(() => [
     {
         key: 'status',
         label: t('text.table-column.column-status'),
-        sortable: true,
-        formatter: (value: number) => value === 1 ? 'Active' : 'Inactive'
-    },
-    {
-        key: 'actions',
-        label: '',
         sortable: false,
-    }
+        cellRenderer: (value: any, row: any) => {
+            const statusText = value ? t('text.message.active' as any) || 'Active' : t('text.message.not-active' as any) || 'Not Active'
+            const badgeColor = value ? 'success' : 'primary'
+
+            return h(UBadge, {
+                variant: 'subtle',
+                color: badgeColor,
+                class: 'text-xs'
+            }, () => statusText)
+        }
+    },
 ])
 
 const actions = computed(() => [
@@ -106,7 +99,7 @@ const actions = computed(() => [
         {
             label: t('text.button.edit' as any) || 'Edit',
             icon: 'i-lucide-pencil',
-            onSelect: (row) => handleEdit(row)
+            onSelect: (row : any) => handleEdit(row)
         }
     ]
 ])
@@ -171,6 +164,112 @@ const getFuncProfileList = async () => {
     }
 }
 
+const getLimitOptions = async () => {
+    limitOptions.value = [] // Clear options before fetching new data
+    try {
+        const params = {
+            skip: 0,
+            limit: 1000,
+            sort_by: 'code',
+            sort_order: 'asc',
+        }
+
+        const response = await axios.get(api.getLimitList, { params })
+        const sourceItems = response?.data?.data?.items || response?.data?.data || response?.data || []
+        const sourceArray = Array.isArray(sourceItems) ? sourceItems : []
+        const activeData = sourceArray.filter((item: any) => {
+            const rawActive = item?.is_active
+            return rawActive === true || rawActive === 1 || rawActive === '1'
+        })
+
+        const uniqueOptions = new Map<string, { label: string; value: string }>()
+        activeData.forEach((item: any) => {
+            const label = String(item?.code).trim()
+            const value = String(item?.id).trim()
+
+            if (!value) return
+            uniqueOptions.set(value, {
+                label: label,
+                value: value,
+            })
+        })
+
+        limitOptions.value = Array.from(uniqueOptions.values())
+    } catch (error) {
+        console.error('Error fetching limit options:', error)
+        limitOptions.value = []
+    }
+}
+
+const getProfileOptions = async () => {
+    profileOptions.value = [] // Clear options before fetching new data
+    try {
+        const params = {
+            skip: 0,
+            limit: 1000,
+            sort_by: 'code',
+            sort_order: 'asc',
+        }
+
+        const response = await axios.get(api.getProfileList, { params })
+        const sourceItems = response?.data?.data?.items || response?.data?.data || response?.data || []
+        const sourceArray = Array.isArray(sourceItems) ? sourceItems : []
+        const activeData = sourceArray.filter((item: any) => {
+            const rawActive = item?.status
+            return rawActive === true || rawActive === 1 || rawActive === '1'
+        })
+
+        const uniqueOptions = new Map<string, { label: string; value: string }>()
+        activeData.forEach((item: any) => {
+            const label = String(item?.name).trim()
+            const value = String(item?.id).trim()
+
+            if (!value) return
+            uniqueOptions.set(value, {
+                label: label,
+                value: value,
+            })
+        })
+
+        profileOptions.value = Array.from(uniqueOptions.values())
+    } catch (error) {
+        console.error('Error fetching profile options:', error)
+        profileOptions.value = []
+    }
+}
+
+const getDivisionOptions = async () => {
+    divisionOptions.value = [] // Clear options before fetching new data
+    divisionOptionsLoading.value = true
+    try {
+        const response = await axios.get(api.getMerchStructDivCatList)
+        const sourceItems = response?.data?.data?.items || response?.data?.data || response?.data || []
+        const sourceArray = Array.isArray(sourceItems) ? sourceItems : []
+        const divisionData = sourceArray.filter((item: any) => {
+            return item.parent_id === null
+        })
+
+        const uniqueOptions = new Map<string, { label: string; value: string }>()
+        divisionData.forEach((item: any) => {
+            const label = String(item?.code).trim() + ' - ' + String(item?.name).trim()
+            const value = String(item?.id).trim()
+
+            if (!value) return
+            uniqueOptions.set(value, {
+                label: label,
+                value: value,
+            })
+        })
+
+        divisionOptions.value = Array.from(uniqueOptions.values())
+    } catch (error) {
+        console.error('Error fetching division options:', error)
+        divisionOptions.value = []
+    } finally {
+        divisionOptionsLoading.value = false
+    }
+}
+
 const onClickFindButton = () => {
     currentPage.value = 1
     getFuncProfileList()
@@ -202,10 +301,23 @@ const handleEdit = (data: any) => {
 }
 
 // Fetch initial data on component mount
-onMounted(() => {
-    getFuncProfileList()
+onMounted(async () => {
+    await Promise.all([
+        getLimitOptions(),
+        getProfileOptions(),
+        getDivisionOptions()
+    ]).catch((error) => {
+        console.error('Error during initial data fetch:', error)
+        Swal?.fire({
+            icon: 'error',
+            title: t('text.message.error' as any) || 'Error!',
+            text: t('text.message.failed-to-load-data-msg' as any) || 'Failed to load data.',
+            confirmButtonText: 'OK'
+        });
+    }).finally(() => {
+        getFuncProfileList() // Fetch list after options are loaded
+    })
 })
-
 </script>
 
 <template>
@@ -240,6 +352,10 @@ onMounted(() => {
                 :edit-mode="editMode"
                 :editing-id="editingId"
                 :initial-data="editData"
+                :limit-options="limitOptions"
+                :profile-options="profileOptions"
+                :division-options="divisionOptions"
+                :division-loading="divisionOptionsLoading"
                 @update:open="modalSubmitOpen = $event"
                 @submitted="onSubmitted"
                 @close="closeModal"
@@ -256,6 +372,10 @@ onMounted(() => {
                         v-model:division="divisionFilter"
                         v-model:limit="limitFilter"
                         v-model:status="statusFilter"
+                        :limit-options="limitOptions"
+                        :profile-options="profileOptions"
+                        :status-options="statusOptions"
+                        :division-options="divisionOptions"
                         :loading="loadingTable"
                         @clear="resetFilter"
                         @find="onClickFindButton"

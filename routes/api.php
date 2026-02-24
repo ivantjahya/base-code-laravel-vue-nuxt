@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\AppConstController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Master\MasterDataFunctionalProfileController;
 use App\Http\Controllers\Master\MasterDataLimitController;
 use App\Http\Controllers\Master\MasterDataMenuController;
+use App\Http\Controllers\Master\MasterDataMerchStructController;
 use App\Http\Controllers\Master\MasterDataProfileController;
 use App\Http\Middleware\XssProtection;
 use Illuminate\Support\Facades\Route;
@@ -21,6 +23,11 @@ Route::prefix('v1')->middleware([XssProtection::class])->group(function () {
 
     Route::middleware(['auth:api'])->group(function () {
         Route::prefix('masterdata')->group(function () {
+            /** Merch Struct */
+            Route::prefix('merch-struct')->group(function () {
+                Route::get('/list-merch-struct-div-cat', [MasterDataMerchStructController::class, 'getMerchStructDivCatList'])->name('get-merch-struct-div-cat-list');
+            });
+
             /** Limit */
             Route::prefix('limit')->group(function () {
                 Route::get('/list', [MasterDataLimitController::class, 'getLimitList'])->name('get-limit-list');
@@ -33,7 +40,7 @@ Route::prefix('v1')->middleware([XssProtection::class])->group(function () {
             /** Menu */
             Route::prefix('menu')->group(function () {
                 Route::get('/list', [MasterDataMenuController::class, 'getMenuList'])->name('get-menu-list');
-                Route::get('/list_menu_acc_control', [MasterDataMenuController::class, 'getMenuAccControlList'])->name('get-menu-acc-control-list');
+                Route::get('/list-menu-acc-control', [MasterDataMenuController::class, 'getMenuAccControlList'])->name('get-menu-acc-control-list');
             });
 
             /** Profile */
@@ -42,6 +49,14 @@ Route::prefix('v1')->middleware([XssProtection::class])->group(function () {
                 Route::get('/detail/{id}', [MasterDataProfileController::class, 'getProfileDetail'])->name('get-profile-detail');
                 Route::post('/create', [MasterDataProfileController::class, 'postProfileCreate'])->name('post-profile-create');
                 Route::put('/update/{id}', [MasterDataProfileController::class, 'postProfileUpdate'])->name('post-profile-update');
+            });
+
+            /** Functional Profile */
+            Route::prefix('func-profile')->group(function () {
+                Route::get('/list', [MasterDataFunctionalProfileController::class, 'getFuncProfileList'])->name('get-func-profile-list');
+                Route::get('/detail/{id}', [MasterDataFunctionalProfileController::class, 'getFuncProfileDetail'])->name('get-func-profile-detail');
+                Route::post('/create', [MasterDataFunctionalProfileController::class, 'postFuncProfileCreate'])->name('post-func-profile-create');
+                Route::put('/update/{id}', [MasterDataFunctionalProfileController::class, 'postFuncProfileUpdate'])->name('post-func-profile-update');
             });
         });
     });
