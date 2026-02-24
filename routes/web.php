@@ -8,6 +8,7 @@ use App\Http\Controllers\Master\MasterDataProfileController;
 use App\Http\Controllers\Master\MasterDataRegionalSiteController;
 use App\Http\Controllers\Master\MasterDataUserController;
 use App\Http\Controllers\Master\MasterDataUserGuideController;
+use App\Http\Controllers\Master\MasterDataApprovalFlowController;
 use Illuminate\Support\Facades\Route;
 
 /** Route for login redirect */
@@ -47,6 +48,9 @@ Route::middleware(['auth'])->group(function () {
 
         /** User */
         Route::get('/user-management', [MasterDataUserController::class, 'userManagementPage'])->name('user-management');
+
+        /** Approval Flow */
+        Route::get('/approval-flow-management', [MasterDataApprovalFlowController::class, 'approvalFlowManagementPage'])->name('approval-flow-management');
 
         /** Regional Site */
         Route::get('/regional-site', [MasterDataRegionalSiteController::class, 'regionalSitePage'])->name('regional-site');
