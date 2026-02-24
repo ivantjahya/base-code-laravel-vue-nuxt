@@ -356,4 +356,39 @@ class PythonModuleMasterDataService
             ['func_profile_id' => $id, 'request_data' => $data]
         );
     }
+
+    /** ------------------------------------- LIMIT ------------------------------------- */
+    /**
+     * Get site list from Python API
+     */
+    public function getSiteList(array $params = []): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(60)
+                ->get("{$this->baseUrl}/site/get_list", $params)
+                ->throw(),
+            '/masterdata/site/get_list',
+            'Failed to get site list',
+            ['params' => $params]
+        );
+    }
+
+    /**
+     * Get site detail by ID from Python API
+     */
+    // public function getSiteDetail(string $id): array
+    // {
+    //     return $this->handleApiRequest(
+    //         fn () => Http::acceptJson()
+    //             ->connectTimeout(3)
+    //             ->timeout(60)
+    //             ->get("{$this->baseUrl}/site/{$id}")
+    //             ->throw(),
+    //         "/masterdata/site/{$id}",
+    //         'Failed to get site detail',
+    //         ['site_id' => $id]
+    //     );
+    // }
 }

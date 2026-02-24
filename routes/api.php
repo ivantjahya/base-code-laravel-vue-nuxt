@@ -7,6 +7,7 @@ use App\Http\Controllers\Master\MasterDataLimitController;
 use App\Http\Controllers\Master\MasterDataMenuController;
 use App\Http\Controllers\Master\MasterDataMerchStructController;
 use App\Http\Controllers\Master\MasterDataProfileController;
+use App\Http\Controllers\Master\MasterDataRegionalSiteController;
 use App\Http\Middleware\XssProtection;
 use Illuminate\Support\Facades\Route;
 
@@ -57,6 +58,12 @@ Route::prefix('v1')->middleware([XssProtection::class])->group(function () {
                 Route::get('/detail/{id}', [MasterDataFunctionalProfileController::class, 'getFuncProfileDetail'])->name('get-func-profile-detail');
                 Route::post('/create', [MasterDataFunctionalProfileController::class, 'postFuncProfileCreate'])->name('post-func-profile-create');
                 Route::put('/update/{id}', [MasterDataFunctionalProfileController::class, 'postFuncProfileUpdate'])->name('post-func-profile-update');
+            });
+
+            /** Regional Site */
+            Route::prefix('site')->group(function () {
+                Route::get('/list', [MasterDataRegionalSiteController::class, 'getSiteList'])->name('get-site-list');
+                Route::get('/detail/{id}', [MasterDataRegionalSiteController::class, 'getSiteDetail'])->name('get-site-detail');
             });
         });
     });

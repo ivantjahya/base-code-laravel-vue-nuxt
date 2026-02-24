@@ -32,6 +32,7 @@ export const useApiStore = defineStore('api', {
         postFuncProfileCreate: '/api/v1/masterdata/func-profile/create',
         postFuncProfileUpdate: '/api/v1/masterdata/func-profile/update/', // + id
         getMerchStructDivCatList: '/api/v1/masterdata/merch-struct/list-merch-struct-div-cat',
+        getSiteList: '/api/v1/masterdata/site/list',
     }),
 });
 
@@ -39,11 +40,11 @@ export const useMainStore = defineStore('main', {
     state: () => {
         // Detect if user is on mobile device
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
-        
+
         // Get stored value or default based on device type
         const storedCollapsed = localStorage.getItem('sidebarCollapsed');
         const defaultCollapsed = storedCollapsed !== null ? storedCollapsed === 'true' : isMobile;
-        
+
         return {
             /** Additional data */
             appName: import.meta.env.APP_NAME,
@@ -118,7 +119,7 @@ export const useMainStore = defineStore('main', {
 
         applyMode() {
             const actualMode = this.actualMode;
-            
+
             if (actualMode === 'dark') {
                 document.documentElement.classList.add('dark');
             } else {
@@ -196,7 +197,7 @@ export const useMainStore = defineStore('main', {
         //             username,
         //             password,
         //         });
-                
+
         //         if (response.data.access_token) {
         //             localStorage.setItem('api_token', response.data.access_token);
         //             localStorage.setItem('token_expires_at', response.data.expires_at);
