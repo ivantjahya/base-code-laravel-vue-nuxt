@@ -28,6 +28,9 @@ const categoryFilter = ref<string | null>(null)
 const ModelValidityDateFilter = shallowRef<CalendarDate>()
 const statusFilter = ref<string | null>(null)
 
+// For select options
+const profileOptions = ref<{ label: string; value: string }[]>([])
+
 const resetFilter = () => {
     usernameFilter.value = ''
     nameFilter.value = ''
@@ -150,6 +153,43 @@ const getUserList = async () => {
     }
 }
 
+const getProfileOptions = async () => {
+    profileOptions.value = [] // Clear options before fetching new data
+    try {
+        const params = {
+            skip: 0,
+            limit: 1000,
+            sort_by: 'code',
+            sort_order: 'asc',
+        }
+
+        const response = await axios.get(api.getProfileList, { params })
+        const sourceItems = response?.data?.data?.items || response?.data?.data || response?.data || []
+        const sourceArray = Array.isArray(sourceItems) ? sourceItems : []
+        const activeData = sourceArray.filter((item: any) => {
+            const rawActive = item?.status
+            return rawActive === true || rawActive === 1 || rawActive === '1'
+        })
+
+        const uniqueOptions = new Map<string, { label: string; value: string }>()
+        activeData.forEach((item: any) => {
+            const label = String(item?.name).trim()
+            const value = String(item?.id).trim()
+
+            if (!value) return
+            uniqueOptions.set(value, {
+                label: label,
+                value: value,
+            })
+        })
+
+        profileOptions.value = Array.from(uniqueOptions.values())
+    } catch (error) {
+        console.error('Error fetching profile options:', error)
+        profileOptions.value = []
+    }
+}
+
 const onClickFindButton = () => {
     currentPage.value = 1
     getUserList()
@@ -181,10 +221,21 @@ const handleEdit = (data: any) => {
 }
 
 // Fetch initial data on component mount
-onMounted(() => {
-    getUserList()
+onMounted(async () => {
+    await Promise.all([
+        getProfileOptions()
+    ]).catch((error) => {
+        console.error('Error during initial data fetch:', error)
+        Swal?.fire({
+            icon: 'error',
+            title: t('text.message.error' as any) || 'Error!',
+            text: t('text.message.failed-to-load-data-msg' as any) || 'Failed to load data.',
+            confirmButtonText: 'OK'
+        });
+    }).finally(() => {
+        getUserList() // Fetch list after options are loaded
+    })
 })
-
 </script>
 
 <template>
@@ -219,6 +270,7 @@ onMounted(() => {
                 :edit-mode="editMode"
                 :editing-id="editingId"
                 :initial-data="editData"
+                :profile-options="profileOptions"
                 @update:open="modalSubmitOpen = $event"
                 @submitted="onSubmitted"
                 @close="closeModal"
@@ -236,6 +288,7 @@ onMounted(() => {
                         v-model:site="siteFilter"
                         v-model:validity-date="validityDateFilter"
                         v-model:status="statusFilter"
+                        :profile-options="profileOptions"
                         :loading="loadingTable"
                         @clear="resetFilter"
                         @find="onClickFindButton"
