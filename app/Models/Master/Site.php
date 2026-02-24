@@ -32,6 +32,9 @@ class Site extends Model
      * regional_code_kontrabon: string(10), nullable
      * regional_init_kontrabon: string(10), nullable
      * regional_name_kontrabon: string, nullable
+     * regional_address_kontrabon: string, nullable
+     * regional_city_kontrabon: string, nullable
+     * regional_region_kontrabon: string, nullable
      * created_at: timestamp
      * updated_at: timestamp
      */
@@ -61,6 +64,9 @@ class Site extends Model
         'regional_code_kontrabon',
         'regional_init_kontrabon',
         'regional_name_kontrabon',
+        'regional_address_kontrabon',
+        'regional_city_kontrabon',
+        'regional_region_kontrabon',
     ];
 
     /**

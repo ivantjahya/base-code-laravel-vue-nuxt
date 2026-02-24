@@ -14,8 +14,8 @@ class Limit extends Model
      *
      * id: uuid
      * code: string(50)
-     * min_value: integer
-     * max_value: integer
+     * min_value: bigInteger
+     * max_value: bigInteger
      * start_date: date
      * end_date: date
      * created_at: timestamp
