@@ -120,7 +120,7 @@ const mapTreeNode = (node: any, inheritedMenuId = '', nodePath = ''): TreeItem |
             if (!controlId || !controlLabel) return null
 
             const controlCode = control.code ? String(control.code) : ''
-            const displayLabel = controlCode ? controlCode : controlLabel
+            const displayLabel = controlLabel ? controlLabel : controlCode
 
             const controlValue = `acc:${currentPath}:${controlCode}`
             const mappedMenuId = effectiveMenuId || getControlMenuId(control)

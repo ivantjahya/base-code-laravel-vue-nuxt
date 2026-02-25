@@ -13,14 +13,14 @@ class AccessControlSeeder extends Seeder
     public function run(): void
     {
         $data = [
-            ['code' => 'create', 'name' => 'Permission to create data'],
-            ['code' => 'update', 'name' => 'Permission to update data'],
-            ['code' => 'delete', 'name' => 'Permission to delete data'],
-            ['code' => 'upload', 'name' => 'Permission to upload files'],
-            ['code' => 'export', 'name' => 'Permission to download files'],
-            ['code' => 'viewdetail', 'name' => 'Permission to view detail data'],
-            ['code' => 'print', 'name' => 'Permission to preview data'],
-            ['code' => 'approve', 'name' => 'Permission to approve data'],
+            ['code' => 'create', 'name' => 'Create'],
+            ['code' => 'update', 'name' => 'Update'],
+            ['code' => 'delete', 'name' => 'Delete'],
+            ['code' => 'upload', 'name' => 'Upload'],
+            ['code' => 'export', 'name' => 'Download'],
+            ['code' => 'viewdetail', 'name' => 'View Detail'],
+            ['code' => 'print', 'name' => 'Print'],
+            ['code' => 'approve', 'name' => 'Approve'],
         ];
 
         foreach ($data as $item) {

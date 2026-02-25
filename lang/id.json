@@ -161,7 +161,8 @@
         "submit": "Simpan",
         "edit": "Ubah Data",
         "extend": "Perpanjang",
-        "view": "Lihat"
+        "view": "Lihat",
+        "close": "Tutup"
     },
     "input-field": {
         "username": "ID Pengguna",

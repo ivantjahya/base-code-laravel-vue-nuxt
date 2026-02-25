@@ -8,6 +8,7 @@ import { useGlobalOptions } from '../composables/useGlobalOptions'
 import CmpLayout from '../Components/CmpLayout.vue'
 import CmpCustomTable from '../Components/CmpCustomTable.vue'
 import CmpAccordionFilter from '../Components/CmpAccordionFilter.vue'
+import DialogFormRegionalSite from './Components/DialogFormRegionalSite.vue'
 import FormFilterRegionalSite from './Components/FormFilterRegionalSite.vue'
 
 const { t } = useI18n()
@@ -135,24 +136,20 @@ const actions = computed(() => [
 // ========================= STATE FOR MODAL =========================
 const modalTitle = ref('')
 const modalSubmitOpen = ref(false)
-const editMode = ref(false)
-const editingId = ref<string | null>(null)
-const editData = ref({})
+const viewMode = ref(false)
+const viewingId = ref<string | null>(null)
+const viewData = ref({})
 
 const showModal = () => {
     modalTitle.value = t('text.regional-site-management-pg.add-new-regional-site' as any) || 'Create New Regional Site'
-    editMode.value = false
-    editingId.value = null
-    editData.value = {}
+    viewMode.value = false
+    viewingId.value = null
+    viewData.value = {}
     modalSubmitOpen.value = true
 }
 
 const closeModal = () => {
     modalSubmitOpen.value = false
-}
-
-const onSubmitted = async () => {
-    await getSiteList()
 }
 
 // ========================= ACTION =========================
@@ -213,7 +210,11 @@ const handleSearch = (query: string) => { // For global search, server-side
 }
 
 const handleView = (data: any) => {
-    console.log('View data:', data)
+    modalTitle.value = t('text.regional-site-pg.view-regional-site' as any) || 'View Regional Site'
+    viewMode.value = true
+    viewData.value = data
+    viewingId.value = data?.id || null
+    modalSubmitOpen.value = true
 }
 
 // ========================= COLUMN PINNING =========================
@@ -248,6 +249,17 @@ onMounted(() => {
                     </div>
                 </div>
             </UCard>
+
+            <!-- MODAL -->
+            <DialogFormRegionalSite
+                :open="modalSubmitOpen"
+                :title="modalTitle"
+                :view-mode="viewMode"
+                :viewing-id="viewingId"
+                :initial-data="viewData"
+                @update:open="modalSubmitOpen = $event"
+                @close="closeModal"
+            />
 
             <!-- MAIN CONTENT -->
             <UCard>
