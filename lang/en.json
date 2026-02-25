@@ -106,7 +106,7 @@
         "input-new-limit": "Limit",
         "input-new-limit-placeholder": "Select limit",
         "input-new-status": "Status",
-        "edit-profile": "Edit Funnctional Profile"
+        "edit-profile": "Edit Functional Profile"
     },
     "user-management-pg": {
         "list": "List of Users",
@@ -162,7 +162,8 @@
         "submit": "Submit",
         "edit": "Edit",
         "extend": "Extend",
-        "view": "View"
+        "view": "View",
+        "close": "Close"
     },
     "input-field": {
         "username": "Username",
