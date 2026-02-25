@@ -1,13 +1,9 @@
 <script setup lang="ts">
-import { ref, shallowRef } from 'vue'
-import type { CalendarDate } from '@internationalized/date'
 import { useI18n } from '../../composables/useI18n'
+import { useGlobalOptions } from '../../composables/useGlobalOptions'
 
 const { t } = useI18n()
-
-const profileValueFilter = ref(['SUPERADMIN', 'ADMIN', 'MD FASHION', 'MD FRESH'])
-const categoryValueFilter = ref(['A1 - MISSY', 'A2 - YOUNG', 'A3 - INTIMATE', 'A4 - BRANDED OUTRIGHT NORMAL'])
-const statusValueFilter = ref(['Active', 'Not Active'])
+const { profileSourceOptions, statusOptions } = useGlobalOptions()
 
 const props = defineProps({
     username: {
@@ -19,24 +15,33 @@ const props = defineProps({
         default: ''
     },
     profile: {
-        type: Array as () => string[],
-        default: () => []
+        type: String as () => string | null,
+        default: null
     },
     category: {
-        type: Array as () => string[],
-        default: () => []
+        type: String as () => string | null,
+        default: null
     },
     status: {
-        type: Array as () => string[],
-        default: () => []
+        type: Number as () => number | null,
+        default: null
     },
     loading: {
         type: Boolean,
         default: false
+    },
+    profileOptions: {
+        type: Array as () => Array<{ label: string; value: string }>,
+        default: () => []
+    },
+    categoryOptions: {
+        type: Array as () => Array<{ label: string; value: string }>,
+        default: () => []
     }
 })
 
 const emit = defineEmits(['update:username', 'update:name', 'update:profile', 'update:category', 'update:status', 'clear', 'find'])
+
 
 const onClear = () => {
     emit('clear')
@@ -76,7 +81,10 @@ const onFind = () => {
                     <USelectMenu
                         :model-value="category"
                         @update:model-value="$emit('update:category', $event)"
-                        :items="categoryValueFilter"
+                        :items="categoryOptions"
+                        value-key="value"
+                        value-attribute="value"
+                        option-attribute="label"
                         :placeholder="t('text.input-field.category-placeholder') || 'Select category'"
                         class="w-full font-reguler"
                     />
@@ -115,7 +123,10 @@ const onFind = () => {
                     <USelectMenu
                         :model-value="status"
                         @update:model-value="$emit('update:status', $event)"
-                        :items="statusValueFilter"
+                        :items="statusOptions"
+                        value-key="id"
+                        value-attribute="id"
+                        option-attribute="label"
                         :placeholder="t('text.input-field.status-placeholder') || 'Select status'"
                         class="w-full font-reguler"/>
 
@@ -135,7 +146,10 @@ const onFind = () => {
                     <USelectMenu
                         :model-value="profile"
                         @update:model-value="$emit('update:profile', $event)"
-                        :items="profileValueFilter"
+                        :items="profileOptions"
+                        value-key="value"
+                        value-attribute="value"
+                        option-attribute="label"
                         :placeholder="t('text.input-field.profile-placeholder') || 'Select profile'"
                         class="w-full font-reguler"
                     />
