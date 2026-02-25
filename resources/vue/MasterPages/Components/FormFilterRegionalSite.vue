@@ -5,9 +5,6 @@ import { useI18n } from '../../composables/useI18n'
 
 const { t } = useI18n()
 
-const profileSourceValueFilter = ref(['Internal', 'External'])
-const statusValueFilter = ref(['Active', 'Not Active'])
-
 const props = defineProps({
     siteCode: {
         type: String,
@@ -26,13 +23,17 @@ const props = defineProps({
         default: ''
     },
     status: {
-        type: Array as () => string[],
-        default: () => []
+        type: Number as () => number | null,
+        default: () => null
     },
     loading: {
         type: Boolean,
         default: false
-    }
+    },
+    statusOptions: {
+        type: Array as () => Array<{ id: number; label: string }>,
+        default: () => []
+    },
 })
 
 const emit = defineEmits(['update:siteCode', 'update:siteName', 'update:regionalCode', 'update:regionalName', 'update:status', 'clear', 'find'])
@@ -62,14 +63,12 @@ const onFind = () => {
                         class="w-full font-light text-base md:text-sm"
                     />
                 </div>
-
             </div>
 
             <div class="px-2"></div>
 
             <!-- REGIONAL NAME -->
             <div class="flex w-full">
-
                 <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.regional-name') || 'Regional Name' }}</div>
                 <div class="flex w-full text-sm">
                     <UInput
@@ -80,7 +79,6 @@ const onFind = () => {
                         class="w-full font-light text-base md:text-sm"
                     />
                 </div>
-
             </div>
 
         </div>
@@ -89,7 +87,6 @@ const onFind = () => {
 
             <!-- SITE NAME -->
             <div class="flex w-full">
-
                 <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.site-name') || 'Site Name' }}</div>
                 <div class="flex w-full text-sm">
                     <UInput
@@ -100,26 +97,24 @@ const onFind = () => {
                         class="w-full font-light text-base md:text-sm"
                     />
                 </div>
-
             </div>
 
             <div class="px-2"></div>
 
             <!-- STATUS -->
             <div class="flex w-full">
-
                 <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.status') || 'Status' }}</div>
                 <div class="flex w-full text-sm">
-
                     <USelectMenu
                         :model-value="status"
                         @update:model-value="$emit('update:status', $event)"
-                        :items="statusValueFilter"
+                        :items="statusOptions"
+                        value-key="id"
+                        value-attribute="id"
+                        option-attribute="label"
                         :placeholder="t('text.input-field.status-placeholder') || 'Select status'"
                         class="w-full font-reguler"/>
-
                 </div>
-
             </div>
 
         </div>
@@ -138,7 +133,6 @@ const onFind = () => {
                         class="w-full font-light text-base md:text-sm"
                     />
                 </div>
-
             </div>
 
             <div class="px-2"></div>
@@ -166,6 +160,5 @@ const onFind = () => {
             </div>
 
         </div>
-
     </div>
 </template>

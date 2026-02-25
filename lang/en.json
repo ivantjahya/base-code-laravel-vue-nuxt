@@ -161,7 +161,8 @@
         "clear": "Clear",
         "submit": "Submit",
         "edit": "Edit",
-        "extend": "Extend"
+        "extend": "Extend",
+        "view": "View"
     },
     "input-field": {
         "username": "Username",

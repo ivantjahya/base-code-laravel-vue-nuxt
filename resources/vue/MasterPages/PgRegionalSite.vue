@@ -1,23 +1,22 @@
 <script setup lang="ts">
 import { ref, computed, h, resolveComponent, shallowRef, onMounted } from 'vue'
-import type { TableColumn } from '@nuxt/ui'
-import { CalendarDate, DateFormatter, getLocalTimeZone, today } from '@internationalized/date'
 import { useI18n } from '../composables/useI18n'
-import { useFormatters } from '../composables/useFormatters'
 import { useApiStore } from '../AppState'
 import axios from 'axios'
 import { getCurrentInstance } from 'vue'
+import { useGlobalOptions } from '../composables/useGlobalOptions'
 import CmpLayout from '../Components/CmpLayout.vue'
 import CmpCustomTable from '../Components/CmpCustomTable.vue'
 import CmpAccordionFilter from '../Components/CmpAccordionFilter.vue'
 import FormFilterRegionalSite from './Components/FormFilterRegionalSite.vue'
 
 const { t } = useI18n()
-const { formatDate, formatCurrency, getDateString, stringToCalendarDate } = useFormatters()
+const { statusOptions } = useGlobalOptions()
 const api = useApiStore()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
 const UButton = resolveComponent('UButton')
+const UBadge = resolveComponent('UBadge')
 
 // ========================= STATE FOR FILTER =========================
 const siteCodeFilter = ref('')
@@ -47,12 +46,14 @@ const columns = computed(() => [
     {
         key: 'code',
         label: t('text.table-column.column-site-code'),
-        sortable: true
+        sortable: true,
+        size: 136,
     },
     {
         key: 'initial',
         label: t('text.table-column.column-site-initial'),
-        sortable: true
+        sortable: true,
+        size: 110
     },
     {
         key: 'name',
@@ -89,27 +90,36 @@ const columns = computed(() => [
         label: t('text.table-column.column-regional-name'),
         sortable: true
     },
-    // {
-    //     key: 'regional_address',
-    //     label: t('text.table-column.column-regional-address'),
-    //     sortable: true
-    // },
-    // {
-    //     key: 'regional_city',
-    //     label: t('text.table-column.column-regional-city'),
-    //     sortable: true
-    // },
-    // {
-    //     key: 'regional_region',
-    //     label: t('text.table-column.column-regional-region'),
-    //     sortable: true
-    // },
+    {
+        key: 'regional_address_kontrabon',
+        label: t('text.table-column.column-regional-address'),
+        sortable: true
+    },
+    {
+        key: 'regional_city_kontrabon',
+        label: t('text.table-column.column-regional-city'),
+        sortable: true
+    },
+    {
+        key: 'regional_region_kontrabon',
+        label: t('text.table-column.column-regional-region'),
+        sortable: true
+    },
     {
         key: 'status',
         label: t('text.table-column.column-status'),
-        sortable: true,
-        formatter: (value: number) => value === 1 ? 'Active' : 'Inactive'
-    }
+        sortable: false,
+        cellRenderer: (value: any, row: any) => {
+            const statusText = value ? t('text.message.active' as any) || 'Active' : t('text.message.not-active' as any) || 'Not Active'
+            const badgeColor = value ? 'success' : 'primary'
+
+            return h(UBadge, {
+                variant: 'subtle',
+                color: badgeColor,
+                class: 'text-xs'
+            }, () => statusText)
+        }
+    },
 ])
 
 const actions = computed(() => [
@@ -117,7 +127,6 @@ const actions = computed(() => [
         {
             label: t('text.button.view' as any) || 'View',
             icon: 'i-lucide-eye',
-            show: (row: any) => row.is_active === true,
             onSelect: (row: any) => handleView(row)
         }
     ]
@@ -162,16 +171,12 @@ const getSiteList = async () => {
             limit: itemPerPage.value,
             search: globalSearchQuery.value, // For global search, server-side
             sort_by: 'code',
+            sort_order: 'asc'
         }
         const response = await axios.get(api.getSiteList, { params });
 
         regionalSiteData.value = response.data?.items;
-        console.log(regionalSiteData.value);
-        countTotalData.value = response.data.data?.total || 0;
-
-        console.log(response);
-
-
+        countTotalData.value = response.data?.total || 0;
     } catch (error) {
         console.error('Error fetching data:', error);
         Swal?.fire({
@@ -207,13 +212,15 @@ const handleSearch = (query: string) => { // For global search, server-side
     getSiteList()
 }
 
-const handleEdit = (data: any) => {
-    modalTitle.value = t('text.regional-site-management-pg.edit-regional-site' as any) || 'Edit regional site'
-    editMode.value = true
-    editingId.value = data.id
-    editData.value = data
-    modalSubmitOpen.value = true
+const handleView = (data: any) => {
+    console.log('View data:', data)
 }
+
+// ========================= COLUMN PINNING =========================
+const columnPinning = ref({
+    left: ['code', 'initial'],
+    right: ['actions']
+})
 
 // Fetch initial data on component mount
 onMounted(() => {
@@ -229,9 +236,9 @@ onMounted(() => {
         <div class="flex-1 overflow-auto p-3">
 
             <!-- Title Section -->
-            <UCard class="mb-3">
+            <UCard class="mb-3" :ui="{ body: 'sm:py-3 sm:px-6' }">
                 <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center">
 
                         <!-- TITLE -->
                         <h1 class="text-lg font-semibold text-gray-900 dark:text-white">
@@ -252,6 +259,7 @@ onMounted(() => {
                         v-model:regionalCode="regionalCodeFilter"
                         v-model:regionalName="regionalNameFilter"
                         v-model:status="statusFilter"
+                        :status-options="statusOptions"
                         :loading="loadingTable"
                         @clear="resetFilter"
                         @find="onClickFindButton"
@@ -270,6 +278,7 @@ onMounted(() => {
                     :page-size="itemPerPage"
                     :current-page="currentPage"
                     :count-total-data="countTotalData"
+                    :column-pinning="columnPinning"
                     @update:currentPage="handlePageChange"
                     @update:pageSize="handlePageSizeChange"
                     @search="handleSearch"
