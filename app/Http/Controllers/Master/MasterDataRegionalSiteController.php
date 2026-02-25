@@ -47,10 +47,8 @@ class MasterDataRegionalSiteController extends Controller
         $validate = Validator::make($request->all(), [
             'site_code' => ['nullable', 'string'],
             'site_name' => ['nullable', 'string'],
-
             'regional_code' => ['nullable', 'string'],
             'regional_name' => ['nullable', 'string'],
-
             'skip' => ['nullable', 'integer', 'min:0'],
             'limit' => ['nullable', 'integer', 'min:1'],
             'search' => ['nullable', 'string'],
@@ -64,10 +62,10 @@ class MasterDataRegionalSiteController extends Controller
 
         try {
             $params = [
-                'code' => $validated['site_code'] ?? null,
+                'site' => $validated['site_code'] ?? null,
                 'name' => $validated['site_name'] ?? null,
-                'regional_code_kontrabong' => $validated['regional_code'] ?? null,
-                'regional_name_kontrabong' => $validated['regional_name'] ?? null,
+                'regional_code_kontrabon' => $validated['regional_code'] ?? null,
+                'regional_name_kontrabon' => $validated['regional_name'] ?? null,
                 'search' => $validated['search'] ?? null,
                 'skip' => $validated['skip'] ?? null,
                 'limit' => $validated['limit'] ?? null,

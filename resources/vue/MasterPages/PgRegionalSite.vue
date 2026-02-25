@@ -44,7 +44,7 @@ const globalSearchQuery = ref('') // For global search, server-side
 
 const columns = computed(() => [
     {
-        key: 'code',
+        key: 'site',
         label: t('text.table-column.column-site-code'),
         sortable: true,
         size: 136,
@@ -218,7 +218,7 @@ const handleView = (data: any) => {
 
 // ========================= COLUMN PINNING =========================
 const columnPinning = ref({
-    left: ['code', 'initial'],
+    left: ['site', 'initial'],
     right: ['actions']
 })
 
