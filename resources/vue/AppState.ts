@@ -32,6 +32,7 @@ export const useApiStore = defineStore('api', {
         postFuncProfileCreate: '/api/v1/masterdata/func-profile/create',
         postFuncProfileUpdate: '/api/v1/masterdata/func-profile/update/', // + id
         getMerchStructDivCatList: '/api/v1/masterdata/merch-struct/list-merch-struct-div-cat',
+        getUserList: '/api/v1/masterdata/user/list',
         getSiteList: '/api/v1/masterdata/site/list',
     }),
 });
