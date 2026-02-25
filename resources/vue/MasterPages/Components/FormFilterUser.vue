@@ -48,7 +48,10 @@ const onClear = () => {
 }
 
 const onFind = () => {
+
+    // console.log(props.profile);
     emit('find')
+
 }
 </script>
 

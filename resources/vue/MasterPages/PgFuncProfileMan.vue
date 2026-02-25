@@ -244,7 +244,7 @@ const getDivisionOptions = async () => {
     divisionOptionsLoading.value = true
     try {
         const response = await axios.get(api.getMerchStructDivCatList)
-        console.log(response);
+        console.log(respon);
 
         const sourceItems = response?.data?.data?.items || response?.data?.data || response?.data || []
         const sourceArray = Array.isArray(sourceItems) ? sourceItems : []

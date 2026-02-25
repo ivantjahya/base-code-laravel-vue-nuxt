@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { ref, computed, h, resolveComponent, shallowRef, onMounted } from 'vue'
-import type { TableColumn } from '@nuxt/ui'
-import { CalendarDate, DateFormatter, getLocalTimeZone, today } from '@internationalized/date'
 import { useI18n } from '../composables/useI18n'
-import { useFormatters } from '../composables/useFormatters'
 import { useApiStore } from '../AppState'
 import axios from 'axios'
 import { getCurrentInstance } from 'vue'
+import { useGlobalOptions } from '../composables/useGlobalOptions'
 import CmpLayout from '../Components/CmpLayout.vue'
 import CmpCustomTable from '../Components/CmpCustomTable.vue'
 import CmpAccordionFilter from '../Components/CmpAccordionFilter.vue'
@@ -14,18 +12,18 @@ import DialogFormUser from './Components/DialogFormUser.vue'
 import FormFilterUser from './Components/FormFilterUser.vue'
 
 const { t } = useI18n()
-const { formatDate, formatCurrency, getDateString, stringToCalendarDate } = useFormatters()
+const { statusOptions } = useGlobalOptions()
 const api = useApiStore()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
 const UButton = resolveComponent('UButton')
+const UBadge = resolveComponent('UBadge')
 
 // ========================= FILTER =========================
 const usernameFilter = ref('')
 const nameFilter = ref('')
 const profileFilter = ref<string | null>(null)
 const categoryFilter = ref<string | null>(null)
-const ModelValidityDateFilter = shallowRef<CalendarDate>()
 const statusFilter = ref<string | null>(null)
 
 // For select options
@@ -39,7 +37,6 @@ const resetFilter = () => {
     nameFilter.value = ''
     profileFilter.value = null
     categoryFilter.value = null
-    ModelValidityDateFilter.value = undefined
     statusFilter.value = null
 }
 
@@ -66,23 +63,29 @@ const columns = computed(() => [
     {
         key: 'profile',
         label: t('text.table-column.column-profile'),
-        sortable: true
+        sortable: true,
+        cellRenderer: (_value: any, row: any) => row.profile ? row.profile?.name : '-'
     },
     {
         key: 'category',
         label: t('text.table-column.column-category'),
-        sortable: true
+        sortable: true,
+        cellRenderer: (_value: any, row: any) => row.merch_struct ? row.merch_struct?.code + ' - ' + row.merch_struct?.name : '-'
     },
     {
         key: 'status',
         label: t('text.table-column.column-status'),
-        sortable: true,
-        formatter: (value: number) => value === 1 ? 'Active' : 'Inactive'
-    },
-    {
-        key: 'actions',
-        label: '',
         sortable: false,
+        cellRenderer: (value: any, row: any) => {
+            const statusText = value ? t('text.message.active' as any) || 'Active' : t('text.message.not-active' as any) || 'Not Active'
+            const badgeColor = value ? 'success' : 'primary'
+
+            return h(UBadge, {
+                variant: 'subtle',
+                color: badgeColor,
+                class: 'text-xs'
+            }, () => statusText)
+        }
     }
 ])
 
@@ -91,7 +94,7 @@ const actions = computed(() => [
         {
             label: t('text.button.edit' as any) || 'Edit',
             icon: 'i-lucide-pencil',
-            onSelect: (row) => handleEdit(row)
+            onSelect: (row : any) => handleEdit(row)
         }
     ]
 ])
@@ -128,21 +131,25 @@ const getUserList = async () => {
         const params = {
             username: usernameFilter.value,
             name: nameFilter.value,
-            profile_code: profileFilter.value,
+            profile: profileFilter.value,
             category: categoryFilter.value,
             status: statusFilter.value,
-            validity_date: getDateString(ModelValidityDateFilter.value),
             skip: (currentPage.value - 1) * itemPerPage.value,
-            user: itemPerPage.value,
+            limit: itemPerPage.value,
             search: globalSearchQuery.value, // For global search, server-side
+            sort_by: 'username',
         }
+        console.log('Request Params:', params);
         const response = await axios.get(api.getUserList, { params });
+        console.log('API Response:', response.data);
 
         userData.value = response.data.data?.items.map((item: any) => ({
             ...item,
+            // profile: item.profile?.name || '-',
             status: item.status === 1 ? 'Active' : 'Inactive'
         }));
         countTotalData.value = response.data.data?.total || 0;
+
     } catch (error) {
         console.error('Error fetching data:', error);
         Swal?.fire({
@@ -172,7 +179,6 @@ const getProfileOptions = async () => {
 
         const activeData = sourceArray.filter((item: any) => {
             const rawActive = item?.status
-            console.log(rawActive);
             return rawActive === true || rawActive === 1 || rawActive === '1'
         })
 
@@ -240,31 +246,43 @@ const getSiteOptions = async () => {
 }
 
 const getcategoryOptions = async () => {
-    categoryOptions.value = [] // Clear options before fetching new data
+    categoryOptions.value = []
     categoryOptionsLoading.value = true
+
     try {
         const response = await axios.get(api.getMerchStructDivCatList)
-        console.log(response);
 
-        const sourceItems = response?.data?.data?.items || response?.data?.data || response?.data || []
+        const sourceItems =
+            response?.data?.data?.items ||
+            response?.data?.data ||
+            response?.data ||
+            []
+
         const sourceArray = Array.isArray(sourceItems) ? sourceItems : []
-        const categoryData = sourceArray.filter((item: any) => {
-            return item.parent_id === null
-        })
 
+        // 🔹 Ambil parent
+        const parentData = sourceArray.filter((item: any) => item.parent_id === null)
+
+        // 🔹 Ambil semua categories dari setiap parent
+        const allCategories = parentData.flatMap((parent: any) => parent.categories || [])
+
+        // 🔹 Mapping ke options
         const uniqueOptions = new Map<string, { label: string; value: string }>()
-        categoryData.forEach((item: any) => {
-            const label = String(item?.code).trim() + ' - ' + String(item?.name).trim()
-            const value = String(item?.id).trim()
+
+        allCategories.forEach((cat: any) => {
+            const label = `${cat.code} - ${cat.name}`
+            const value = cat.id
 
             if (!value) return
+
             uniqueOptions.set(value, {
-                label: label,
-                value: value,
+                label,
+                value,
             })
         })
 
         categoryOptions.value = Array.from(uniqueOptions.values())
+
     } catch (error) {
         console.error('Error fetching category options:', error)
         categoryOptions.value = []
@@ -308,7 +326,8 @@ onMounted(async () => {
     await Promise.all([
         getProfileOptions(),
         getSiteOptions(),
-        getcategoryOptions()
+        getcategoryOptions(),
+        getUserList()
     ]).catch((error) => {
         console.error('Error during initial data fetch:', error)
         Swal?.fire({
@@ -317,8 +336,6 @@ onMounted(async () => {
             text: t('text.message.failed-to-load-data-msg' as any) || 'Failed to load data.',
             confirmButtonText: 'OK'
         });
-    }).finally(() => {
-        getUserList() // Fetch list after options are loaded
     })
 })
 </script>
@@ -371,8 +388,6 @@ onMounted(async () => {
                         v-model:name="nameFilter"
                         v-model:profile="profileFilter"
                         v-model:category="categoryFilter"
-                        v-model:site="siteFilter"
-                        v-model:validity-date="validityDateFilter"
                         v-model:status="statusFilter"
                         :profile-options="profileOptions"
                         :category-options="categoryOptions"
@@ -403,7 +418,7 @@ onMounted(async () => {
     </CmpLayout>
 </template>
 
-<style scoped>
+<!-- <style scoped>
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -418,4 +433,4 @@ onMounted(async () => {
 .animate-fade-in {
   animation: fade-in 0.2s ease-out;
 }
-</style>
+</style> -->

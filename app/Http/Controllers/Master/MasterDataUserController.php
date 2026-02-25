@@ -15,6 +15,14 @@ use Illuminate\View\View;
 
 class MasterDataUserController extends Controller
 {
+
+    private PythonModuleMasterDataService $moduleMasterDataService;
+
+    public function __construct(PythonModuleMasterDataService $moduleMasterDataService)
+    {
+        $this->moduleMasterDataService = $moduleMasterDataService;
+    }
+
     /**
      * GET request for user management page
      */
@@ -34,7 +42,7 @@ class MasterDataUserController extends Controller
     public function getUserList(Request $request): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User is requesting get limit list', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
+        Log::debug('User is requesting get user list', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
         /** Validate Input */
         $validate = Validator::make($request->all(), [
@@ -42,6 +50,7 @@ class MasterDataUserController extends Controller
             'name' => ['nullable', 'string'],
             'profile' => ['nullable', 'uuid'],
             'category' => ['nullable', 'uuid'],
+            'status' => ['nullable', 'integer', 'in:0,1'],
             'skip' => ['nullable', 'integer', 'min:0'],
             'limit' => ['nullable', 'integer', 'min:1'],
             'search' => ['nullable', 'string'],
@@ -58,14 +67,14 @@ class MasterDataUserController extends Controller
                 'username' => $validated['username'] ?? null,
                 'name' => $validated['name'] ?? null,
                 'profile_id' => $validated['profile'] ?? null,
-                'category' => $validated['category'] ?? null,
+                'merch_struct_id' => $validated['category'] ?? null,
                 'search' => $validated['search'] ?? null,
                 'skip' => $validated['skip'] ?? null,
                 'limit' => $validated['limit'] ?? null,
                 'sort_by' => $validated['sort_by'] ?? null,
                 'sort_order' => $validated['sort_order'] ?? null,
             ];
-            $data = $this->moduleMasterDataService->getLimitList($params);
+            $data = $this->moduleMasterDataService->getUserList($params);
 
             return response()->json($data);
         } catch (\Throwable $e) {
