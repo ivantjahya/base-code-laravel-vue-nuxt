@@ -15,6 +15,7 @@ interface Column {
   alignHeader?: 'left' | 'center' | 'right'
   alignBody?: 'left' | 'center' | 'right'
   cellRenderer?: (value: any, row: any) => any // For custom components like radio, input, etc.
+  size?: number // Explicit column width in pixels (required for proper column pinning)
 }
 
 interface Filter {
@@ -73,6 +74,9 @@ interface Props {
   // Loading
   loading?: boolean
   showLoadingOverlay?: boolean
+
+  // Column pinning
+  columnPinning?: { left?: string[], right?: string[] }
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -200,6 +204,7 @@ const tableColumns = computed<TableColumn<any>[]>(() => {
     if (col.sortable) {
       cols.push({
         accessorKey: col.key,
+        ...(col.size ? { size: col.size } : {}),
         header: ({ column }) => {
           const isSorted = column.getIsSorted()
 
@@ -238,6 +243,7 @@ const tableColumns = computed<TableColumn<any>[]>(() => {
     } else {
       cols.push({
         accessorKey: col.key,
+        ...(col.size ? { size: col.size } : {}),
         header: () => h('div', { class: alignHeaderClass }, col.label),
         cell: ({ row }) => {
           const value = row.getValue(col.key)
@@ -327,6 +333,7 @@ watch(rowSelection, (newVal) => {
         :data="filteredData"
         :columns="tableColumns"
         :loading="loading"
+        :column-pinning="columnPinning"
         class="shrink-0 border border-default rounded-lg"
         :ui="{
           base: 'table-fixed border-separate border-spacing-0',
@@ -406,5 +413,37 @@ watch(rowSelection, (newVal) => {
 <style scoped>
 .custom-table-wrapper {
   width: 100%;
+}
+
+/*
+ * Sticky / pinned column backgrounds — light & dark mode aware.
+ * Nuxt UI v3 UTable adds the `sticky` utility class to pinned th/td elements.
+ * We use [class*="sticky"] so the rule only fires on those cells and never
+ * on un-pinned columns (no more :first-child / :last-child side-effects).
+ *
+ * --ui-bg          → the page/card background (auto-switches light ↔ dark)
+ * --ui-bg-elevated → slightly elevated surface used by the thead
+ */
+
+/* Pinned body cells */
+:deep(table td[class*="sticky"]) {
+  background-color: var(--ui-bg);
+}
+
+/* Pinned header cells — match the thead's bg-elevated tint */
+:deep(table thead th[class*="sticky"]) {
+  background-color: var(--ui-bg-elevated);
+}
+
+/* Divider shadow on the rightmost left-pinned column */
+:deep(table th[class*="sticky"][class*="left"]:not([class*="right"])),
+:deep(table td[class*="sticky"][class*="left"]:not([class*="right"])) {
+  border-right: 1px solid var(--ui-border);
+}
+
+/* Divider shadow on the leftmost right-pinned column */
+:deep(table th[class*="sticky"][class*="right"]:not([class*="left"])),
+:deep(table td[class*="sticky"][class*="right"]:not([class*="left"])) {
+  border-left: 1px solid var(--ui-border);
 }
 </style>

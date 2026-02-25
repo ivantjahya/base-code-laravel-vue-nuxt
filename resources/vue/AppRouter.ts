@@ -54,19 +54,13 @@ const routes: Array<RouteRecordRaw> = [
         path: regionalSite,
         name: 'regionalSite',
         component: () => import('./MasterPages/PgRegionalSite.vue'),
-        meta: { titleKey: 'page.regional-site-management', title: 'Regional Site' },
+        meta: { titleKey: 'page.regional-site', title: 'Regional Site' },
     },
     {
         path: approvalFlowManagement,
         name: 'approvalFlowManagement',
         component: () => import('./MasterPages/PgApprovalFlowMan.vue'),
-        meta: { title: 'Approval Flow' },
-    },
-    {
-        path: approvalFlowManagement,
-        name: 'approvalFlowManagement',
-        component: () => import('./MasterPages/PgApprovalFlowMan.vue'),
-        meta: { title: 'Approval Flow' },
+        meta: { titleKey: 'page.approval-flow-management', title: 'Approval Flow' },
     },
     {
         path: userGuideManagement,

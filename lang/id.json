@@ -160,7 +160,8 @@
         "clear": "Kosongkan",
         "submit": "Simpan",
         "edit": "Ubah Data",
-        "extend": "Perpanjang"
+        "extend": "Perpanjang",
+        "view": "Lihat"
     },
     "input-field": {
         "username": "ID Pengguna",
@@ -272,12 +273,12 @@
         "column-site-address": "Alamat Lokasi",
         "column-site-city": "Kota Lokasi",
         "column-site-region": "Wilayah Lokasi",
-        "column-regional-code": "Kode Lokasi",
+        "column-regional-code": "Kode Regional",
         "column-regional-initial": "Inisial Regional",
-        "column-regional-name": "Nama Lokasi",
-        "column-regional-address": "Alamat Lokasi",
-        "column-regional-city": "Kota Lokasi",
-        "column-regional-region": "Wilayah Lokasi",
+        "column-regional-name": "Nama Regional",
+        "column-regional-address": "Alamat Regional",
+        "column-regional-city": "Kota Regional",
+        "column-regional-region": "Wilayah Regional",
 
         "column-user-guide-code": "Kode Panduan",
         "column-user-guide-name": "Nama Panduan",
