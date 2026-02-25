@@ -31,6 +31,8 @@ const statusFilter = ref<string | null>(null)
 // For select options
 const profileOptions = ref<{ label: string; value: string }[]>([])
 const siteOptions = ref<{ label: string; value: string }[]>([])
+const categoryOptions = ref<{ label: string; value: string }[]>([])
+const categoryOptionsLoading = ref(false)
 
 const resetFilter = () => {
     usernameFilter.value = ''
@@ -237,6 +239,40 @@ const getSiteOptions = async () => {
     }
 }
 
+const getcategoryOptions = async () => {
+    categoryOptions.value = [] // Clear options before fetching new data
+    categoryOptionsLoading.value = true
+    try {
+        const response = await axios.get(api.getMerchStructDivCatList)
+        console.log(response);
+
+        const sourceItems = response?.data?.data?.items || response?.data?.data || response?.data || []
+        const sourceArray = Array.isArray(sourceItems) ? sourceItems : []
+        const categoryData = sourceArray.filter((item: any) => {
+            return item.parent_id === null
+        })
+
+        const uniqueOptions = new Map<string, { label: string; value: string }>()
+        categoryData.forEach((item: any) => {
+            const label = String(item?.code).trim() + ' - ' + String(item?.name).trim()
+            const value = String(item?.id).trim()
+
+            if (!value) return
+            uniqueOptions.set(value, {
+                label: label,
+                value: value,
+            })
+        })
+
+        categoryOptions.value = Array.from(uniqueOptions.values())
+    } catch (error) {
+        console.error('Error fetching category options:', error)
+        categoryOptions.value = []
+    } finally {
+        categoryOptionsLoading.value = false
+    }
+}
+
 const onClickFindButton = () => {
     currentPage.value = 1
     getUserList()
@@ -271,7 +307,8 @@ const handleEdit = (data: any) => {
 onMounted(async () => {
     await Promise.all([
         getProfileOptions(),
-        getSiteOptions()
+        getSiteOptions(),
+        getcategoryOptions()
     ]).catch((error) => {
         console.error('Error during initial data fetch:', error)
         Swal?.fire({
@@ -338,7 +375,7 @@ onMounted(async () => {
                         v-model:validity-date="validityDateFilter"
                         v-model:status="statusFilter"
                         :profile-options="profileOptions"
-                        :site-options="siteOptions"
+                        :category-options="categoryOptions"
                         :loading="loadingTable"
                         @clear="resetFilter"
                         @find="onClickFindButton"

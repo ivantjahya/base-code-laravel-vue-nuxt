@@ -357,7 +357,7 @@ class PythonModuleMasterDataService
         );
     }
 
-    /** ------------------------------------- LIMIT ------------------------------------- */
+    /** ------------------------------------- REGIONAL SITE ------------------------------------- */
     /**
      * Get site list from Python API
      */
@@ -391,4 +391,22 @@ class PythonModuleMasterDataService
     //         ['site_id' => $id]
     //     );
     // }
+
+    /** ------------------------------------- USER ------------------------------------- */
+    /**
+     * Get site list from Python API
+     */
+    public function getUserList(array $params = []): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(60)
+                ->get("{$this->baseUrl}/user/", $params)
+                ->throw(),
+            '/masterdata/user/',
+            'Failed to get user list',
+            ['params' => $params]
+        );
+    }
 }
