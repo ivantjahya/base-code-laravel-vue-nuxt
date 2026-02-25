@@ -30,6 +30,7 @@ const statusFilter = ref<string | null>(null)
 
 // For select options
 const profileOptions = ref<{ label: string; value: string }[]>([])
+const siteOptions = ref<{ label: string; value: string }[]>([])
 
 const resetFilter = () => {
     usernameFilter.value = ''
@@ -166,8 +167,10 @@ const getProfileOptions = async () => {
         const response = await axios.get(api.getProfileList, { params })
         const sourceItems = response?.data?.data?.items || response?.data?.data || response?.data || []
         const sourceArray = Array.isArray(sourceItems) ? sourceItems : []
+
         const activeData = sourceArray.filter((item: any) => {
             const rawActive = item?.status
+            console.log(rawActive);
             return rawActive === true || rawActive === 1 || rawActive === '1'
         })
 
@@ -184,9 +187,53 @@ const getProfileOptions = async () => {
         })
 
         profileOptions.value = Array.from(uniqueOptions.values())
+        // console.log(profileOptions.value);
+
     } catch (error) {
         console.error('Error fetching profile options:', error)
         profileOptions.value = []
+    }
+}
+
+const getSiteOptions = async () => {
+    siteOptions.value = [] // Clear options before fetching new data
+    try {
+        const params = {
+            skip: 0,
+            limit: 1000,
+            sort_by: 'code',
+            sort_order: 'asc',
+        }
+
+        const response = await axios.get(api.getSiteList, { params })
+        const sourceItems = response?.data?.items || response?.data || response?.data || []
+        const sourceArray = Array.isArray(sourceItems) ? sourceItems : []
+
+        // const activeData = sourceArray.filter((item: any) => {
+        //     const rawActive = item?.status
+        //     console.log(rawActive);
+        //     return rawActive === true || rawActive === 1 || rawActive === '1'
+        // })
+
+        const uniqueOptions = new Map<string, { label: string; value: string }>()
+        sourceArray.forEach((item: any) => {
+            const label = String(item?.name).trim()
+            const value = String(item?.id).trim()
+
+            if (!value) return
+            uniqueOptions.set(value, {
+                label: label,
+                value: value,
+            })
+        })
+
+        siteOptions.value = Array.from(uniqueOptions.values())
+        // console.log(siteOptions.value);
+
+
+    } catch (error) {
+        console.error('Error fetching site options:', error)
+        siteOptions.value = []
     }
 }
 
@@ -223,7 +270,8 @@ const handleEdit = (data: any) => {
 // Fetch initial data on component mount
 onMounted(async () => {
     await Promise.all([
-        getProfileOptions()
+        getProfileOptions(),
+        getSiteOptions()
     ]).catch((error) => {
         console.error('Error during initial data fetch:', error)
         Swal?.fire({
@@ -271,6 +319,7 @@ onMounted(async () => {
                 :editing-id="editingId"
                 :initial-data="editData"
                 :profile-options="profileOptions"
+                :site-options="siteOptions"
                 @update:open="modalSubmitOpen = $event"
                 @submitted="onSubmitted"
                 @close="closeModal"
@@ -289,6 +338,7 @@ onMounted(async () => {
                         v-model:validity-date="validityDateFilter"
                         v-model:status="statusFilter"
                         :profile-options="profileOptions"
+                        :site-options="siteOptions"
                         :loading="loadingTable"
                         @clear="resetFilter"
                         @find="onClickFindButton"

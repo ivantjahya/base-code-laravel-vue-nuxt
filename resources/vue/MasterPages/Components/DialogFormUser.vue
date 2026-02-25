@@ -34,6 +34,10 @@ const props = defineProps({
         type: Array as () => Array<{ label: string; value: string }>,
         default: () => []
     },
+    siteOptions: {
+        type: Array as () => Array<{ label: string; value: string }>,
+        default: () => []
+    },
 })
 
 const emit = defineEmits(['update:open', 'submitted', 'close'])
@@ -414,8 +418,9 @@ const isOpen = computed({
 
                 <div class="w-80">
                     <USelectMenu
+                        multiple
                         v-model="site"
-                        :items="siteValue"
+                        :items="siteOptions"
                         placeholder="Select site"
                         class="w-full font-light"
                         :ui="{
