@@ -42,9 +42,9 @@
     "sell-out-by-div-by-cat-by-brand-report": "Penjualan per Div per Kategori per Merek",
     "50-top-sku-report": "50 SKU Teratas",
     "sell-in-by-month-report": "Penjualan Masuk per Bulan",
-    "sell-in-by-div-month-report": "Penjualan Masuk per Divisi per Bulan",
+    "sell-in-by-div-by-month-report": "Penjualan Masuk per Divisi per Bulan",
     "sl-by-month-report": "SL per Bulan",
-    "sl-by-div-month-report": "SL per Divisi per Bulan",
+    "sl-by-div-by-month-report": "SL per Divisi per Bulan",
     "sl-distributor-by-div-by-month-report": "SL Distributor per Divisi per Bulan",
     "payment-check": "Cek Pembayaran",
     "invoice-input-putus": "Faktur Putus",
@@ -162,7 +162,8 @@
         "edit": "Ubah Data",
         "extend": "Perpanjang",
         "view": "Lihat",
-        "close": "Tutup"
+        "close": "Tutup",
+        "check-all": "Centang Semua"
     },
     "input-field": {
         "username": "ID Pengguna",

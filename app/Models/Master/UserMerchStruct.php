@@ -2,13 +2,10 @@
 
 namespace App\Models\Master;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
 class UserMerchStruct extends Model
 {
-    use HasUuids;
-
     /**
      * Column info:
      *

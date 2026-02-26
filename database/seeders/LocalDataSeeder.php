@@ -3,7 +3,10 @@
 namespace Database\Seeders;
 
 use App\Interfaces\InterfaceClass;
+use App\Models\Master\Menu;
+use App\Models\Master\MenuAccControl;
 use App\Models\Master\Profile;
+use App\Models\Master\ProfileMenu;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
@@ -22,10 +25,6 @@ class LocalDataSeeder extends Seeder
             return;
         }
 
-        // Create local site for testing
-
-        // Create local merchendise structure for testing
-
         // Create local profile for testing
         $profile = Profile::firstOrCreate([
             'code' => 'P0000',
@@ -35,6 +34,29 @@ class LocalDataSeeder extends Seeder
             'is_internal' => 1,
             'status' => 1,
         ]);
+
+        // Link profile with all menus and access control for testing
+        Menu::chunkById(1000, function ($menus) use ($profile) {
+            foreach ($menus as $menu) {
+                $menuAccControls = MenuAccControl::where('menu_id', $menu->id)->get();
+
+                if ($menuAccControls->isEmpty()) {
+                    ProfileMenu::firstOrCreate([
+                        'profile_id' => $profile->id,
+                        'menu_id' => $menu->id,
+                        'acc_control_id' => null
+                    ], []);
+                } else {
+                    foreach ($menuAccControls as $menuAccControl) {
+                        ProfileMenu::firstOrCreate([
+                            'profile_id' => $profile->id,
+                            'menu_id' => $menu->id,
+                            'acc_control_id' => $menuAccControl->acc_control_id,
+                        ], []);
+                    }
+                }
+            }
+        }, $column = 'id');
 
         // Create local user for testing
         User::firstOrCreate([

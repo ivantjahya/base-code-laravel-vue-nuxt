@@ -42,9 +42,9 @@
     "sell-out-by-div-by-cat-by-brand-report": "Sell Out By Div By Cat By Brand",
     "50-top-sku-report": "50 Top SKU",
     "sell-in-by-month-report": "Sell In By Month",
-    "sell-in-by-div-month-report": "Sell In By Div Month",
+    "sell-in-by-div-by-month-report": "Sell In By Div By Month",
     "sl-by-month-report": "SL By Month",
-    "sl-by-div-month-report": "SL By Div Month",
+    "sl-by-div-by-month-report": "SL By Div By Month",
     "sl-distributor-by-div-by-month-report": "SL Distributor By Div By Month",
     "payment-check": "Payment Check",
     "invoice-input-putus": "Invoice Putus",
@@ -163,7 +163,8 @@
         "edit": "Edit",
         "extend": "Extend",
         "view": "View",
-        "close": "Close"
+        "close": "Close",
+        "check-all": "Check All"
     },
     "input-field": {
         "username": "Username",

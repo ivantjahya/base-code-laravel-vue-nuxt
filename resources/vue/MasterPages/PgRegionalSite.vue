@@ -107,7 +107,7 @@ const columns = computed(() => [
         sortable: true
     },
     {
-        key: 'status',
+        key: 'is_active',
         label: t('text.table-column.column-status'),
         sortable: false,
         cellRenderer: (value: any, row: any) => {
@@ -132,6 +132,11 @@ const actions = computed(() => [
         }
     ]
 ])
+
+const columnPinning = ref({
+    left: ['site', 'initial'],
+    right: ['actions']
+})
 
 // ========================= STATE FOR MODAL =========================
 const modalTitle = ref('')
@@ -216,12 +221,6 @@ const handleView = (data: any) => {
     viewingId.value = data?.id || null
     modalSubmitOpen.value = true
 }
-
-// ========================= COLUMN PINNING =========================
-const columnPinning = ref({
-    left: ['site', 'initial'],
-    right: ['actions']
-})
 
 // Fetch initial data on component mount
 onMounted(() => {

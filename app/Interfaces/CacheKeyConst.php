@@ -5,18 +5,26 @@ namespace App\Interfaces;
 interface CacheKeyConst
 {
     /**
-     * List of cache key
-     */
-    public const KEY_MENUPERM = 'menu-perm';
-
-    public const KEY_MENUCTRLPERM = 'menu-ctrl-perm';
-
-    /**
      * List of cache tags
      */
+    public const TAG_MASTERDATA = 'mst-data';
+
     public const TAG_MENUPERM = 'mst-menu-perm';
 
     public const TAG_MENUCTRLPERM = 'mst-menu-ctrl-perm';
+
+    /**
+     * List of cache key
+     */
+    public const KEY_MASTER_MENU = 'master-menu';
+
+    public const KEY_MASTER_MENU_ACC_CTRL = 'master-menu-acc-ctrl';
+
+    public const KEY_MASTER_MERCH_STRUCT_DIV_CAT = 'master-merch-struct-div-cat';
+
+    public const KEY_MENUPERM = 'menu-perm';
+
+    public const KEY_MENUCTRLPERM = 'menu-ctrl-perm';
 
     /**
      * List of cache carbon time
