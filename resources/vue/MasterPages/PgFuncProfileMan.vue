@@ -107,6 +107,10 @@ const actions = computed(() => [
     ]
 ])
 
+const columnPinning = ref({
+    right: ['actions']
+})
+
 // ========================= STATE FOR MODAL =========================
 const modalTitle = ref('')
 const modalSubmitOpen = ref(false)
@@ -244,7 +248,6 @@ const getDivisionOptions = async () => {
     divisionOptionsLoading.value = true
     try {
         const response = await axios.get(api.getMerchStructDivCatList)
-        console.log(respon);
 
         const sourceItems = response?.data?.data?.items || response?.data?.data || response?.data || []
         const sourceArray = Array.isArray(sourceItems) ? sourceItems : []
@@ -396,6 +399,7 @@ onMounted(async () => {
                     :page-size="itemPerPage"
                     :current-page="currentPage"
                     :count-total-data="countTotalData"
+                    :column-pinning="columnPinning"
                     @update:currentPage="handlePageChange"
                     @update:pageSize="handlePageSizeChange"
                     @search="handleSearch"

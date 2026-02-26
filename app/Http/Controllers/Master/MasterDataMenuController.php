@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Master;
 
 use App\Exceptions\CommonCustomException;
 use App\Http\Controllers\Controller;
+use App\Interfaces\InterfaceClass;
 use App\Services\PythonModuleMasterDataService;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class MasterDataMenuController extends Controller
@@ -28,7 +31,10 @@ class MasterDataMenuController extends Controller
         Log::debug('User is requesting get menu list', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
         try {
-            $data = $this->moduleMasterDataService->getMenuList();
+            $data = Cache::tags([InterfaceClass::TAG_MASTERDATA])->remember(InterfaceClass::KEY_MASTER_MENU, InterfaceClass::CACHE_MST_TIME, function () {
+                $temp = $this->moduleMasterDataService->getMenuList();
+                return $temp;
+            });
 
             return response()->json($data);
         } catch (\Throwable $e) {
@@ -45,7 +51,10 @@ class MasterDataMenuController extends Controller
         Log::debug('User is requesting get menu access control list', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
         try {
-            $data = $this->moduleMasterDataService->getMenuAccControlList();
+            $data = Cache::tags([InterfaceClass::TAG_MASTERDATA])->remember(InterfaceClass::KEY_MASTER_MENU_ACC_CTRL, InterfaceClass::CACHE_MST_TIME, function () {
+                $temp = $this->moduleMasterDataService->getMenuAccControlList();
+                return $temp;
+            });
 
             return response()->json($data);
         } catch (\Throwable $e) {

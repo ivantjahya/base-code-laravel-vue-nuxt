@@ -956,11 +956,11 @@ const showChangePassword = () => {
           <template #default="{ }">
             <button class="w-full flex items-center gap-2.5 px-2.5 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
               <UAvatar 
-                src="https://ui-avatars.com/api/?name=Username&background=f97316&color=fff" 
+                :src="`https://ui-avatars.com/api/?name=${mainStore.userName}&background=f97316&color=fff`" 
                 size="sm"
               />
               <div class="flex-1 min-w-0 text-left">
-                <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">Username</p>
+                <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{{ mainStore.userName }}</p>
               </div>
               <UIcon name="i-lucide-chevrons-up-down" class="w-4 h-4 text-gray-400 dark:text-gray-500" />
             </button>
@@ -975,7 +975,7 @@ const showChangePassword = () => {
           :content="{ side: 'right', align: 'end', sideOffset: 8 }"
         >
           <UAvatar 
-            src="https://ui-avatars.com/api/?name=Username&background=f97316&color=fff"
+            :src="`https://ui-avatars.com/api/?name=${mainStore.userName}&background=f97316&color=fff`"
             size="sm"
             class="cursor-pointer"
           />
@@ -983,8 +983,8 @@ const showChangePassword = () => {
           <template #content>
             <div class="min-w-[180px] p-2">
               <div class="px-3 py-2 border-b border-gray-200 dark:border-gray-700 mb-2">
-                <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">Username</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">user@example.com</p>
+                <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ mainStore.userName }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400"></p>
               </div>
               
               <div class="space-y-0.5">

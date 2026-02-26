@@ -358,6 +358,50 @@ const selectedMenuAccess = computed(() => {
     return Array.from(unique.values())
 })
 
+const getSelectedTreeValues = (): Set<string> => {
+    const values = (Array.isArray(treeValue.value) ? treeValue.value : [])
+        .map((entry: any) => {
+            if (typeof entry === 'string') return entry
+            if (entry && typeof entry === 'object') return String(entry.value || entry.id || '')
+            return ''
+        })
+        .filter((value) => !!value)
+
+    return new Set(values)
+}
+
+const getAllTreeNodes = (): TreeItem[] => {
+    const nodes = Object.values(treeNodeByValueMap.value) as TreeItem[]
+
+    const unique = new Map<string, TreeItem>()
+    nodes.forEach((node) => {
+        const key = String(node?.value || '')
+        if (key) unique.set(key, node)
+    })
+
+    return Array.from(unique.values())
+}
+
+const allAccessChecked = computed({
+    get: () => {
+        const allNodes = getAllTreeNodes()
+        if (allNodes.length === 0) return false
+
+        const selectedValues = getSelectedTreeValues()
+        // If we have selected values, check if all nodes are selected
+        return allNodes.every((node: any) => selectedValues.has(String(node?.value || '')))
+    },
+    set: (checked: boolean) => {
+        const allNodes = getAllTreeNodes()
+        if (!checked || allNodes.length === 0) {
+            treeValue.value = []
+            return
+        }
+
+        treeValue.value = allNodes
+    }
+})
+
 const isAccessControlNode = (item: any): boolean => String(item?.value || '').startsWith('acc:')
 
 function onSelect(e: TreeItemSelectEvent<TreeItem>, item: any) {
@@ -686,6 +730,19 @@ const isOpen = computed({
                     <p v-if="isLoadingTree" class="text-xs md:text-sm text-gray-500">{{ t('text.message.loading') }}</p>
                 </div>
                 <p v-if="errors.accessRight" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.accessRight }}</p>
+            </UFormField>
+
+            <!-- CHECK ALL -->
+            <UFormField orientation="horizontal" class="mb-2">
+                <div class="flex items-center w-80 gap-2">
+                    <UCheckbox
+                        v-model="allAccessChecked"
+                        :disabled="isLoadingTree || items.length === 0"
+                    />
+                    <span class="text-sm font-light">
+                        {{ t('text.button.check-all') || 'Check All' }}
+                    </span>
+                </div>
             </UFormField>
 
             <!-- STATUS -->
