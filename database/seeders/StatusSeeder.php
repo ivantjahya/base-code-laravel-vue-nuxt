@@ -12,6 +12,7 @@ class StatusSeeder extends Seeder
      */
     public function run(): void
     {
+        /** List status for approval PO */
         $data = [
             [
                 'code' => '0',
@@ -162,6 +163,38 @@ class StatusSeeder extends Seeder
                 'description' => 'Waiting-Approve-Manager-X',
                 'used_for' => 'APPROVAL_PO',
                 'status_group' => 'MANAGER-X',
+            ],
+        ];
+
+        foreach ($data as $item) {
+            Status::firstOrCreate([
+                'code' => $item['code'],
+            ], [
+                'description' => $item['description'],
+                'used_for' => $item['used_for'],
+                'status_group' => $item['status_group'],
+            ]);
+        }
+
+        /** List status for users */
+        $data = [
+            [
+                'code' => 'USR_ACTIVE',
+                'description' => 'text.message.active',
+                'used_for' => 'MASTER_USER',
+                'status_group' => null,
+            ],
+            [
+                'code' => 'USR_INACTIVE',
+                'description' => 'text.message.not-active',
+                'used_for' => 'MASTER_USER',
+                'status_group' => null,
+            ],
+            [
+                'code' => 'USR_LOCKED',
+                'description' => 'text.message.locked',
+                'used_for' => 'MASTER_USER',
+                'status_group' => null,
             ],
         ];
 
