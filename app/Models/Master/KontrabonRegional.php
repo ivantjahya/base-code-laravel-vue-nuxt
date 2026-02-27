@@ -5,7 +5,7 @@ namespace App\Models\Master;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
-class FuncProfile extends Model
+class KontrabonRegional extends Model
 {
     use HasUuids;
 
@@ -13,16 +13,14 @@ class FuncProfile extends Model
      * Column info:
      *
      * id: uuid
-     * profile_id: uuid
-     * merch_struct_id: uuid
-     * limit_code: string
-     * company_id: uuid
-     * start_date: date
-     * end_date: date
+     * code: string(10)
+     * initial: string(10)
+     * name: string
+     * address: string, nullable
+     * city: string, nullable
+     * region: string, nullable
      * created_at: timestamp
      * updated_at: timestamp
-     * created_by: uuid
-     * updated_by: uuid
      */
 
     /**
@@ -31,13 +29,11 @@ class FuncProfile extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'profile_id',
-        'merch_struct_id',
-        'limit_code',
-        'company_id',
-        'start_date',
-        'end_date',
-        'created_by',
-        'updated_by',
+        'code',
+        'initial',
+        'name',
+        'address',
+        'city',
+        'region',
     ];
 }

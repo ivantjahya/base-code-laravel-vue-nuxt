@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Interfaces\InterfaceClass;
 use App\Models\Master\Profile;
+use App\Models\Master\Status;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
@@ -24,6 +25,7 @@ class UserSeeder extends Seeder
 
         /** Initial user for login to application */
         $profileSuperAdmin = Profile::where('code', 'P0001')->first();
+        $statusIdActive = Status::where('code', 'USR_ACTIVE')->value('id');
 
         User::firstOrCreate([
             'username' => 'superadmin',
@@ -32,6 +34,7 @@ class UserSeeder extends Seeder
             'password' => Hash::make(env('DEFAULT_PASSWORD_USER')),
             'profile_id' => $profileSuperAdmin->id,
             'valid_date' => Carbon::parse(InterfaceClass::DEFAULT_VALID_DATE),
+            'status_id' => $statusIdActive,
         ]);
     }
 }

@@ -309,7 +309,8 @@
       "internal": "Internal",
       "external": "External",
       "active": "Active",
-      "not-active": "Not Active"
+      "not-active": "Not Active",
+      "locked": "Locked"
     }
   },
   "auth": {

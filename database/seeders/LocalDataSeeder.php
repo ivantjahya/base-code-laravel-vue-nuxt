@@ -7,6 +7,7 @@ use App\Models\Master\Menu;
 use App\Models\Master\MenuAccControl;
 use App\Models\Master\Profile;
 use App\Models\Master\ProfileMenu;
+use App\Models\Master\Status;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
@@ -59,6 +60,8 @@ class LocalDataSeeder extends Seeder
         }, $column = 'id');
 
         // Create local user for testing
+        $statusIdActive = Status::where('code', 'USR_ACTIVE')->value('id');
+
         User::firstOrCreate([
             'username' => 'test',
         ], [
@@ -66,6 +69,7 @@ class LocalDataSeeder extends Seeder
             'password' => Hash::make(env('DEFAULT_PASSWORD_USER')),
             'profile_id' => $profile->id,
             'valid_date' => Carbon::parse(InterfaceClass::DEFAULT_VALID_DATE),
+            'status_id' => $statusIdActive,
         ]);
     }
 }

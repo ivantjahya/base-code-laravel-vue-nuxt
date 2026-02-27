@@ -308,7 +308,8 @@
       "internal": "Internal",
       "external": "Eksternal",
       "active": "Aktif",
-      "not-active": "Tidak Aktif"
+      "not-active": "Tidak Aktif",
+      "locked": "Terkunci"
     }
   },
   "auth": {
