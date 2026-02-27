@@ -135,6 +135,12 @@
         "input-new-profile-placeholder": "Pilih profil",
         "input-new-division": "Divisi",
         "input-new-division-placeholder": "Pilih divisi",
+        "input-new-po-status": "Status PO",
+        "input-new-po-status-placeholder": "Pilih status PO",
+        "input-new-request-to": "Permintaan ke",
+        "input-new-request-to-placeholder": "Pilih permintaan ke",
+        "input-new-next-po-status": "Status PO Berikutnya",
+        "input-new-next-po-status-placeholder": "Pilih status PO berikutnya",
         "input-new-description": "Deskripsi",
         "input-new-status": "Status",
         "edit-approval-flow": "Edit Alur Persetujuan"

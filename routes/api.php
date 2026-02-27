@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AppConstController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Master\MasterDataApprovalFlowController;
 use App\Http\Controllers\Master\MasterDataFunctionalProfileController;
 use App\Http\Controllers\Master\MasterDataLimitController;
 use App\Http\Controllers\Master\MasterDataMenuController;
@@ -9,6 +10,8 @@ use App\Http\Controllers\Master\MasterDataMerchStructController;
 use App\Http\Controllers\Master\MasterDataProfileController;
 use App\Http\Controllers\Master\MasterDataRegionalSiteController;
 use App\Http\Controllers\Master\MasterDataUserController;
+use App\Http\Controllers\Master\MasterDataUserGuideController;
+use App\Http\Controllers\Master\MasterDataPoStatusController;
 use App\Http\Middleware\XssProtection;
 use Illuminate\Support\Facades\Route;
 
@@ -66,10 +69,26 @@ Route::prefix('v1')->middleware([XssProtection::class])->group(function () {
                 Route::get('/list', [MasterDataUserController::class, 'getUserList'])->name('get-user-list');
             });
 
+            /** Approval Flow */
+            Route::prefix('approval-flow')->group(function () {
+                Route::get('/list', [MasterDataApprovalFlowController::class, 'getApprovalFlowList'])->name('get-approval-flow-list');
+                Route::post('/create', [MasterDataApprovalFlowController::class, 'postApprovalFlowCreate'])->name('post-approval-flow-create');
+            });
+
             /** Regional Site */
             Route::prefix('site')->group(function () {
                 Route::get('/list', [MasterDataRegionalSiteController::class, 'getSiteList'])->name('get-site-list');
                 Route::get('/detail/{id}', [MasterDataRegionalSiteController::class, 'getSiteDetail'])->name('get-site-detail');
+            });
+
+            /** User Guide */
+            Route::prefix('user-guide')->group(function () {
+                Route::get('/list', [MasterDataUserGuideController::class, 'getUserGuideList'])->name('get-user-guide-list');
+            });
+
+            /** PO STATUS */
+            Route::prefix('po-status')->group(function () {
+                Route::get('/list', [MasterDataPoStatusController::class, 'getPoStatusList'])->name('get-po-status-list');
             });
         });
     });

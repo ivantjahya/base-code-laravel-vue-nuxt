@@ -359,7 +359,7 @@ class PythonModuleMasterDataService
 
     /** ------------------------------------- REGIONAL SITE ------------------------------------- */
     /**
-     * Get site list from Python API
+     * Get regional site list from Python API
      */
     public function getSiteList(array $params = []): array
     {
@@ -394,22 +394,8 @@ class PythonModuleMasterDataService
 
     /** ------------------------------------- USER ------------------------------------- */
     /**
-     * Get site list from Python API
+     * Get user list from Python API
      */
-    // public function getUserList(array $params = []): array
-    // {
-    //     return $this->handleApiRequest(
-    //         fn () => Http::acceptJson()
-    //             ->connectTimeout(3)
-    //             ->timeout(60)
-    //             ->get("{$this->baseUrl}/user/get_list", $params)
-    //             ->throw(),
-    //         '/masterdata/user/get_list',
-    //         'Failed to get user list',
-    //         ['params' => $params]
-    //     );
-    // }
-
     public function getUserList(array $params = []): array
     {
         return $this->handleApiRequest(
@@ -423,4 +409,77 @@ class PythonModuleMasterDataService
             ['params' => $params]
         );
     }
+
+    /** ------------------------------------- APPROVAL FLOW ------------------------------------- */
+    /**
+     * Get approval flow list from Python API
+     */
+    public function getApprovalFlowList(array $params = []): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(60)
+                ->get("{$this->baseUrl}/approval_flow/get_list", $params)
+                ->throw(),
+            '/masterdata/approval_flow/get_list',
+            'Failed to get approval flow list',
+            ['params' => $params]
+        );
+    }
+
+    /**
+     * Create new approval flow in Python API
+     */
+    public function createApprovalFlow(array $data): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(30)
+                ->post("{$this->baseUrl}/approval_flow/post_create", $data)
+                ->throw(),
+            '/masterdata/approval_flow/post_create',
+            'Failed to create approval flow',
+            ['request_data' => $data]
+        );
+    }
+
+    /** ------------------------------------- USER GUIDE ------------------------------------- */
+    /**
+     * Get user guide list from Python API
+     */
+    public function getUserGuideList(array $params = []): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(60)
+                ->get("{$this->baseUrl}/user_guide/get_list", $params)
+                ->throw(),
+            '/masterdata/user_guide/get_list',
+            'Failed to get user guide list',
+            ['params' => $params]
+        );
+    }
+
+    /** ------------------------------------- STATUS PO ------------------------------------- */
+    /**
+     * Get status PO list from Python API
+     */
+    public function getPoStatusList(array $params = []): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(60)
+                ->get("{$this->baseUrl}/status/get_list_po_status", $params)
+                ->throw(),
+            '/masterdata/status/get_list_po_status',
+            'Failed to get status PO list',
+            ['params' => $params]
+        );
+    }
+
+
 }

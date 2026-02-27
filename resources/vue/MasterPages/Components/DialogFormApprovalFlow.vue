@@ -1,9 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, h, resolveComponent, shallowRef, onMounted, watch, getCurrentInstance } from 'vue'
-import type { TableColumn } from '@nuxt/ui'
-import { CalendarDate, DateFormatter, getLocalTimeZone, today } from '@internationalized/date'
+import { ref, computed, watch, getCurrentInstance, nextTick } from 'vue'
 import { useI18n } from '../../composables/useI18n'
-import { useFormatters } from '../../composables/useFormatters'
 import { useApiStore } from '../../AppState'
 import axios from 'axios'
 
@@ -27,24 +24,43 @@ const props = defineProps({
     initialData: {
         type: Object,
         default: () => ({})
+    },
+    profileOptions: {
+        type: Array as () => Array<{ label: string; value: string }>,
+        default: () => []
+    },
+    divisionOptions: {
+        type: Array as () => Array<{ label: string; value: string }>,
+        default: () => []
+    },
+    divisionLoading: {
+        type: Boolean,
+        default: false
+    },
+    poStatusOptions: {
+        type: Array as () => Array<{ label: string; value: string }>,
+        default: () => []
+    },
+    poStatusLoading: {
+        type: Boolean,
+        default: false
     }
 })
 
 const emit = defineEmits(['update:open', 'submitted', 'close'])
 
 const { t } = useI18n()
-const { formatDate, formatCurrency, getDateString, stringToCalendarDate } = useFormatters()
 const api = useApiStore()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
 const isSubmitting = ref(false)
 
-const description = ref<string>('')
-
-const profileValue = ref(['SUPERADMIN', 'ADMIN', 'MD FASHION', 'MD FRESH'])
 const profile = ref<string | null>(null)
-const divisionValue = ref(['A1 - MISSY', 'A2 - YOUNG', 'A3 - INTIMATE', 'A4 - BRANDED OUTRIGHT NORMAL'])
 const division = ref<string | null>(null)
+const poStatus = ref<string | null>(null)
+const request_to = ref<string | null>(null)
+const nextPoStatus = ref<string | null>(null)
+const description = ref<string>('')
 
 const valueSwitch = ref(true)
 
@@ -52,19 +68,31 @@ const valueSwitch = ref(true)
 const errors = ref({
     profile: '',
     division: '',
+    poStatus: '',
+    request_to: '',
+    nextPoStatus: '',
     description: ''
 })
 
 const resetForm = () => {
     profile.value = null
     division.value = null
+    poStatus.value = null
+    request_to.value = null
+    nextPoStatus.value = null
     description.value = ''
+    valueSwitch.value = true
+
     // Reset errors
     errors.value = {
         profile: '',
         division: '',
+        poStatus: '',
+        request_to: '',
+        nextPoStatus: '',
         description: ''
     }
+
 }
 
 const closeModal = () => {
@@ -78,6 +106,9 @@ watch(() => props.open, (newVal) => {
             description.value = props.initialData.description || ''
             profile.value = props.initialData.profile || null
             division.value = props.initialData.division || null
+            poStatus.value = props.initialData.poStatus || null
+            request_to.value = props.initialData.request_to || null
+            nextPoStatus.value = props.initialData.nextPoStatus || null
             valueSwitch.value = props.initialData.status ?? true
         } else {
             resetForm()
@@ -91,7 +122,10 @@ const postSubmitProfile = async () => {
     errors.value = {
         description: '',
         profile: '',
-        division: ''
+        division: '',
+        poStatus: '',
+        request_to: '',
+        nextPoStatus: ''
     }
 
     // Validation
@@ -107,6 +141,21 @@ const postSubmitProfile = async () => {
         hasError = true
     }
 
+    if (!poStatus.value) {
+        errors.value.poStatus = t('auth.validation.required' as any) || 'This field is required'
+        hasError = true
+    }
+
+    if (!request_to.value) {
+        errors.value.request_to = t('auth.validation.required' as any) || 'This field is required'
+        hasError = true
+    }
+
+    if (!nextPoStatus.value) {
+        errors.value.nextPoStatus = t('auth.validation.required' as any) || 'This field is required'
+        hasError = true
+    }
+
     if (hasError) {
         return
     }
@@ -114,21 +163,25 @@ const postSubmitProfile = async () => {
     isSubmitting.value = true
     try {
 
+        console.log(poStatus.value);
+
         const payload = {
-            description: description.value,
             profile: profile.value,
             division: division.value,
+            poStatus: poStatus.value,
+            request_to: request_to.value,
+            nextPoStatus: nextPoStatus.value,
+            description: description.value,
             status: valueSwitch.value ? 1 : 0
         }
+        console.log('Payload to submit:', payload);
 
         // let response
-        // if (props.editMode && props.editingId) {
-        //     // Update existing profile
-        //     response = await axios.put(`${api.postProfileUpdate}${props.editingId}`, payload)
-        // } else {
-        //     // Create new profile
-        //     response = await axios.post(api.postProfileCreate, payload)
-        // }
+        if (props.editMode && props.editingId) {
+            await axios.put(`${api.postApprovalFlowUpdate}${props.editingId}`, payload)
+        } else {
+            await axios.post(api.postApprovalFlowCreate, payload)
+        }
 
         Swal?.fire({
             icon: 'success',
@@ -182,8 +235,11 @@ const isOpen = computed({
                 <div class="w-80">
                     <USelectMenu
                         v-model="profile"
-                        :items="profileValue"
-                        placeholder="Select profile"
+                        :items="profileOptions"
+                        value-key="value"
+                        value-attribute="value"
+                        option-attribute="label"
+                        :placeholder="t('text.approval-flow-management-pg.input-new-profile-placeholder') || 'Select profile'"
                         class="w-full font-light"
                         :ui="{
                             base: errors.profile
@@ -216,8 +272,11 @@ const isOpen = computed({
                 <div class="w-80">
                     <USelectMenu
                         v-model="division"
-                        :items="divisionValue"
-                        placeholder="Select division"
+                        :items="divisionOptions"
+                        value-key="value"
+                        value-attribute="value"
+                        option-attribute="label"
+                        :placeholder="t('text.approval-flow-management-pg.input-new-division-placeholder') || 'Select division'"
                         class="w-full font-light"
                         :ui="{
                             base: errors.division
@@ -225,7 +284,118 @@ const isOpen = computed({
                                 : ''
                         }"
                     />
-                    <p v-if="errors.category" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.category }}</p>
+                    <p v-if="errors.division" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.division }}</p>
+                </div>
+
+            </UFormField>
+
+            <!-- PO STATUS -->
+            <UFormField
+                orientation="horizontal"
+                class="mb-2"
+                :error="!!errors.poStatus"
+                :ui="{
+                    error: 'hidden',
+                }"
+            >
+
+                <template #label>
+                    <span class="flex items-center gap-1">
+                        {{ t('text.approval-flow-management-pg.input-new-po-status') || 'PO Status' }}
+                        <span class="text-red-500">*</span>
+                    </span>
+                </template>
+
+                <div class="w-80">
+                    <USelectMenu
+                        v-model="poStatus"
+                        :items="poStatusOptions"
+                        value-key="value"
+                        value-attribute="value"
+                        option-attribute="label"
+                        :placeholder="t('text.approval-flow-management-pg.input-new-po-status-placeholder') || 'Select PO Status'"
+                        class="w-full font-light"
+                        :ui="{
+                            base: errors.poStatus
+                                ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
+                                : ''
+                        }"
+                    />
+                    <p v-if="errors.poStatus" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.poStatus }}</p>
+                </div>
+
+            </UFormField>
+
+            <!-- REQUEST TO -->
+            <UFormField
+                orientation="horizontal"
+                class="mb-2"
+                :error="!!errors.request_to"
+                :ui="{
+                    error: 'hidden',
+                }"
+            >
+
+                <template #label>
+                    <span class="flex items-center gap-1">
+                        {{ t('text.approval-flow-management-pg.input-new-request-to') || 'Request To' }}
+                        <span class="text-red-500">*</span>
+                    </span>
+                </template>
+
+                <div class="w-80">
+                    <USelectMenu
+                        v-model="request_to"
+                        :items="profileOptions"
+                        value-key="value"
+                        value-attribute="value"
+                        option-attribute="label"
+                        :placeholder="t('text.approval-flow-management-pg.input-new-request-to-placeholder') || 'Select request to'"
+                        class="w-full font-light"
+                        :ui="{
+                            base: errors.request_to
+                                ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
+                                : ''
+                        }"
+                    />
+                    <p v-if="errors.request_to" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.request_to }}</p>
+                </div>
+
+            </UFormField>
+
+            <!-- NEXT PO STATUS -->
+            <UFormField
+                orientation="horizontal"
+                class="mb-2"
+                :error="!!errors.nextPoStatus"
+                :ui="{
+                    error: 'hidden',
+                }"
+            >
+
+                <template #label>
+                    <span class="flex items-center gap-1">
+                        {{ t('text.approval-flow-management-pg.input-new-next-po-status') || 'Next PO Status' }}
+                        <span class="text-red-500">*</span>
+                    </span>
+                </template>
+
+                <div class="w-80">
+                    <USelectMenu
+                        v-model="nextPoStatus"
+                        :items="poStatusOptions"
+                        value-key="value"
+                        value-attribute="value"
+                        option-attribute="label"
+                        :placeholder="t('text.approval-flow-management-pg.input-new-next-po-status-placeholder') || 'Select Next PO Status'"
+                        class="w-full font-light"
+                        :ui="{
+                            base: errors.nextPoStatus
+                                ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
+                                : ''
+                        }"
+                    />
+                    <p v-if="errors.nextPoStatus" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.nextPoStatus }}</p>
                 </div>
 
             </UFormField>
@@ -267,9 +437,9 @@ const isOpen = computed({
                 <template #label>
                     <span class="flex items-center gap-1">
                         {{ t('text.approval-flow-management-pg.input-new-status') || 'Status' }}
+                        <span class="text-red-500">*</span>
                     </span>
                 </template>
-
                 <div class="flex justify-start w-80">
                     <USwitch v-model="valueSwitch" />
                 </div>

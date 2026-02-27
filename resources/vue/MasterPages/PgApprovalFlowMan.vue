@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { ref, computed, h, resolveComponent, shallowRef, onMounted } from 'vue'
-import type { TableColumn } from '@nuxt/ui'
-import { CalendarDate, DateFormatter, getLocalTimeZone, today } from '@internationalized/date'
 import { useI18n } from '../composables/useI18n'
-import { useFormatters } from '../composables/useFormatters'
 import { useApiStore } from '../AppState'
 import axios from 'axios'
 import { getCurrentInstance } from 'vue'
+import { useGlobalOptions } from '../composables/useGlobalOptions'
 import CmpLayout from '../Components/CmpLayout.vue'
 import CmpCustomTable from '../Components/CmpCustomTable.vue'
 import CmpAccordionFilter from '../Components/CmpAccordionFilter.vue'
@@ -14,7 +12,7 @@ import DialogFormApprovalFlow from './Components/DialogFormApprovalFlow.vue'
 import FormFilterApprovalFlow from './Components/FormFilterApprovalFlow.vue'
 
 const { t } = useI18n()
-const { formatDate, formatCurrency, getDateString, stringToCalendarDate } = useFormatters()
+const { statusOptions } = useGlobalOptions()
 const api = useApiStore()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
@@ -23,14 +21,21 @@ const UBadge = resolveComponent('UBadge')
 
 // ========================= STATE FOR FILTER =========================
 const approvalFlowCodeFilter = ref('')
-const profile = ref<number | null>(null)
-const division = ref<number | null>(null)
+const profileFilter = ref<number | null>(null)
+const divisionFilter = ref<number | null>(null)
 const statusFilter = ref<number | null>(null)
+
+// For select options
+const profileOptions = ref<{ label: string; value: string }[]>([])
+const divisionOptions = ref<{ label: string; value: string }[]>([])
+const divisionOptionsLoading = ref(false)
+const poStatusOptions = ref<{ label: string; value: string }[]>([])
+const poStatusOptionsLoading = ref(false)
 
 const resetFilter = () => {
     approvalFlowCodeFilter.value = ''
-    profile.value = null
-    division.value = null
+    profileFilter.value = null
+    divisionFilter.value = null
     statusFilter.value = null
 }
 
@@ -52,12 +57,14 @@ const columns = computed(() => [
     {
         key: 'profile',
         label: t('text.table-column.column-profile'),
-        sortable: true
+        sortable: true,
+        cellRenderer: (_value: any, row: any) => row.profile ? row.profile?.name : '-'
     },
     {
         key: 'division',
         label: t('text.table-column.column-division'),
-        sortable: true
+        sortable: true,
+        cellRenderer: (_value: any, row: any) => row.merch_struct ? row.merch_struct?.name : '-'
     },
     {
         key: 'status',
@@ -117,8 +124,8 @@ const getApprovalFlowList = async () => {
     try {
         const params = {
             approval_flow_code: approvalFlowCodeFilter.value,
-            profile: profile.value,
-            division: division.value,
+            profile: profileFilter.value,
+            division: divisionFilter.value,
             status: statusFilter.value,
             skip: (currentPage.value - 1) * itemPerPage.value,
             limit: itemPerPage.value,
@@ -139,6 +146,111 @@ const getApprovalFlowList = async () => {
         });
     } finally {
         loadingTable.value = false;
+    }
+}
+
+const getProfileOptions = async () => {
+    profileOptions.value = [] // Clear options before fetching new data
+    try {
+        const params = {
+            skip: 0,
+            limit: 1000,
+            sort_by: 'code',
+            sort_order: 'asc',
+        }
+
+        const response = await axios.get(api.getProfileList, { params })
+        const sourceItems = response?.data?.data?.items || response?.data?.data || response?.data || []
+        const sourceArray = Array.isArray(sourceItems) ? sourceItems : []
+        const activeData = sourceArray.filter((item: any) => {
+            const rawActive = item?.status
+            return rawActive === true || rawActive === 1 || rawActive === '1'
+        })
+
+        const uniqueOptions = new Map<string, { label: string; value: string }>()
+        activeData.forEach((item: any) => {
+            const label = String(item?.name).trim()
+            const value = String(item?.id).trim()
+
+            if (!value) return
+            uniqueOptions.set(value, {
+                label: label,
+                value: value,
+            })
+        })
+
+        profileOptions.value = Array.from(uniqueOptions.values())
+    } catch (error) {
+        console.error('Error fetching profile options:', error)
+        profileOptions.value = []
+    }
+}
+
+const getDivisionOptions = async () => {
+    divisionOptions.value = [] // Clear options before fetching new data
+    divisionOptionsLoading.value = true
+    try {
+        const response = await axios.get(api.getMerchStructDivCatList)
+
+        const sourceItems = response?.data?.data?.items || response?.data?.data || response?.data || []
+        const sourceArray = Array.isArray(sourceItems) ? sourceItems : []
+        const divisionData = sourceArray.filter((item: any) => {
+            return item.parent_id === null
+        })
+
+        const uniqueOptions = new Map<string, { label: string; value: string }>()
+        divisionData.forEach((item: any) => {
+            const label = String(item?.code).trim() + ' - ' + String(item?.name).trim()
+            const value = String(item?.id).trim()
+
+            if (!value) return
+            uniqueOptions.set(value, {
+                label: label,
+                value: value,
+            })
+        })
+
+        divisionOptions.value = Array.from(uniqueOptions.values())
+
+    } catch (error) {
+        console.error('Error fetching division options:', error)
+        divisionOptions.value = []
+    } finally {
+        divisionOptionsLoading.value = false
+    }
+}
+
+const getPoStatusOptions = async () => {
+    poStatusOptions.value = [] // Clear options before fetching new data
+    poStatusOptionsLoading.value = true
+    try {
+        const response = await axios.get(api.getPoStatusList)
+        console.log(response);
+
+        const sourceItems = response?.data?.items || response?.data || response || []
+        const sourceArray = Array.isArray(sourceItems) ? sourceItems : []
+
+        const uniqueOptions = new Map<string, { label: string; value: string }>()
+        sourceArray.forEach((item: any) => {
+            const label = String(item?.description).trim()
+            const value = String(item?.id).trim()
+
+            if (!value) return
+            uniqueOptions.set(value, {
+                label: label,
+                value: value,
+            })
+        })
+
+        poStatusOptions.value = Array.from(uniqueOptions.values())
+        console.log(poStatusOptions.value);
+
+
+    } catch (error) {
+        console.error('Error fetching po status options:', error)
+        poStatusOptions.value = []
+    } finally {
+        poStatusOptionsLoading.value = false
     }
 }
 
@@ -200,8 +312,21 @@ const handleEdit = async (data: any) => {
 }
 
 // Fetch initial data on component mount
-onMounted(() => {
-    getApprovalFlowList()
+onMounted(async () => {
+    await Promise.all([
+        getProfileOptions(),
+        getDivisionOptions(),
+        getPoStatusOptions(),
+        getApprovalFlowList()
+    ]).catch((error) => {
+        console.error('Error during initial data fetch:', error)
+        Swal?.fire({
+            icon: 'error',
+            title: t('text.message.error' as any) || 'Error!',
+            text: t('text.message.failed-to-load-data-msg' as any) || 'Failed to load data.',
+            confirmButtonText: 'OK'
+        });
+    })
 })
 
 </script>
@@ -238,6 +363,11 @@ onMounted(() => {
                 :edit-mode="editMode"
                 :editing-id="editingId"
                 :initial-data="editData"
+                :profile-options="profileOptions"
+                :division-options="divisionOptions"
+                :division-loading="divisionOptionsLoading"
+                :po-status-options="poStatusOptions"
+                :po-status-loading="poStatusOptionsLoading"
                 @update:open="modalSubmitOpen = $event"
                 @submitted="onSubmitted"
                 @close="closeModal"
@@ -248,10 +378,13 @@ onMounted(() => {
                 <!-- Filters Section with Accordion -->
                 <CmpAccordionFilter>
                     <FormFilterApprovalFlow
-                        v-model:approval-flow-code="approvalFlowCodeFilter"
+                        v-model:approvalCode="approvalFlowCodeFilter"
                         v-model:profile="profileFilter"
                         v-model:division="divisionFilter"
                         v-model:status="statusFilter"
+                        :profile-options="profileOptions"
+                        :status-options="statusOptions"
+                        :division-options="divisionOptions"
                         :loading="loadingTable"
                         @clear="resetFilter"
                         @find="onClickFindButton"
