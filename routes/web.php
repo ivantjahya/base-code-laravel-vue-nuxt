@@ -2,13 +2,13 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Master\MasterDataApprovalFlowController;
 use App\Http\Controllers\Master\MasterDataFunctionalProfileController;
 use App\Http\Controllers\Master\MasterDataLimitController;
 use App\Http\Controllers\Master\MasterDataProfileController;
 use App\Http\Controllers\Master\MasterDataRegionalSiteController;
 use App\Http\Controllers\Master\MasterDataUserController;
 use App\Http\Controllers\Master\MasterDataUserGuideController;
-use App\Http\Controllers\Master\MasterDataApprovalFlowController;
 use Illuminate\Support\Facades\Route;
 
 /** Route for login redirect */
@@ -38,25 +38,39 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware(['can:has-master-menu-perm'])->group(function () {
         /** Limit */
-        Route::get('/limit-management', [MasterDataLimitController::class, 'limitManagementPage'])->name('limit-management');
+        Route::middleware(['can:has-master-limit-menu-perm'])->group(function () {
+            Route::get('/limit-management', [MasterDataLimitController::class, 'limitManagementPage'])->name('limit-management');
+        });
 
         /** Profile */
-        Route::get('/profile-management', [MasterDataProfileController::class, 'profileManagementPage'])->name('profile-management');
+        Route::middleware(['can:has-master-profile-menu-perm'])->group(function () {
+            Route::get('/profile-management', [MasterDataProfileController::class, 'profileManagementPage'])->name('profile-management');
+        });
 
         /** Functional Profile */
-        Route::get('/functional-profile-management', [MasterDataFunctionalProfileController::class, 'functionalProfileManagementPage'])->name('functional-profile-management');
+        Route::middleware(['can:has-master-func-profile-menu-perm'])->group(function () {
+            Route::get('/functional-profile-management', [MasterDataFunctionalProfileController::class, 'functionalProfileManagementPage'])->name('functional-profile-management');
+        });
 
         /** User */
-        Route::get('/user-management', [MasterDataUserController::class, 'userManagementPage'])->name('user-management');
+        Route::middleware(['can:has-master-user-menu-perm'])->group(function () {
+            Route::get('/user-management', [MasterDataUserController::class, 'userManagementPage'])->name('user-management');
+        });
 
         /** Approval Flow */
-        Route::get('/approval-flow-management', [MasterDataApprovalFlowController::class, 'approvalFlowManagementPage'])->name('approval-flow-management');
+        Route::middleware(['can:has-master-approval-flow-menu-perm'])->group(function () {
+            Route::get('/approval-flow-management', [MasterDataApprovalFlowController::class, 'approvalFlowManagementPage'])->name('approval-flow-management');
+        });
 
         /** Regional Site */
-        Route::get('/regional-site', [MasterDataRegionalSiteController::class, 'regionalSitePage'])->name('regional-site');
+        Route::middleware(['can:has-master-regional-site-menu-perm'])->group(function () {
+            Route::get('/regional-site', [MasterDataRegionalSiteController::class, 'regionalSitePage'])->name('regional-site');
+        });
 
         /** User Guide */
-        Route::get('/user-guide-management', [MasterDataUserGuideController::class, 'userGuideManagementPage'])->name('user-guide-management');
+        Route::middleware(['can:has-master-user-guide-menu-perm'])->group(function () {
+            Route::get('/user-guide-management', [MasterDataUserGuideController::class, 'userGuideManagementPage'])->name('user-guide-management');
+        });
     });
 });
 

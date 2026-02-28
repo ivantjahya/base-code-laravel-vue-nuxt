@@ -45,7 +45,7 @@ class LocalDataSeeder extends Seeder
                     ProfileMenu::firstOrCreate([
                         'profile_id' => $profile->id,
                         'menu_id' => $menu->id,
-                        'acc_control_id' => null
+                        'acc_control_id' => null,
                     ], []);
                 } else {
                     foreach ($menuAccControls as $menuAccControl) {

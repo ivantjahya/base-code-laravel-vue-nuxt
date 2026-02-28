@@ -6,7 +6,6 @@ use App\Exceptions\CommonCustomException;
 use App\Http\Controllers\Controller;
 use App\Interfaces\InterfaceClass;
 use App\Services\PythonModuleMasterDataService;
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -33,6 +32,7 @@ class MasterDataMenuController extends Controller
         try {
             $data = Cache::tags([InterfaceClass::TAG_MASTERDATA])->remember(InterfaceClass::KEY_MASTER_MENU, InterfaceClass::CACHE_MST_TIME, function () {
                 $temp = $this->moduleMasterDataService->getMenuList();
+
                 return $temp;
             });
 
@@ -53,6 +53,7 @@ class MasterDataMenuController extends Controller
         try {
             $data = Cache::tags([InterfaceClass::TAG_MASTERDATA])->remember(InterfaceClass::KEY_MASTER_MENU_ACC_CTRL, InterfaceClass::CACHE_MST_TIME, function () {
                 $temp = $this->moduleMasterDataService->getMenuAccControlList();
+
                 return $temp;
             });
 

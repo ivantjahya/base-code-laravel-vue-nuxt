@@ -52,6 +52,16 @@ const postLoginData = async () => {
             summary: response.data.title,
             detail: response.data.message,
         });
+
+        // Store the menu list returned from login response into localStorage immediately,
+        // so the menu is ready when the home page loads without any empty state flash.
+        const accessMenuList = response.data?.data?.accessMenuList;
+        if (accessMenuList && accessMenuList.length > 0) {
+            localStorage.setItem('accessMenuList', JSON.stringify(accessMenuList));
+        } else {
+            localStorage.removeItem('accessMenuList');
+        }
+
         // Use the redirect URL from backend response if available
         const redirectUrl = response.data.redirect || web.home;
         window.location.href = redirectUrl;

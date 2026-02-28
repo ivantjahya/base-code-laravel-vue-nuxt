@@ -26,6 +26,12 @@ interface CacheKeyConst
 
     public const KEY_MENUCTRLPERM = 'menu-ctrl-perm';
 
+    public const KEY_STATUS_USER_ACTIVE = 'status-user-active';
+
+    public const KEY_STATUS_USER_INACTIVE = 'status-user-inactive';
+
+    public const KEY_STATUS_USER_LOCKED = 'status-user-locked';
+
     /**
      * List of cache carbon time
      */

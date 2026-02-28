@@ -119,7 +119,7 @@ class MenuSeeder extends Seeder
             [
                 'name' => 'Purchase Order',
                 'url' => null,
-                'icon' => 'i-luicide-baggage-claim',
+                'icon' => 'i-lucide-baggage-claim',
                 'code' => 3000,
                 'name_code' => 'menu.purchase-order',
                 'submenu' => [

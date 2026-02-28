@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Interfaces\InterfaceClass;
 use App\Models\Master\Status;
 use Illuminate\Database\Seeder;
 
@@ -179,19 +180,19 @@ class StatusSeeder extends Seeder
         /** List status for users */
         $data = [
             [
-                'code' => 'USR_ACTIVE',
+                'code' => InterfaceClass::STATUS_USER_ACTIVE,
                 'description' => 'text.message.active',
                 'used_for' => 'MASTER_USER',
                 'status_group' => null,
             ],
             [
-                'code' => 'USR_INACTIVE',
+                'code' => InterfaceClass::STATUS_USER_INACTIVE,
                 'description' => 'text.message.not-active',
                 'used_for' => 'MASTER_USER',
                 'status_group' => null,
             ],
             [
-                'code' => 'USR_LOCKED',
+                'code' => InterfaceClass::STATUS_USER_LOCKED,
                 'description' => 'text.message.locked',
                 'used_for' => 'MASTER_USER',
                 'status_group' => null,

@@ -24,6 +24,14 @@ const props = defineProps({
         type: Boolean,
         default: false
     },
+    /**
+     * When true the dialog opens in read-only mode: all inputs are disabled
+     * and the Submit button is hidden. Used when the user has no update permission.
+     */
+    viewOnly: {
+        type: Boolean,
+        default: false
+    },
     editingId: {
         type: String,
         default: null
@@ -81,7 +89,7 @@ const closeModal = () => {
 
 watch(() => props.open, (newVal) => {
     if (newVal) {
-        if ((props.editMode || props.extendMode) && props.initialData) {
+        if ((props.editMode || props.extendMode || props.viewOnly) && props.initialData) {
             valueMin.value = props.initialData.min_value
             valueMax.value = props.initialData.max_value
             modelValueStart.value = stringToCalendarDate(props.initialData.start_date)
@@ -225,7 +233,7 @@ const isOpen = computed({
                         v-model="valueMin"
                         required
                         locale="id-ID"
-                        :disabled="extendMode"
+                        :disabled="extendMode || viewOnly"
                         :format-options="{
                             style: 'currency',
                             currency: 'IDR'
@@ -261,7 +269,7 @@ const isOpen = computed({
                     <UInputNumber
                         v-model="valueMax"
                         locale="id-ID"
-                        :disabled="extendMode"
+                        :disabled="extendMode || viewOnly"
                         :format-options="{
                             style: 'currency',
                             currency: 'IDR'
@@ -300,7 +308,7 @@ const isOpen = computed({
                         locale="en-GB"
                         format="dd/mm/yyyy"
                         :max-value="modelValueEnd"
-                        :disabled="editMode || extendMode"
+                        :disabled="editMode || extendMode || viewOnly"
                         class="w-full font-reguler"
                         :ui="{
                             base: errors.startDate
@@ -317,7 +325,7 @@ const isOpen = computed({
                                     icon="i-lucide-calendar"
                                     aria-label="Select a date"
                                     class="px-0"
-                                    :disabled="editMode || extendMode"
+                                    :disabled="editMode || extendMode || viewOnly"
                                 />
 
                                 <template #content>
@@ -358,7 +366,7 @@ const isOpen = computed({
                         locale="en-GB"
                         format="dd/mm/yyyy"
                         :min-value="modelValueStart"
-                        :disabled="editMode"
+                        :disabled="editMode || viewOnly"
                         class="w-full font-reguler"
                         :ui="{
                             base: errors.endDate
@@ -375,7 +383,7 @@ const isOpen = computed({
                                     icon="i-lucide-calendar"
                                     aria-label="Select a date"
                                     class="px-0"
-                                    :disabled="editMode"
+                                    :disabled="editMode || viewOnly"
                                 />
 
                                 <template #content>
@@ -395,20 +403,32 @@ const isOpen = computed({
         </template>
 
         <template #footer>
+            <!-- Clear button — only in create mode -->
             <UButton
-                v-if="!editMode && !extendMode"
+                v-if="!editMode && !extendMode && !viewOnly"
                 class="bg-[#FEE9D6] text-[#F26524] hover:bg-[#FBD0AD] hover:text-[#E34613] active:bg-[#FBD0AD] active:text-[#E34613] text-[14px] px-5"
                 :disabled="isSubmitting"
                 @click="resetForm"
             >{{ t('text.button.clear') || 'Clear' }}</UButton>
 
-            <UButton 
+            <!-- Submit button — hidden in view-only mode -->
+            <UButton
+                v-if="!viewOnly"
                 class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[14px] px-5"
                 :loading="isSubmitting"
                 :disabled="isSubmitting"
                 @click="postSubmitLimit"
             >
                 {{ t('text.button.submit') || 'Submit' }}
+            </UButton>
+
+            <!-- Close button — shown only in view-only mode -->
+            <UButton
+                v-if="viewOnly"
+                class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[14px] px-5"
+                @click="closeModal"
+            >
+                {{ t('text.button.close') || 'Close' }}
             </UButton>
         </template>
     </UModal>
