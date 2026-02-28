@@ -35,7 +35,7 @@ class MasterDataRegionalSiteController extends Controller
         ]);
     }
 
-     /**
+    /**
      * GET request for get site list
      */
     public function getSiteList(Request $request): HttpJsonResponse

@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Master;
 
 use App\Exceptions\CommonCustomException;
 use App\Http\Controllers\Controller;
+use App\Interfaces\InterfaceClass;
 use App\Services\PythonModuleMasterDataService;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -107,6 +110,35 @@ class MasterDataProfileController extends Controller
     }
 
     /**
+     * GET request for get profile menu access
+     */
+    public function getProfileMenuAccess(Request $request, $id): HttpJsonResponse
+    {
+        $user = Auth::user() ?? Auth::guard('api')->user();
+        Log::debug('User is requesting get profile menu access', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'profileId' => $id]);
+
+        /** Validate ID parameter */
+        $validate = Validator::make(['id' => $id], [
+            'id' => ['required', 'uuid'],
+        ]);
+        if ($validate->fails()) {
+            throw new ValidationException($validate);
+        }
+        try {
+            // Keyed by profile id ($id) so one entry is shared by all users on this profile
+            $data = Cache::tags([InterfaceClass::TAG_MENUPERM])->remember(InterfaceClass::KEY_MENUPERM.'-'.$id, Carbon::now()->addYear(), function () use ($id) {
+                $data = $this->moduleMasterDataService->getProfileMenuAccess($id);
+
+                return $data['data']['menu_access'] ?? [];
+            });
+
+            return response()->json($data);
+        } catch (\Throwable $e) {
+            throw new CommonCustomException($e->getMessage(), 500, $e);
+        }
+    }
+
+    /**
      * POST request for create profile
      */
     public function postProfileCreate(Request $request): HttpJsonResponse
@@ -188,6 +220,9 @@ class MasterDataProfileController extends Controller
                 'user_id' => $user?->id,
             ];
             $data = $this->moduleMasterDataService->updateProfile($idValidated['id'], $params);
+
+            // Invalidate the menu permission cache for this profile so all users see the updated menu
+            Cache::tags([InterfaceClass::TAG_MENUPERM])->forget(InterfaceClass::KEY_MENUPERM.'-'.$idValidated['id']);
 
             return response()->json($data);
         } catch (\Throwable $e) {

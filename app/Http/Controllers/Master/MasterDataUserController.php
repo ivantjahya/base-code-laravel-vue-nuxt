@@ -15,7 +15,6 @@ use Illuminate\View\View;
 
 class MasterDataUserController extends Controller
 {
-
     private PythonModuleMasterDataService $moduleMasterDataService;
 
     public function __construct(PythonModuleMasterDataService $moduleMasterDataService)

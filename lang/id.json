@@ -81,7 +81,8 @@
         "input-new-end-date": "Tanggal Berakhir",
         "input-new-status": "Status",
         "edit-limit": "Edit Limit",
-        "extend-limit": "Perpanjang Limit"
+        "extend-limit": "Perpanjang Limit",
+        "view-limit": "Lihat Limit"
     },
     "profile-management-pg": {
         "list": "Daftar Data Profil",
@@ -327,7 +328,10 @@
       "username-incorrect": "ID pengguna salah",
       "password-incorrect": "Kata sandi salah",
       "required": "Kolom ini wajib diisi",
-      "amount-max-greater-than-min": "Maksimum harus lebih besar dari atau sama dengan minimum"
+      "amount-max-greater-than-min": "Maksimum harus lebih besar dari atau sama dengan minimum",
+      "inactive-user": "Akun Anda tidak aktif. Silakan hubungi administrator.",
+      "locked-user": "Akun Anda terkunci. Silakan hubungi administrator.",
+      "expired-user": "Akun Anda telah kedaluwarsa. Silakan hubungi administrator."
     }
   },
   "token": {

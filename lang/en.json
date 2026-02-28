@@ -81,7 +81,8 @@
         "input-new-end-date": "End Date",
         "input-new-status": "Status",
         "edit-limit": "Edit Limit",
-        "extend-limit": "Extend Limit"
+        "extend-limit": "Extend Limit",
+        "view-limit": "View Limit"
     },
     "profile-management-pg": {
         "list": "List of Profiles",
@@ -328,7 +329,10 @@
       "username-incorrect": "Username is incorrect",
       "password-incorrect": "Password is incorrect",
       "required": "This field is required",
-      "amount-max-greater-than-min": "Maximum must be greater than or equal to minimum"
+      "amount-max-greater-than-min": "Maximum must be greater than or equal to minimum",
+      "inactive-user": "Your account is inactive. Please contact the administrator.",
+      "locked-user": "Your account is locked. Please contact the administrator.",
+      "expired-user": "Your account has expired. Please contact the administrator."
     }
   },
   "token": {

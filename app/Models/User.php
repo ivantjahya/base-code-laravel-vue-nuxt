@@ -23,6 +23,8 @@ class User extends Authenticatable
      * profile_id: uuid
      * valid_date: date
      * remember_token: string
+     * login_attempt: integer
+     * status_id: uuid
      * created_at: timestamp
      * updated_at: timestamp, nullable
      * created_by: uuid, nullable
@@ -41,6 +43,8 @@ class User extends Authenticatable
         'password',
         'profile_id',
         'valid_date',
+        'login_attempt',
+        'status_id',
         'created_by',
         'updated_by',
         'deleted_at',

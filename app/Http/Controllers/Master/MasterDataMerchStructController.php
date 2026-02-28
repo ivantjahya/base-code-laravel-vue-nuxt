@@ -32,6 +32,7 @@ class MasterDataMerchStructController extends Controller
         try {
             $data = Cache::tags([InterfaceClass::TAG_MASTERDATA])->remember(InterfaceClass::KEY_MASTER_MERCH_STRUCT_DIV_CAT, InterfaceClass::CACHE_MST_TIME, function () {
                 $temp = $this->moduleMasterDataService->getMerchStructDivCatList();
+
                 return $temp;
             });
 

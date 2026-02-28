@@ -4,6 +4,7 @@ import type { TableColumn } from '@nuxt/ui'
 import { CalendarDate, DateFormatter, getLocalTimeZone, today } from '@internationalized/date'
 import { useI18n } from '../composables/useI18n'
 import { useFormatters } from '../composables/useFormatters'
+import { useMenuPermission } from '../composables/useMenuPermission'
 import { useApiStore } from '../AppState'
 import axios from 'axios'
 import { getCurrentInstance } from 'vue'
@@ -15,8 +16,13 @@ import FormFilterLimit from './Components/FormFilterLimit.vue'
 
 const { t } = useI18n()
 const { formatDate, formatCurrency, getDateString, stringToCalendarDate } = useFormatters()
+const { hasMenuCtrl, MENU_CODE, CTRL_CODE } = useMenuPermission()
 const api = useApiStore()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
+
+// ========================= PERMISSIONS =========================
+const canCreateLimit = computed(() => hasMenuCtrl(MENU_CODE.value.SUBMENU_LIMITS, CTRL_CODE.value.MENU_CTRL_CREATE))
+const canUpdateLimit = computed(() => hasMenuCtrl(MENU_CODE.value.SUBMENU_LIMITS, CTRL_CODE.value.MENU_CTRL_UPDATE))
 
 const UButton = resolveComponent('UButton')
 const UBadge = resolveComponent('UBadge')
@@ -120,6 +126,7 @@ const modalTitle = ref('')
 const modalSubmitOpen = ref(false)
 const editMode = ref(false)
 const extendMode = ref(false)
+const viewOnlyMode = ref(false)
 const editingId = ref<string | null>(null)
 const editData = ref({})
 
@@ -127,6 +134,7 @@ const showModal = () => {
     modalTitle.value = t('text.limit-management-pg.add-new-limit' as any) || 'Create New Limit'
     editMode.value = false
     extendMode.value = false
+    viewOnlyMode.value = false
     editingId.value = null
     editData.value = {}
     modalSubmitOpen.value = true
@@ -197,18 +205,28 @@ const handleSearch = (query: string) => { // For global search, server-side
 }
 
 const handleEdit = (data: any) => {
-    modalTitle.value = t('text.limit-management-pg.edit-limit' as any) || 'Edit Limit'
-    editMode.value = true
+    // If the user has no update permission, open the dialog in view-only mode
+    const isViewOnly = !canUpdateLimit.value
+    modalTitle.value = isViewOnly
+        ? t('text.limit-management-pg.view-limit' as any) || 'View Limit'
+        : t('text.limit-management-pg.edit-limit' as any) || 'Edit Limit'
+    editMode.value = !isViewOnly
     extendMode.value = false
+    viewOnlyMode.value = isViewOnly
     editingId.value = data.id
     editData.value = data
     modalSubmitOpen.value = true
 }
 
 const handleExtend = (data: any) => {
-    modalTitle.value = t('text.limit-management-pg.extend-limit' as any) || 'Extend Limit'
+    // If the user has no update permission, open the dialog in view-only mode
+    const isViewOnly = !canUpdateLimit.value
+    modalTitle.value = isViewOnly
+        ? t('text.limit-management-pg.view-limit' as any) || 'View Limit'
+        : t('text.limit-management-pg.extend-limit' as any) || 'Extend Limit'
     editMode.value = false
-    extendMode.value = true
+    extendMode.value = !isViewOnly
+    viewOnlyMode.value = isViewOnly
     editingId.value = data.id
     editData.value = data
     modalSubmitOpen.value = true
@@ -231,8 +249,8 @@ onMounted(() => {
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-4">
 
-                        <!-- BUTTON NEW -->
-                        <UButton type="button" @click="showModal" class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[16px] px-5">
+                        <!-- BUTTON NEW — only shown when user has create permission -->
+                        <UButton v-if="canCreateLimit" type="button" @click="showModal" class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[16px] px-5">
                             {{ t('text.button.new').toUpperCase() || 'NEW' }}
                         </UButton>
 
@@ -251,6 +269,7 @@ onMounted(() => {
                 :title="modalTitle"
                 :edit-mode="editMode"
                 :extend-mode="extendMode"
+                :view-only="viewOnlyMode"
                 :editing-id="editingId"
                 :initial-data="editData"
                 @update:open="modalSubmitOpen = $event"

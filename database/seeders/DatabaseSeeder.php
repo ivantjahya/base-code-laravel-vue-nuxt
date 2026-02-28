@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Master\KontrabonRegional;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Cache;
 
@@ -21,6 +22,7 @@ class DatabaseSeeder extends Seeder
             MenuSeeder::class,
             StatusSeeder::class,
             MerchStructSeeder::class,
+            KontrabonRegionalSeeder::class,
             ProfileSeeder::class,
             UserSeeder::class,
             /** For local testing */

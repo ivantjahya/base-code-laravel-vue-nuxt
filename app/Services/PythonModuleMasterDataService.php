@@ -255,6 +255,23 @@ class PythonModuleMasterDataService
     }
 
     /**
+     * Get profile menu access by ID from Python API
+     */
+    public function getProfileMenuAccess(string $id): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(60)
+                ->get("{$this->baseUrl}/profile/get_menu_access/{$id}")
+                ->throw(),
+            "/masterdata/profile/get_menu_access/{$id}",
+            'Failed to get profile menu access',
+            ['profile_id' => $id]
+        );
+    }
+
+    /**
      * Create new profile in Python API
      */
     public function createProfile(array $data): array

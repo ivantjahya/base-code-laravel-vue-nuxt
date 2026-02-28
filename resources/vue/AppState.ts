@@ -3,6 +3,24 @@ import { defineStore } from 'pinia';
 
 export type ColorMode = 'light' | 'dark' | 'system';
 
+export interface AccessMenuControl {
+    id: string;
+    code: string;
+    name: string;
+}
+
+export interface AccessMenuItem {
+    id: string;
+    name: string;
+    url: string | null;
+    icon: string | null;
+    code: number;
+    name_code: string;
+    active: boolean;
+    submenu: AccessMenuItem[];
+    acc_controls: AccessMenuControl[];
+}
+
 export const useWebApiStore = defineStore('webapi', {
     state: () => ({
         /** WEB for API requests */
@@ -25,6 +43,7 @@ export const useApiStore = defineStore('api', {
         getMenuAccControlList: '/api/v1/masterdata/menu/list-menu-acc-control',
         getProfileList: '/api/v1/masterdata/profile/list',
         getProfileDetail: '/api/v1/masterdata/profile/detail/', // + id
+        getProfileMenuAccess: '/api/v1/masterdata/profile/get-menu-access/', // + id
         postProfileCreate: '/api/v1/masterdata/profile/create',
         postProfileUpdate: '/api/v1/masterdata/profile/update/', // + id
         getFuncProfileList: '/api/v1/masterdata/func-profile/list',
@@ -53,10 +72,14 @@ export const useMainStore = defineStore('main', {
             appDebug: false,
             userName: '',
             userId: '',
+            profileId: '',
             notificationList: [],
             locale: (localStorage.getItem('locale') || 'en') as 'en' | 'id',
             mode: (localStorage.getItem('colorMode') || 'system') as ColorMode,
             isCollapsed: defaultCollapsed,
+            accessMenuList: (JSON.parse(localStorage.getItem('accessMenuList') || '[]')) as AccessMenuItem[],
+            menuCodes: (JSON.parse(localStorage.getItem('menuCodes') || '{}')) as Record<string, number>,
+            ctrlCodes: (JSON.parse(localStorage.getItem('ctrlCodes') || '{}')) as Record<string, string>,
         };
     },
 
@@ -157,25 +180,59 @@ export const useMainStore = defineStore('main', {
             /** Get Constant */
             axios
                 .post(api.appConst)
-                .then((response) => {
+                .then(async (response) => {
+                    let accessMenuList = response.data.accessMenuList ?? [];
+                    const profileId = response.data.profileId;
+
+                    if (accessMenuList.length === 0 && profileId) {
+                        try {
+                            const params = {
+                                id: profileId,
+                            };
+                            const menuResponse = await axios.get(api.getProfileMenuAccess + params.id);
+                            
+                            // Handle various response formats
+                            if (Array.isArray(menuResponse.data)) {
+                                accessMenuList = menuResponse.data;
+                            } else if (menuResponse.data && Array.isArray(menuResponse.data.data)) {
+                                accessMenuList = menuResponse.data.data;
+                            } else if (menuResponse.data && Array.isArray(menuResponse.data.menu_access)) {
+                                accessMenuList = menuResponse.data.menu_access;
+                            }
+                        } catch (err) {
+                            console.error('Failed to fetch profile menu access:', err);
+                        }
+                    }
+
+                    // Update local storage
+                    if (accessMenuList.length > 0) {
+                        localStorage.setItem('accessMenuList', JSON.stringify(accessMenuList));
+                    } else {
+                        // Clear storage if menu is empty (e.g. logged out or no access)
+                        localStorage.removeItem('accessMenuList');
+                    }
+
+                    if (response.data.menuCodes) {
+                        localStorage.setItem('menuCodes', JSON.stringify(response.data.menuCodes));
+                    }
+                    if (response.data.ctrlCodes) {
+                        localStorage.setItem('ctrlCodes', JSON.stringify(response.data.ctrlCodes));
+                    }
+
                     this.$patch({
                         appName: response.data.appName,
-                    });
-                    this.$patch({
                         appVersion: response.data.appVersion,
-                    });
-                    this.$patch({
                         appDebug: response.data.appDebug,
-                    });
-                    this.$patch({
                         userName: response.data.userName,
-                    });
-                    this.$patch({
                         userId: response.data.userId,
+                        profileId: profileId,
+                        accessMenuList: accessMenuList,
+                        menuCodes: response.data.menuCodes ?? this.menuCodes,
+                        ctrlCodes: response.data.ctrlCodes ?? this.ctrlCodes,
                     });
                 })
                 .catch((error) => {
-                    console.error(error.response.data);
+                    console.error(error);
                 });
         },
 

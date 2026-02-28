@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Interfaces\InterfaceClass;
+use App\Models\Master\Status;
 use App\Models\User;
+use App\Services\PythonModuleMasterDataService;
 use App\Traits\AuthFunction;
 use App\Traits\JsonResponse;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,6 +23,13 @@ use Illuminate\View\View;
 class AuthController extends Controller
 {
     use AuthFunction, JsonResponse;
+
+    private PythonModuleMasterDataService $moduleMasterDataService;
+
+    public function __construct(PythonModuleMasterDataService $moduleMasterDataService)
+    {
+        $this->moduleMasterDataService = $moduleMasterDataService;
+    }
 
     /**
      * GET request for login landing page
@@ -66,9 +76,29 @@ class AuthController extends Controller
             ]);
         }
 
-        /** Clear old session first */
-        // Cache::tags([InterfaceClass::TAG_MENUPERM])->forget(InterfaceClass::KEY_MENUPERM.'-'.$user?->username);
-        // Cache::tags([InterfaceClass::TAG_MENUCTRLPERM])->forget(InterfaceClass::KEY_MENUCTRLPERM.'-'.$user?->username);
+        /** Check status user */
+        $statusIdInactive = Cache::tags([InterfaceClass::TAG_MASTERDATA])->remember(InterfaceClass::KEY_STATUS_USER_INACTIVE, Carbon::now()->addYear(), function () {
+            return Status::where('code', InterfaceClass::STATUS_USER_INACTIVE)->first()?->id;
+        });
+        $statusIdLocked = Cache::tags([InterfaceClass::TAG_MASTERDATA])->remember(InterfaceClass::KEY_STATUS_USER_LOCKED, Carbon::now()->addYear(), function () {
+            return Status::where('code', InterfaceClass::STATUS_USER_LOCKED)->first()?->id;
+        });
+        if ($user->status_id === $statusIdInactive) {
+            Log::warning('Username failed to login, inactive user', ['username' => $validated['username']]);
+            throw ValidationException::withMessages([
+                'username' => __('app.auth.validation.inactive-user'),
+            ]);
+        } elseif ($user->status_id === $statusIdLocked) {
+            Log::warning('Username failed to login, locked user', ['username' => $validated['username']]);
+            throw ValidationException::withMessages([
+                'username' => __('app.auth.validation.locked-user'),
+            ]);
+        } elseif ($user->valid_date < Carbon::now()) {
+            Log::warning('Username failed to login, expired user', ['username' => $validated['username']]);
+            throw ValidationException::withMessages([
+                'username' => __('app.auth.validation.expired-user'),
+            ]);
+        }
 
         /** Login with custom auth */
         Auth::login($user);
@@ -76,18 +106,31 @@ class AuthController extends Controller
 
         Log::notice('User logged in', ['remoteIp' => $request->ip(), 'username' => $user?->username, 'name' => $user?->name]);
 
+        /** Pre-fetch and cache the access menu list so the frontend can use it immediately */
+        /** Keyed by user ID — each user has their own snapshot, refreshed only on login. */
+        /** This means profile changes don't affect currently logged-in users until they re-login. */
+        $accessMenuList = [];
+        try {
+            $accessMenuList = Cache::tags([InterfaceClass::TAG_MENUPERM])->remember(InterfaceClass::KEY_MENUPERM.'-'.$user?->profile_id, Carbon::now()->addYear(), function () use ($user) {
+                $data = $this->moduleMasterDataService->getProfileMenuAccess($user?->profile_id);
+
+                return $data['data']['menu_access'] ?? [];
+            });
+
+            // Always force-write on login so this user gets the latest access
+            Cache::tags([InterfaceClass::TAG_MENUPERM])->put(InterfaceClass::KEY_MENUPERM.'-'.$user?->id, $accessMenuList, Carbon::now()->addYear());
+        } catch (\Throwable $e) {
+            Log::warning('Failed to fetch access menu list on login', ['userId' => $user?->id, 'error' => $e->getMessage()]);
+        }
+
         /** Send user to home */
         (string) $title = __('app.auth.login-success.title');
         (string) $message = __('app.auth.login-success.message');
         (string) $route = route('home');
 
-        Log::debug('Login response', [
-            'title' => $title,
-            'message' => $message,
-            'locale' => app()->getLocale(),
+        return $this->jsonSuccess($title, $message, $route, [
+            'accessMenuList' => $accessMenuList,
         ]);
-
-        return $this->jsonSuccess($title, $message, $route);
     }
 
     /**
@@ -103,10 +146,6 @@ class AuthController extends Controller
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
-
-            // Cache::tags([InterfaceClass::TAG_MENUPERM])->forget(InterfaceClass::KEY_MENUPERM.'-'.$user?->username);
-            // Cache::tags([InterfaceClass::TAG_MENUCTRLPERM])->forget(InterfaceClass::KEY_MENUCTRLPERM.'-'.$user?->username);
-            // Cache::tags([InterfaceClass::TAG_OPENDETAILPAGE.'-'.$user?->username])->flush();
         }
     }
 
