@@ -52,7 +52,11 @@ export const useApiStore = defineStore('api', {
         postFuncProfileUpdate: '/api/v1/masterdata/func-profile/update/', // + id
         getMerchStructDivCatList: '/api/v1/masterdata/merch-struct/list-merch-struct-div-cat',
         getUserList: '/api/v1/masterdata/user/list',
+        getApprovalFlowList: '/api/v1/masterdata/approval-flow/list',
+        postApprovalFlowCreate: '/api/v1/masterdata/approval-flow/create',
         getSiteList: '/api/v1/masterdata/site/list',
+        getUserGuideList: '/api/v1/masterdata/user-guide/list',
+        getPoStatusList: '/api/v1/masterdata/po-status/list',
     }),
 });
 

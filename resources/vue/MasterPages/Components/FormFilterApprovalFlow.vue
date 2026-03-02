@@ -3,30 +3,41 @@ import { useI18n } from '../../composables/useI18n'
 import { useGlobalOptions } from '../../composables/useGlobalOptions'
 
 const { t } = useI18n()
-const { profileSourceOptions, statusOptions } = useGlobalOptions()
+const { statusOptions } = useGlobalOptions()
 
-const props = withDefaults(defineProps<{
-    approvalCode?: string
-    profile?: number | null
-    division?: number | null
-    status?: number | null
-    loading?: boolean
-}>(), {
-    approvalCode: '',
-    profile: null,
-    division: null,
-    status: null,
-    loading: false
+const props = defineProps({
+    approvalCode: {
+        type: String,
+        default: ''
+    },
+    profile: {
+        type: String as () => string | null,
+        default: null
+    },
+    division: {
+        type: String as () => string | null,
+        default: null
+    },
+    status: {
+        type: Number,
+        default: null
+    },
+    loading: {
+        type: Boolean,
+        default: false
+    },
+    profileOptions: {
+        type: Array as () => Array<{ label: string; value: string }>,
+        default: () => []
+    },
+    divisionOptions: {
+        type: Array as () => Array<{ label: string; value: string }>,
+        default: () => []
+    }
 })
 
-const emit = defineEmits<{
-    (e: 'update:approvalCode', value: string): void
-    (e: 'update:profile', value: number | null): void
-    (e: 'update:division', value: number | null): void
-    (e: 'update:status', value: number | null): void
-    (e: 'clear'): void
-    (e: 'find'): void
-}>()
+const emit = defineEmits(['update:approvalCode', 'update:profile', 'update:division', 'update:status', 'clear', 'find'])
+
 
 const onClear = () => {
     emit('clear')
@@ -46,8 +57,8 @@ const onFind = () => {
                 <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.approval-code') || 'Approval Flow Code' }}</div>
                 <div class="flex w-full text-sm">
                     <UInput
-                        :model-value="approvalFlowCode"
-                        @update:model-value="$emit('update:approvalFlowCode', $event)"
+                        :model-value="approvalCode"
+                        @update:model-value="$emit('update:approvalCode', $event)"
                         :placeholder="t('text.input-field.approval-flow-code-placeholder') || 'Enter approval flow code'"
                         size="md"
                         class="w-full font-light text-base md:text-sm"
@@ -87,17 +98,16 @@ const onFind = () => {
 
                 <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.profile') || 'Profile' }}</div>
                 <div class="flex w-full text-sm">
-
                     <USelectMenu
                         :model-value="profile"
                         @update:model-value="$emit('update:profile', $event)"
-                        :items="profileSourceOptions"
-                        value-key="id"
-                        value-attribute="id"
+                        :items="profileOptions"
+                        value-key="value"
+                        value-attribute="value"
                         option-attribute="label"
                         :placeholder="t('text.input-field.profile-placeholder') || 'Select profile'"
-                        class="w-full font-reguler"/>
-
+                        class="w-full font-reguler"
+                    />
                 </div>
 
             </div>
@@ -135,17 +145,15 @@ const onFind = () => {
 
                 <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.division') || 'Division' }}</div>
                 <div class="flex w-full text-sm">
-
                     <USelectMenu
                         :model-value="division"
                         @update:model-value="$emit('update:division', $event)"
                         :items="divisionOptions"
-                        value-key="id"
-                        value-attribute="id"
+                        value-key="value"
+                        value-attribute="value"
                         option-attribute="label"
                         :placeholder="t('text.input-field.division-placeholder') || 'Select division'"
                         class="w-full font-reguler"/>
-
                 </div>
 
             </div>

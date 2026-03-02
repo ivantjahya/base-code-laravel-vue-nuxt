@@ -3,7 +3,7 @@ import { useI18n } from '../../composables/useI18n'
 import { useGlobalOptions } from '../../composables/useGlobalOptions'
 
 const { t } = useI18n()
-const { profileSourceOptions, statusOptions } = useGlobalOptions()
+const { statusOptions } = useGlobalOptions()
 
 const props = defineProps({
     username: {
