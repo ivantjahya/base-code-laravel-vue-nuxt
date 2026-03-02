@@ -299,8 +299,10 @@ const showChangePassword = () => {
             :close-delay="100"
             :content="{ side: 'right', align: 'start', sideOffset: 8 }"
           >
-            <button
-              @click="item.submenu && item.submenu.length > 0 ? toggleMenu(index) : navigateTo(item.url)"
+            <component
+              :is="item.submenu && item.submenu.length > 0 ? 'button' : 'RouterLink'"
+              v-bind="item.submenu && item.submenu.length > 0 ? { type: 'button' } : { to: item.url || '' }"
+              @click="item.submenu && item.submenu.length > 0 ? toggleMenu(index) : undefined"
               :class="[
                 'w-full flex items-center justify-center gap-2.5 px-2.5 py-2 rounded-md transition-all duration-150 text-sm group',
                 item.active 
@@ -315,7 +317,7 @@ const showChangePassword = () => {
                   item.active ? 'text-orange-600 dark:text-orange-400' : 'text-[#9F9FA9] dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300'
                 ]"
               />
-            </button>
+            </component>
             <template #content>
               <div v-if="item.submenu && item.submenu.length > 0" class="min-w-[200px] max-w-[280px] p-2">
                 <!-- Main menu item -->
@@ -325,10 +327,10 @@ const showChangePassword = () => {
                 
                 <!-- Submenu items if available -->
                 <div v-if="item.submenu && item.submenu.length > 0" class="space-y-0.5">
-                  <button
+                  <RouterLink
                     v-for="(child, childIndex) in item.submenu"
                     :key="childIndex"
-                    @click="navigateTo(child.url)"
+                    :to="child.url || ''"
                     :class="[
                       'w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-all duration-150 group',
                       child.active 
@@ -337,17 +339,17 @@ const showChangePassword = () => {
                     ]"
                   >
                     <span class="text-left truncate">{{ t(child.name_code) }}</span>
-                  </button>
+                  </RouterLink>
                 </div>
                 
                 <!-- If no submenu, show clickable item -->
                 <div v-else>
-                  <button
-                    @click="navigateTo(item.url)"
+                  <RouterLink
+                    :to="item.url || ''"
                     class="w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-all duration-150 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100"
                   >
                     <span class="text-left">Open {{ t(item.name_code) }}</span>
-                  </button>
+                  </RouterLink>
                 </div>
               </div>
               <div v-else>
@@ -359,9 +361,11 @@ const showChangePassword = () => {
           </UPopover>
 
           <!-- Menu Item (expanded state) -->
-          <button
+          <component
+            :is="item.submenu && item.submenu.length > 0 ? 'button' : 'RouterLink'"
+            v-bind="item.submenu && item.submenu.length > 0 ? { type: 'button' } : { to: item.url || '' }"
             v-else
-            @click="item.submenu && item.submenu.length > 0 ? toggleMenu(index) : navigateTo(item.url)"
+            @click="item.submenu && item.submenu.length > 0 ? toggleMenu(index) : undefined"
             :class="[
               'w-full flex items-center gap-2.5 px-2.5 py-2 rounded-md transition-all duration-150 text-sm group',
               item.active 
@@ -385,16 +389,16 @@ const showChangePassword = () => {
                 item.active || isExpanded(index) ? 'text-gray-700 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500'
               ]"
             />
-          </button>
+          </component>
           <!-- Submenu Items (expanded state) -->
           <div 
             v-if="item.submenu && isExpanded(index) && !mainStore.isCollapsed && item.submenu.length > 0"
             class="mt-0.5 mb-1 ml-5 space-y-0.5 relative pl-2.5 border-l-2 border-gray-200 dark:border-gray-700"
           >
-            <button
+            <RouterLink
               v-for="(child, childIndex) in item.submenu"
               :key="childIndex"
-              @click="navigateTo(child.url)"
+              :to="child.url || ''"
               :class="[
                 'w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-sm transition-all duration-150 group',
                 child.active 
@@ -410,7 +414,7 @@ const showChangePassword = () => {
                 ]"
               />
               <span class="text-left truncate">{{ t(child.name_code) }}</span>
-            </button>
+            </RouterLink>
           </div>
         </div>
       </nav>

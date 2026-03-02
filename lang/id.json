@@ -164,7 +164,9 @@
         "extend": "Perpanjang",
         "view": "Lihat",
         "close": "Tutup",
-        "check-all": "Centang Semua"
+        "check-all": "Centang Semua",
+        "functional-profile": "Profil Fungsional",
+        "add-row": "Tambah Baris"
     },
     "input-field": {
         "username": "ID Pengguna",
@@ -261,6 +263,7 @@
         "column-profile": "Profil",
         "column-division": "Divisi",
         "column-limit": "Limit",
+        "column-company": "Perusahaan",
 
         "column-username": "ID Pengguna",
         "column-name": "Nama",

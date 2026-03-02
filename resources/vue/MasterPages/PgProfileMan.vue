@@ -11,6 +11,7 @@ import CmpLayout from '../Components/CmpLayout.vue'
 import CmpCustomTable from '../Components/CmpCustomTable.vue'
 import CmpAccordionFilter from '../Components/CmpAccordionFilter.vue'
 import DialogFormProfile from './Components/DialogFormProfile.vue'
+import DialogFormFuncProfile from './Components/DialogFormFuncProfile.vue'
 import FormFilterProfile from './Components/FormFilterProfile.vue'
 
 const { t } = useI18n()
@@ -91,6 +92,12 @@ const actions = computed(() => [
             label: t('text.button.edit' as any) || 'Edit',
             icon: 'i-lucide-pencil',
             onSelect: (row : any) => handleEdit(row)
+        },
+        {
+            label: t('text.button.functional-profile' as any) || 'Functional Profile',
+            icon: 'i-lucide-pencil',
+            show: (row: any) => row.is_internal,
+            onSelect: (row : any) => handleFunctionalProfile(row)
         }
     ]
 ])
@@ -102,9 +109,16 @@ const columnPinning = ref({
 // ========================= STATE FOR MODAL =========================
 const modalTitle = ref('')
 const modalSubmitOpen = ref(false)
+const modalFuncProfileOpen = ref(false)
 const editMode = ref(false)
 const editingId = ref<string | null>(null)
 const editData = ref({})
+const editFuncProfileData = ref({})
+
+// For select options
+const companyOptions = ref<{ label: string; value: string }[]>([])
+const divisionOptions = ref<{ label: string; value: string }[]>([])
+const limitOptions = ref<{ label: string; value: string }[]>([])
 
 const showModal = () => {
     modalTitle.value = t('text.profile-management-pg.add-new-profile' as any) || 'Create New Profile'
@@ -116,6 +130,10 @@ const showModal = () => {
 
 const closeModal = () => {
     modalSubmitOpen.value = false
+}
+
+const closeModalFuncProfile = () => {
+    modalFuncProfileOpen.value = false
 }
 
 const onSubmitted = async () => {
@@ -152,6 +170,110 @@ const getProfileList = async () => {
         });
     } finally {
         loadingTable.value = false;
+    }
+}
+
+const getCompanyOptions = async () => {
+    companyOptions.value = [] // Clear options before fetching new data
+    try {
+        const params = {
+            skip: 0,
+            limit: 1000,
+            sort_by: 'code',
+            sort_order: 'asc',
+        }
+
+        // const response = await axios.get(api.getCompanyList, { params })
+        // const sourceItems = response?.data?.data?.items || response?.data?.data || response?.data || []
+        // const sourceArray = Array.isArray(sourceItems) ? sourceItems : []
+        // const activeData = sourceArray.filter((item: any) => {
+        //     const rawActive = item?.is_active
+        //     return rawActive === true || rawActive === 1 || rawActive === '1'
+        // })
+
+        // const uniqueOptions = new Map<string, { label: string; value: string }>()
+        // activeData.forEach((item: any) => {
+        //     const label = String(item?.code).trim()
+        //     const value = String(item?.code).trim()
+
+        //     if (!value) return
+        //     uniqueOptions.set(value, {
+        //         label: label,
+        //         value: value,
+        //     })
+        // })
+
+        // companyOptions.value = Array.from(uniqueOptions.values())
+    } catch (error) {
+        console.error('Error fetching company options:', error)
+        companyOptions.value = []
+    }
+}
+
+const getLimitOptions = async () => {
+    limitOptions.value = [] // Clear options before fetching new data
+    try {
+        const params = {
+            skip: 0,
+            limit: 1000,
+            sort_by: 'code',
+            sort_order: 'asc',
+        }
+
+        const response = await axios.get(api.getLimitList, { params })
+        const sourceItems = response?.data?.data?.items || response?.data?.data || response?.data || []
+        const sourceArray = Array.isArray(sourceItems) ? sourceItems : []
+        const activeData = sourceArray.filter((item: any) => {
+            const rawActive = item?.is_active
+            return rawActive === true || rawActive === 1 || rawActive === '1'
+        })
+
+        const uniqueOptions = new Map<string, { label: string; value: string }>()
+        activeData.forEach((item: any) => {
+            const label = String(item?.code).trim()
+            const value = String(item?.code).trim()
+
+            if (!value) return
+            uniqueOptions.set(value, {
+                label: label,
+                value: value,
+            })
+        })
+
+        limitOptions.value = Array.from(uniqueOptions.values())
+    } catch (error) {
+        console.error('Error fetching limit options:', error)
+        limitOptions.value = []
+    }
+}
+
+const getDivisionOptions = async () => {
+    divisionOptions.value = [] // Clear options before fetching new data
+    try {
+        const response = await axios.get(api.getMerchStructDivCatList)
+
+        const sourceItems = response?.data?.data?.items || response?.data?.data || response?.data || []
+        const sourceArray = Array.isArray(sourceItems) ? sourceItems : []
+        const divisionData = sourceArray.filter((item: any) => {
+            return item.parent_id === null
+        })
+
+        const uniqueOptions = new Map<string, { label: string; value: string }>()
+        divisionData.forEach((item: any) => {
+            const label = String(item?.code).trim() + ' - ' + String(item?.name).trim()
+            const value = String(item?.id).trim()
+
+            if (!value) return
+            uniqueOptions.set(value, {
+                label: label,
+                value: value,
+            })
+        })
+
+        divisionOptions.value = Array.from(uniqueOptions.values())
+    } catch (error) {
+        console.error('Error fetching division options:', error)
+        divisionOptions.value = []
     }
 }
 
@@ -212,9 +334,51 @@ const handleEdit = async (data: any) => {
     }
 }
 
+const handleFunctionalProfile = async (data: any) => {
+    const profileId = String(data?.id || '')
+    if (!profileId) return
+
+    loadingTable.value = true
+    try {
+        const response = await axios.get(`${api.getProfileDetail}${profileId}`)
+        const detail = response?.data?.data || response?.data || {}
+
+        modalTitle.value = t('text.button.functional-profile' as any) || 'Functional Profiles'
+        editMode.value = true
+        editingId.value = profileId
+        editFuncProfileData.value = {
+            profileName: detail?.name || data?.name || '',
+        }
+        modalFuncProfileOpen.value = true
+    } catch (error: any) {
+        console.error('Error fetching profile detail:', error?.response?.data || error?.message)
+        Swal?.fire({
+            icon: 'error',
+            title: t('text.message.error' as any) || 'Error!',
+            text: t('text.message.failed-to-load-data-msg' as any) || 'Failed to load data.',
+            confirmButtonText: 'OK'
+        })
+    } finally {
+        loadingTable.value = false
+    }
+}
+
 // Fetch initial data on component mount
-onMounted(() => {
-    getProfileList()
+onMounted(async () => {
+    await Promise.all([
+        getCompanyOptions(),
+        getLimitOptions(),
+        getDivisionOptions(),
+        getProfileList()
+    ]).catch((error) => {
+        console.error('Error during initial data fetch:', error)
+        Swal?.fire({
+            icon: 'error',
+            title: t('text.message.error' as any) || 'Error!',
+            text: t('text.message.failed-to-load-data-msg' as any) || 'Failed to load data.',
+            confirmButtonText: 'OK'
+        });
+    })
 })
 
 </script>
@@ -254,6 +418,20 @@ onMounted(() => {
                 @update:open="modalSubmitOpen = $event"
                 @submitted="onSubmitted"
                 @close="closeModal"
+            />
+
+            <DialogFormFuncProfile
+                :open="modalFuncProfileOpen"
+                :title="modalTitle"
+                :edit-mode="editMode"
+                :editing-id="editingId"
+                :initial-data="editFuncProfileData"
+                :company-options="companyOptions"
+                :limit-options="limitOptions"
+                :division-options="divisionOptions"
+                @update:open="modalFuncProfileOpen = $event"
+                @submitted="onSubmitted"
+                @close="closeModalFuncProfile"
             />
 
             <!-- MAIN CONTENT -->

@@ -165,7 +165,9 @@
         "extend": "Extend",
         "view": "View",
         "close": "Close",
-        "check-all": "Check All"
+        "check-all": "Check All",
+        "functional-profile": "Functional Profiles",
+        "add-row": "Add Row"
     },
     "input-field": {
         "username": "Username",
@@ -262,6 +264,7 @@
         "column-profile": "Profile",
         "column-division": "Division",
         "column-limit": "Limit",
+        "column-company": "Company",
 
         "column-username": "Username",
         "column-name": "Name",

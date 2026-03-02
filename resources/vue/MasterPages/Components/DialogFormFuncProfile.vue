@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import { ref, computed, watch, getCurrentInstance } from 'vue'
+import { ref, computed, watch, getCurrentInstance, h, resolveComponent } from 'vue'
 import axios from 'axios'
 import { useI18n } from '../../composables/useI18n'
 import { useApiStore } from '../../AppState'
+import CmpCustomTable from '../../Components/CmpCustomTable.vue'
+import CmpAccordionFilter from '../../Components/CmpAccordionFilter.vue'
+import FormFilterFuncProfile from './FormFilterFuncProfile.vue'
 
 const props = defineProps({
     open: {
@@ -25,21 +28,17 @@ const props = defineProps({
         type: Object,
         default: () => ({})
     },
-    limitOptions: {
+    companyOptions: {
         type: Array as () => Array<{ label: string; value: string }>,
         default: () => []
     },
-    profileOptions: {
+    limitOptions: {
         type: Array as () => Array<{ label: string; value: string }>,
         default: () => []
     },
     divisionOptions: {
         type: Array as () => Array<{ label: string; value: string }>,
         default: () => []
-    },
-    divisionLoading: {
-        type: Boolean,
-        default: false
     }
 })
 
@@ -49,34 +48,74 @@ const { t } = useI18n()
 const api = useApiStore()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
-const isSubmitting = ref(false)
+const UBadge = resolveComponent('UBadge')
 
-const functionalProfileName = ref<string>('')
-const profile = ref<string | null>(null)
-const limit = ref<string | null>(null)
-const selectDivision = ref<string | null>(null)
-const valueSwitch = ref(true)
+// ========================= TABLE =========================
+const functionalProfileData = ref([])
+const currentPage = ref(1)
+const itemPerPage = ref(10)
+const countTotalData = ref(0)
+const loadingTable = ref(false)
+const showLoadingOverlay = ref(true)
+const globalSearchQuery = ref('') // For global search, server-side
+
+const columns = computed(() => [
+    {
+        key: 'company',
+        label: t('text.table-column.column-company'),
+        sortable: true
+    },
+    {
+        key: 'division',
+        label: t('text.table-column.column-division'),
+        sortable: true
+    },
+    {
+        key: 'limit',
+        label: t('text.table-column.column-limit'),
+        sortable: true,
+    },
+    {
+        key: 'start_date',
+        label: t('text.table-column.column-start-date'),
+        sortable: true,
+    },
+    {
+        key: 'end_date',
+        label: t('text.table-column.column-end-date'),
+        sortable: true,
+    },
+    {
+        key: 'status',
+        label: t('text.table-column.column-status'),
+        sortable: false,
+        cellRenderer: (value: any, row: any) => {
+            const statusText = value ? t('text.message.active' as any) || 'Active' : t('text.message.not-active' as any) || 'Not Active'
+            const badgeColor = value ? 'success' : 'primary'
+
+            return h(UBadge, {
+                variant: 'subtle',
+                color: badgeColor,
+                class: 'text-xs'
+            }, () => statusText)
+        }
+    },
+])
+
+// ========================= STATE FOR MODAL =========================
+const isSubmitting = ref(false)
+const profileName = ref<string | null>(null)
 
 // Validation error states
 const errors = ref({
-    functionalProfileName: '',
-    profile: '',
-    limit: '',
-    division: ''
+    profileName: '',
 })
 
 const resetForm = () => {
-    functionalProfileName.value = ''
-    profile.value = null
-    limit.value = null
-    selectDivision.value = null
-    valueSwitch.value = true
+    profileName.value = null
 
     errors.value = {
-        functionalProfileName: '',
-        profile: '',
-        limit: '',
-        division: ''
+        profileName: '',
     }
 }
 
@@ -87,48 +126,48 @@ const closeModal = () => {
 
 watch(() => props.open, (newVal) => {
     if (newVal) {
+        console.log('Dialog opened with initial data:', props.initialData)
+        console.log('Edit mode:', props.editMode)
+        console.log('Editing ID:', props.editingId)
+        console.log('Company options:', props.companyOptions)
+        console.log('Limit options:', props.limitOptions)
+        console.log('Division options:', props.divisionOptions)
+
         if (props.editMode && props.initialData) {
-            functionalProfileName.value = props.initialData.name || ''
-            profile.value = props.initialData.profile?.id || null
-            limit.value = props.initialData.limit?.code || null
-            selectDivision.value = props.initialData.merch_struct?.id || null
-            valueSwitch.value = Boolean(props.initialData.status ?? true)
+            profileName.value = props.initialData.profileName || ''
         } else {
             resetForm()
         }
     }
 })
 
+// ========================= ACTION =========================
+const handlePageChange = (page: number) => {
+    currentPage.value = page
+}
+
+const handlePageSizeChange = (size: number) => {
+    itemPerPage.value = size
+    currentPage.value = 1 // Reset to first page when changing page size
+}
+
+const handleSearch = (query: string) => { // For global search, server-side
+    globalSearchQuery.value = query
+    currentPage.value = 1 // Reset to first page when searching
+}
+
 // Submit create/update profile
 const postSubmitFuncProfile = async () => {
     // Reset errors
     errors.value = {
-        functionalProfileName: '',
-        profile: '',
-        limit: '',
-        division: ''
+        profileName: ''
     }
 
     // Validation
     let hasError = false
 
-    if (functionalProfileName.value.trim() === '') {
-        errors.value.functionalProfileName = t('auth.validation.required' as any) || 'This field is required'
-        hasError = true
-    }
-
-    if (!profile.value) {
-        errors.value.profile = t('auth.validation.required' as any) || 'This field is required'
-        hasError = true
-    }
-
-    if (!limit.value) {
-        errors.value.limit = t('auth.validation.required' as any) || 'This field is required'
-        hasError = true
-    }
-
-    if (!selectDivision.value) {
-        errors.value.division = t('auth.validation.required' as any) || 'This field is required'
+    if (!profileName.value) {
+        errors.value.profileName = t('auth.validation.required' as any) || 'This field is required'
         hasError = true
     }
 
@@ -140,11 +179,7 @@ const postSubmitFuncProfile = async () => {
     try {
 
         const payload = {
-            name: functionalProfileName.value,
-            profile: profile.value,
-            limit: limit.value,
-            merch_struct: selectDivision.value,
-            status: valueSwitch.value ? 1 : 0
+            profileName: profileName.value,
         }
 
         if (props.editMode && props.editingId) {
@@ -182,148 +217,70 @@ const isOpen = computed({
 </script>
 
 <template>
-    <UModal v-model:open="isOpen" :title="title" :dismissible="false" class="text-[16px] font-semibold" :ui="{ footer: 'justify-end' }">
+    <UModal
+        v-model:open="isOpen"
+        :title="title"
+        :dismissible="false"
+        class="text-[16px] font-semibold"
+        :ui="{
+            content: 'max-w-6xl',
+            footer: 'justify-end'
+        }"
+    >
         <template #body>
-
-            <!-- PROFILE NAME -->
-            <UFormField
-                orientation="horizontal"
-                class="mb-2"
-                :error="!!errors.profileName"
-                :ui="{
-                    error: 'hidden',
-                }"
-            >
-                <template #label>
-                    <span class="flex items-center gap-1">
-                        {{ t('text.functional-profile-management-pg.input-new-functional-profile-name') || 'Functional Profile Name' }}
-                        <span class="text-red-500">*</span>
-                    </span>
-                </template>
-                <div class="w-80">
-                    <UInput
-                        v-model="functionalProfileName"
-                        required
-                        :placeholder="t('text.functional-profile-management-pg.input-new-functional-profile-name-placeholder') || 'Enter functional profile name'"
-                        class="w-80 border-[#CAD5E2] font-light"
-                        :ui="{
-                            base: errors.functionalProfileName
-                                ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
-                                : ''
-                        }"
-                    />
-                    <p v-if="errors.functionalProfileName" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.functionalProfileName }}</p>
-                </div>
-            </UFormField>
-
             <!-- PROFILE -->
-            <UFormField
-                orientation="horizontal"
-                class="mb-2"
-                :error="!!errors.description"
-                :ui="{
-                    error: 'hidden',
-                }"
-            >
-                <template #label>
-                    <span class="flex items-center gap-1">
-                        {{ t('text.functional-profile-management-pg.input-new-profile') || 'Profile' }}
-                        <span class="text-red-500">*</span>
-                    </span>
-                </template>
-                <div class="w-80">
-                    <USelectMenu
-                        v-model="profile"
-                        :items="profileOptions"
-                        value-key="value"
-                        value-attribute="value"
-                        option-attribute="label"
-                        :placeholder="t('text.functional-profile-management-pg.input-new-profile-placeholder') || 'Select profile'"
-                        class="w-80 font-light"
-                        :ui="{
-                            base: errors.profile
-                                ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
-                                : ''
-                        }"
-                    />
-                    <p v-if="errors.profile" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.profile }}</p>
+             <div class="flex w-full">
+                <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
+                    {{ t('text.functional-profile-management-pg.input-new-profile') || 'Profile' }}
                 </div>
-            </UFormField>
-
-            <!-- LIMIT -->
-            <UFormField
-                orientation="horizontal"
-                class="mb-2"
-                :error="!!errors.profileSource"
-                :ui="{
-                    error: 'hidden',
-                }"
-            >
-                <template #label>
-                    <span class="flex items-center gap-1">
-                        {{ t('text.functional-profile-management-pg.input-new-limit') || 'Limit' }}
-                        <span class="text-red-500">*</span>
-                    </span>
-                </template>
-                <div class="w-80">
-                    <USelectMenu
-                        v-model="limit"
-                        :items="limitOptions"
-                        value-key="value"
-                        value-attribute="value"
-                        option-attribute="label"
-                        :placeholder="t('text.functional-profile-management-pg.input-new-limit-placeholder') || 'Select limit'"
-                        class="w-80 font-light"
-                        :ui="{
-                            base: errors.profile
-                                ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
-                                : ''
-                        }"
-                    />
-                    <p v-if="errors.limit" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.limit }}</p>
-                </div>
-            </UFormField>
-
-            <!-- DIVISION -->
-            <UFormField
-                orientation="horizontal"
-                class="mb-2"
-                :error="!!errors.division"
-                :ui="{
-                    error: 'hidden',
-                }"
-            >
-                <template #label>
-                    <span class="flex items-center gap-1">
-                        {{ t('text.functional-profile-management-pg.input-new-division') || 'Division' }}
-                        <span class="text-red-500">*</span>
-                    </span>
-                </template>
-                <div class="w-80 font-light max-h-48 overflow-y-auto border border-gray-300 rounded-md p-2 dark:border-gray-700">
-                    <p v-if="divisionLoading" class="text-xs md:text-sm text-gray-500">{{ t('text.message.loading') || 'Loading...' }}</p>
-                    <URadioGroup
-                        v-model="selectDivision"
-                        :items="divisionOptions"
-                        value-key="value"
-                        option-attribute="label"
-                        :disabled="divisionLoading || isSubmitting"
+                <div class="flex w-full text-sm">
+                    <UInput
+                        v-model="profileName"
+                        size="md"
+                        disabled
+                        class="w-full font-light text-base md:text-sm"
                     />
                 </div>
-                <p v-if="errors.division" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.division }}</p>
-            </UFormField>
+            </div>
 
-            <!-- STATUS -->
-            <UFormField orientation="horizontal" class="mb-2" >
-                <template #label>
-                    <span class="flex items-center gap-1">
-                        {{ t('text.functional-profile-management-pg.input-new-status') || 'Status' }}
-                        <span class="text-red-500">*</span>
-                    </span>
-                </template>
-                <div class="flex justify-start w-80">
-                    <USwitch v-model="valueSwitch" />
-                </div>
-            </UFormField>
+            <div class="mt-2">
+                <!-- Filters Section with Accordion -->
+                <!-- <CmpAccordionFilter>
+                    <FormFilterFuncProfile
+                        v-model:funcProfileCode="functionalProfileCodeFilter"
+                        v-model:funcProfileName="functionalProfileNameFilter"
+                        v-model:profile="profileFilter"
+                        v-model:division="divisionFilter"
+                        v-model:limit="limitFilter"
+                        v-model:status="statusFilter"
+                        :limit-options="limitOptions"
+                        :profile-options="profileOptions"
+                        :status-options="statusOptions"
+                        :division-options="divisionOptions"
+                        :loading="loadingTable"
+                        @clear="resetFilter"
+                        @find="onClickFindButton"
+                    />
+                </CmpAccordionFilter> -->
+    
+                <!-- Nuxt UI Table -->
+                <CmpCustomTable
+                    :data="functionalProfileData"
+                    :columns="columns"
+                    :actions="actions"
+                    :showNumberColumn="false"
+                    :showFilters="true"
+                    :loading="loadingTable"
+                    :showLoadingOverlay="showLoadingOverlay"
+                    :page-size="itemPerPage"
+                    :current-page="currentPage"
+                    :count-total-data="countTotalData"
+                    :column-pinning="columnPinning"
+                    @update:currentPage="handlePageChange"
+                    @update:pageSize="handlePageSizeChange"
+                    @search="handleSearch"
+                />
+            </div>
         </template>
 
         <template #footer>
