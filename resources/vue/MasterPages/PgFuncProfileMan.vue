@@ -312,7 +312,7 @@ onMounted(async () => {
         getLimitOptions(),
         getProfileOptions(),
         getDivisionOptions(),
-        getFuncProfileList()
+        // getFuncProfileList()
     ]).catch((error) => {
         console.error('Error during initial data fetch:', error)
         Swal?.fire({
@@ -337,9 +337,9 @@ onMounted(async () => {
                     <div class="flex items-center gap-4">
 
                         <!-- BUTTON NEW -->
-                        <UButton type="button" @click="showModal" class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[16px] px-5">
+                        <!-- <UButton type="button" @click="showModal" class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[16px] px-5">
                             {{ t('text.button.new').toUpperCase() || 'NEW' }}
-                        </UButton>
+                        </UButton> -->
 
                         <!-- TITLE -->
                         <h1 class="text-lg font-semibold text-gray-900 dark:text-white">

@@ -70,6 +70,23 @@ class AuthController extends Controller
 
         /** Check password */
         if (! Hash::check($validated['password'], $user?->password)) {
+            /** Increment login attempt, maximum 5 */
+            $user->login_attempt = ($user->login_attempt ?? 0) + 1;
+            $user->save();
+            if ($user->login_attempt >= 5) {
+                /** Lock user if login attempt exceed maximum */
+                $statusIdLocked = Cache::tags([InterfaceClass::TAG_MASTERDATA])->remember(InterfaceClass::KEY_STATUS_USER_LOCKED, Carbon::now()->addYear(), function () {
+                    return Status::where('code', InterfaceClass::STATUS_USER_LOCKED)->first()?->id;
+                });
+                $user->status_id = $statusIdLocked;
+                $user->save();
+
+                Log::warning('Username failed to login, user locked due to too many failed attempts', ['username' => $validated['username']]);
+                throw ValidationException::withMessages([
+                    'username' => __('app.auth.validation.locked-user'),
+                ]);
+            }
+
             Log::warning('Username failed to login, incorrect password', ['username' => $validated['username']]);
             throw ValidationException::withMessages([
                 'username' => __('app.auth.validation.password-incorrect'),
@@ -122,6 +139,10 @@ class AuthController extends Controller
         } catch (\Throwable $e) {
             Log::warning('Failed to fetch access menu list on login', ['userId' => $user?->id, 'error' => $e->getMessage()]);
         }
+
+        /** Clear login attempt */
+        $user->login_attempt = 0;
+        $user->save();
 
         /** Send user to home */
         (string) $title = __('app.auth.login-success.title');

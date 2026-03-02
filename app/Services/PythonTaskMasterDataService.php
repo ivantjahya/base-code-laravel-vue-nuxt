@@ -130,4 +130,21 @@ class PythonTaskMasterDataService
             []
         );
     }
+
+    /**
+     * Process data in middleware site ebs from Python API
+     */
+    public function processMiddlewareSiteEbs(): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(60)
+                ->post("{$this->baseUrl}/regional_site/process_middleware_site_ebs/sync")
+                ->throw(),
+            '/regional_site/process_middleware_site_ebs/sync',
+            'Failed to process middleware site ebs',
+            []
+        );
+    }
 }
