@@ -129,16 +129,22 @@
         "edit-user": "Edit User"
     },
     "approval-flow-management-pg": {
-        "list": "Daftar Data Alur Persetujuan",
-        "add-new-approval-flow": "Tambah Alur Persetujuan Baru",
+        "list": "List of Approval Flows",
+        "add-new-approval-flow": "Add New Approval Flow",
 
         "input-new-profile": "Profile",
-        "input-new-profile-placeholder": "Pilih profil",
-        "input-new-division": "Divisi",
-        "input-new-division-placeholder": "Pilih divisi",
-        "input-new-description": "Deskripsi",
+        "input-new-profile-placeholder": "Select profile",
+        "input-new-division": "Division",
+        "input-new-division-placeholder": "Select division",
+        "input-new-po-status": "PO Status",
+        "input-new-po-status-placeholder": "Select PO Status",
+        "input-new-request-to": "Request To",
+        "input-new-request-to-placeholder": "Select Request To",
+        "input-new-next-po-status": "Next PO Status",
+        "input-new-next-po-status-placeholder": "Select Next PO Status",
+        "input-new-description": "Description",
         "input-new-status": "Status",
-        "edit-approval-flow": "Edit Alur Persetujuan"
+        "edit-approval-flow": "Edit Approval Flow"
     },
     "regional-site-pg": {
         "list": "List of Regional Sites",

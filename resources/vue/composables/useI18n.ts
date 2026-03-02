@@ -113,6 +113,7 @@ type TranslationKey =
   | 'text.table-column.column-regional-address'
   | 'text.table-column.column-regional-city'
   | 'text.table-column.column-regional-region'
+  | 'text.table-column.column-approval-flow-code'
   | 'text.table-column.column-user-guide-code'
   | 'text.table-column.column-user-guide-name'
   | 'text.table-column.column-user-guide-menu'
