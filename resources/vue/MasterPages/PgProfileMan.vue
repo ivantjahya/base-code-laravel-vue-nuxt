@@ -403,6 +403,15 @@ onMounted(async () => {
                         <h1 class="text-lg font-semibold text-gray-900 dark:text-white">
                             {{ t('text.profile-management-pg.list') || 'List of Profiles' }}
                         </h1>
+                    </div>
+                    <div>
+                        <UDrawer handle-only>
+                            <UButton label="User Guide" color="neutral" variant="subtle"/>
+
+                            <template #content>
+                                <Placeholder class="h-48 m-4" />
+                            </template>
+                        </UDrawer>
 
                     </div>
                 </div>
