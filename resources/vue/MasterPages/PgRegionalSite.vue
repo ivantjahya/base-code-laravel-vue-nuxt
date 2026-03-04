@@ -5,6 +5,7 @@ import { useApiStore } from '../AppState'
 import axios from 'axios'
 import { getCurrentInstance } from 'vue'
 import { useGlobalOptions } from '../composables/useGlobalOptions'
+import { useFormatters } from '../composables/useFormatters'
 import CmpLayout from '../Components/CmpLayout.vue'
 import CmpCustomTable from '../Components/CmpCustomTable.vue'
 import CmpAccordionFilter from '../Components/CmpAccordionFilter.vue'
@@ -13,6 +14,7 @@ import FormFilterRegionalSite from './Components/FormFilterRegionalSite.vue'
 
 const { t } = useI18n()
 const { statusOptions } = useGlobalOptions()
+const { formatDate } = useFormatters()
 const api = useApiStore()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
@@ -90,6 +92,18 @@ const columns = computed(() => [
         key: 'regional_name_kontrabon',
         label: t('text.table-column.column-regional-name-kontrabon'),
         sortable: true
+    },
+    {
+        key: 'start_date',
+        label: t('text.table-column.column-start-date'),
+        sortable: true,
+        formatter: (value: string) => formatDate(value)
+    },
+    {
+        key: 'end_date',
+        label: t('text.table-column.column-end-date'),
+        sortable: true,
+        formatter: (value: string) => formatDate(value)
     },
     {
         key: 'is_active',
