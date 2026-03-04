@@ -97,6 +97,7 @@ const resetForm = () => {
 
 const closeModal = () => {
     resetForm()
+    emit('update:open', false)
     emit('close')
 }
 
@@ -116,8 +117,8 @@ watch(() => props.open, (newVal) => {
     }
 })
 
-// Submit create/update profile
-const postSubmitProfile = async () => {
+// Submit create/update approval flow
+const postSubmitApproalFlow = async () => {
     // Reset errors
     errors.value = {
         description: '',
@@ -163,7 +164,7 @@ const postSubmitProfile = async () => {
     isSubmitting.value = true
     try {
 
-        console.log(poStatus.value);
+        // console.log(poStatus.value);
 
         const payload = {
             profile: profile.value,
@@ -174,7 +175,7 @@ const postSubmitProfile = async () => {
             description: description.value,
             status: valueSwitch.value ? 1 : 0
         }
-        console.log('Payload to submit:', payload);
+        // console.log('Payload to submit:', payload);
 
         // let response
         if (props.editMode && props.editingId) {
@@ -207,7 +208,13 @@ const postSubmitProfile = async () => {
 
 const isOpen = computed({
     get: () => props.open,
-    set: (value) => emit('update:open', value)
+    set: (value) => {
+        if (!value) {
+            closeModal()
+            return
+        }
+        emit('update:open', value)
+    }
 })
 </script>
 
@@ -458,7 +465,7 @@ const isOpen = computed({
                 class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[14px] px-5"
                 :loading="isSubmitting"
                 :disabled="isSubmitting"
-                @click="postSubmitProfile"
+                @click="postSubmitApproalFlow"
             >
                 {{ t('text.button.submit') || 'Submit' }}
             </UButton>

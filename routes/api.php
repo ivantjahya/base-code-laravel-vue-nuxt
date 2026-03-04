@@ -85,7 +85,11 @@ Route::prefix('v1')->middleware([XssProtection::class])->group(function () {
             /** Approval Flow */
             Route::prefix('approval-flow')->group(function () {
                 Route::get('/list', [MasterDataApprovalFlowController::class, 'getApprovalFlowList'])->name('get-approval-flow-list');
+                Route::get('/detail/{id}', [MasterDataApprovalFlowController::class, 'getApprovalFlowDetail'])->name('get-approval-flow-detail');
                 Route::post('/create', [MasterDataApprovalFlowController::class, 'postApprovalFlowCreate'])->name('post-approval-flow-create');
+                Route::middleware(['can:has-approval-flow-update-perm'])->group(function () {
+                    Route::put('/update/{id}', [MasterDataApprovalFlowController::class, 'postApprovalFlowUpdate'])->name('post-approval-flow-update');
+                });
             });
 
             /** Regional Site */
