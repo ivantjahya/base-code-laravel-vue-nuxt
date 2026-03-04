@@ -105,7 +105,7 @@ const clearData = () => {
 
         <!-- Venditore Plus Logo -->
         <div class="flex items-center justify-center flex-1">
-          <img :src="venditorePlusLogoLogin" alt="Venditore+" class="max-w-md w-full" />
+          <img :src="venditorePlusLogoLogin" alt="Venditore+" class="max-w-sm w-full" />
         </div>
       </div>
     </div>
