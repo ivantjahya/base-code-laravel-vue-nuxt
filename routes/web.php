@@ -72,6 +72,11 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/user-guide-management', [MasterDataUserGuideController::class, 'userGuideManagementPage'])->name('user-guide-management');
         });
     });
+
+    Route::middleware(['can:has-tax-supplier-data-menu-perm'])->group(function () {
+        /** Tax Supplier Data */
+        Route::get('/tax-supplier-data', [HomeController::class, 'exploreNuxtPage'])->name('tax-supplier-data');
+    });
 });
 
 /** Route for explore nuxt component */

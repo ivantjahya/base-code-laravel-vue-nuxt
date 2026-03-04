@@ -14,7 +14,12 @@ export function useFormatters() {
      */
     const formatDate = (dateString: string): string => {
         if (!dateString) return '-'
-        const [year, month, day] = dateString.split('-')
+
+        // Remove time part if exists
+        const cleanDate = dateString.split('T')[0]
+        const [year, month, day] = cleanDate.split('-')
+        if (!year || !month || !day) return '-'
+
         return `${day}-${month}-${year}`
     }
 

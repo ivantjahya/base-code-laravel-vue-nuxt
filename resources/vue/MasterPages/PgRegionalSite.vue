@@ -62,48 +62,33 @@ const columns = computed(() => [
         sortable: true
     },
     {
-        key: 'address',
-        label: t('text.table-column.column-site-address'),
+        key: 'company_code',
+        label: t('text.table-column.column-company-code'),
         sortable: true
     },
     {
-        key: 'city',
-        label: t('text.table-column.column-site-city'),
+        key: 'company_initial',
+        label: t('text.table-column.column-company-initial'),
         sortable: true
     },
     {
-        key: 'region',
-        label: t('text.table-column.column-site-region'),
+        key: 'company_name',
+        label: t('text.table-column.column-company-name'),
         sortable: true
     },
     {
         key: 'regional_code_kontrabon',
-        label: t('text.table-column.column-regional-code'),
+        label: t('text.table-column.column-regional-code-kontrabon'),
         sortable: true
     },
     {
         key: 'regional_init_kontrabon',
-        label: t('text.table-column.column-regional-initial'),
+        label: t('text.table-column.column-regional-initial-kontrabon'),
         sortable: true
     },
     {
         key: 'regional_name_kontrabon',
-        label: t('text.table-column.column-regional-name'),
-        sortable: true
-    },
-    {
-        key: 'regional_address_kontrabon',
-        label: t('text.table-column.column-regional-address'),
-        sortable: true
-    },
-    {
-        key: 'regional_city_kontrabon',
-        label: t('text.table-column.column-regional-city'),
-        sortable: true
-    },
-    {
-        key: 'regional_region_kontrabon',
-        label: t('text.table-column.column-regional-region'),
+        label: t('text.table-column.column-regional-name-kontrabon'),
         sortable: true
     },
     {

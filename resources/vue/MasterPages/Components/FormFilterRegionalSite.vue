@@ -69,12 +69,12 @@ const onFind = () => {
 
             <!-- REGIONAL NAME -->
             <div class="flex w-full">
-                <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.regional-name') || 'Regional Name' }}</div>
+                <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.regional-name-kontrabon') || 'Regional Name Kontrabon' }}</div>
                 <div class="flex w-full text-sm">
                     <UInput
                         :model-value="regionalName"
                         @update:model-value="$emit('update:regionalName', $event)"
-                        :placeholder="t('text.input-field.regional-name-placeholder') || 'Enter regional name'"
+                        :placeholder="t('text.input-field.regional-name-kontrabon-placeholder') || 'Enter regional name kontrabon'"
                         size="md"
                         class="w-full font-light text-base md:text-sm"
                     />
@@ -123,12 +123,12 @@ const onFind = () => {
 
             <!-- REGIONAL CODE -->
             <div class="flex w-full">
-                <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.regional-code') || 'Regional Code' }}</div>
+                <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.regional-code-kontrabon') || 'Regional Code Kontrabon' }}</div>
                 <div class="flex w-full text-sm">
                     <UInput
                         :model-value="regionalCode"
                         @update:model-value="$emit('update:regionalCode', $event)"
-                        :placeholder="t('text.input-field.regional-code-placeholder') || 'Enter regional code'"
+                        :placeholder="t('text.input-field.regional-code-kontrabon-placeholder') || 'Enter regional code kontrabon'"
                         size="md"
                         class="w-full font-light text-base md:text-sm"
                     />
