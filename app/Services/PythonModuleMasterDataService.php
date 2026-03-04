@@ -446,6 +446,23 @@ class PythonModuleMasterDataService
     }
 
     /**
+     * Get functional profile detail by ID from Python API
+     */
+    public function getApprovalFlowDetail(string $id): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(60)
+                ->get("{$this->baseUrl}/approval_flow/{$id}")
+                ->throw(),
+            "/masterdata/approval_flow/{$id}",
+            'Failed to get approval flow detail',
+            ['approval_flow_id' => $id]
+        );
+    }
+
+    /**
      * Create new approval flow in Python API
      */
     public function createApprovalFlow(array $data): array
@@ -459,6 +476,23 @@ class PythonModuleMasterDataService
             '/masterdata/approval_flow/post_create',
             'Failed to create approval flow',
             ['request_data' => $data]
+        );
+    }
+
+    /**
+     * Update approval flow in Python API
+     */
+    public function updateApprovalFlow(string $id, array $data): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(30)
+                ->put("{$this->baseUrl}/approval_flow/post_update/{$id}", $data)
+                ->throw(),
+            "/masterdata/approval_flow/post_update/{$id}",
+            'Failed to update approval flow',
+            ['approval_flow_id' => $id, 'request_data' => $data]
         );
     }
 

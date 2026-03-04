@@ -225,7 +225,6 @@ const getPoStatusOptions = async () => {
     poStatusOptionsLoading.value = true
     try {
         const response = await axios.get(api.getPoStatusList)
-        console.log(response);
 
         const sourceItems = response?.data?.items || response?.data || response || []
         const sourceArray = Array.isArray(sourceItems) ? sourceItems : []
@@ -243,8 +242,6 @@ const getPoStatusOptions = async () => {
         })
 
         poStatusOptions.value = Array.from(uniqueOptions.values())
-        console.log(poStatusOptions.value);
-
 
     } catch (error) {
         console.error('Error fetching po status options:', error)
@@ -282,9 +279,11 @@ const handleEdit = async (data: any) => {
 
     loadingTable.value = true
     try {
-        const response = await axios.get(`${api.getProfileDetail}${profileId}`)
+        const response = await axios.get(`${api.getApprovalFlowDetail}${profileId}`)
         const detail = response?.data?.data || response?.data || {}
-        const rawMenuAccess = Array.isArray(detail?.menu_access) ? detail.menu_access : []
+        console.log("cek : " + detail);
+
+        // const rawMenuAccess = Array.isArray(detail?.menu_access) ? detail.menu_access : []
 
         modalTitle.value = t('text.approval-flow-management-pg.edit-approval-flow' as any) || 'Edit Approval Flow'
         editMode.value = true
@@ -294,8 +293,7 @@ const handleEdit = async (data: any) => {
             profileName: detail?.name || data?.name || '',
             description: detail?.description || data?.description || '',
             profileSource: rawProfileSource === null || rawProfileSource === undefined || rawProfileSource === '' ? null : Number(rawProfileSource),
-            status: Boolean(detail?.status ?? data?.status ?? true),
-            menuAccess: rawMenuAccess
+            status: Boolean(detail?.status ?? data?.status ?? true)
         }
         modalSubmitOpen.value = true
     } catch (error: any) {

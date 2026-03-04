@@ -53,7 +53,9 @@ export const useApiStore = defineStore('api', {
         getMerchStructDivCatList: '/api/v1/masterdata/merch-struct/list-merch-struct-div-cat',
         getUserList: '/api/v1/masterdata/user/list',
         getApprovalFlowList: '/api/v1/masterdata/approval-flow/list',
+        getApprovalFlowDetail: '/api/v1/masterdata/approval-flow/detail/', // + id
         postApprovalFlowCreate: '/api/v1/masterdata/approval-flow/create',
+        postApprovalFlowUpdate: '/api/v1/masterdata/approval-flow/update/', // + id
         getSiteList: '/api/v1/masterdata/site/list',
         getUserGuideList: '/api/v1/masterdata/user-guide/list',
         getPoStatusList: '/api/v1/masterdata/po-status/list',
@@ -194,7 +196,7 @@ export const useMainStore = defineStore('main', {
                                 id: profileId,
                             };
                             const menuResponse = await axios.get(api.getProfileMenuAccess + params.id);
-                            
+
                             // Handle various response formats
                             if (Array.isArray(menuResponse.data)) {
                                 accessMenuList = menuResponse.data;
