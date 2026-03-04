@@ -226,7 +226,7 @@ const tabItems = computed(() => [
                                     <!-- SITE NAME -->
                                     <div class="flex w-full">
                                         <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
-                                            {{ t('text.table-column.column-site-name') || 'Site Name' }}
+                                            {{ t('text.table-column.column-name') || 'Name' }}
                                         </div>
                                         <div class="flex w-full text-sm">
                                             <UInput
@@ -260,7 +260,7 @@ const tabItems = computed(() => [
                                     <!-- SITE ADDRESS -->
                                     <div class="flex w-full">
                                         <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
-                                            {{ t('text.table-column.column-site-address') || 'Site Address' }}
+                                            {{ t('text.table-column.column-address') || 'Address' }}
                                         </div>
                                         <div class="flex w-full text-sm" ref="siteAddressInputRef" @mouseenter="checkSiteAddressOverflow">
                                             <UTooltip
@@ -302,7 +302,7 @@ const tabItems = computed(() => [
                                     <!-- SITE CITY -->
                                     <div class="flex w-full">
                                         <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
-                                            {{ t('text.table-column.column-site-city') || 'Site City' }}
+                                            {{ t('text.table-column.column-city') || 'City' }}
                                         </div>
                                         <div class="flex w-full text-sm">
                                             <UInput
@@ -331,7 +331,7 @@ const tabItems = computed(() => [
                                     <!-- SITE REGION -->
                                     <div class="flex w-full">
                                         <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
-                                            {{ t('text.table-column.column-site-region') || 'Site Region' }}
+                                            {{ t('text.table-column.column-region') || 'Region' }}
                                         </div>
                                         <div class="flex w-full text-sm">
                                             <UInput
@@ -363,7 +363,7 @@ const tabItems = computed(() => [
                                     <!-- COMPANY CODE -->
                                     <div class="flex w-full">
                                         <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
-                                            {{ t('text.table-column.column-company-code') || 'Company Code' }}
+                                            {{ t('text.table-column.column-code') || 'Code' }}
                                         </div>
                                         <div class="flex w-full text-sm">
                                             <UInput
@@ -380,7 +380,7 @@ const tabItems = computed(() => [
                                     <!-- COMPANY INITIAL -->
                                     <div class="flex w-full">
                                         <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
-                                            {{ t('text.table-column.column-company-initial') || 'Company Initial' }}
+                                            {{ t('text.table-column.column-initial') || 'Initial' }}
                                         </div>
                                         <div class="flex w-full text-sm">
                                             <UInput
@@ -397,7 +397,7 @@ const tabItems = computed(() => [
                                     <!-- COMPANY NAME -->
                                     <div class="flex w-full">
                                         <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
-                                            {{ t('text.table-column.column-company-name') || 'Company Name' }}
+                                            {{ t('text.table-column.column-name') || 'Name' }}
                                         </div>
                                         <div class="flex w-full text-sm">
                                             <UInput
@@ -414,7 +414,7 @@ const tabItems = computed(() => [
                                     <!-- COMPANY ADDRESS -->
                                     <div class="flex w-full">
                                         <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
-                                            {{ t('text.table-column.column-company-address') || 'Company Address' }}
+                                            {{ t('text.table-column.column-address') || 'Address' }}
                                         </div>
                                         <div class="flex w-full text-sm">
                                             <UInput
@@ -431,7 +431,7 @@ const tabItems = computed(() => [
                                     <!-- COMPANY CITY -->
                                     <div class="flex w-full">
                                         <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
-                                            {{ t('text.table-column.column-company-city') || 'Company City' }}
+                                            {{ t('text.table-column.column-city') || 'City' }}
                                         </div>
                                         <div class="flex w-full text-sm">
                                             <UInput
@@ -448,7 +448,7 @@ const tabItems = computed(() => [
                                     <!-- COMPANY REGION -->
                                     <div class="flex w-full">
                                         <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
-                                            {{ t('text.table-column.column-company-region') || 'Company Region' }}
+                                            {{ t('text.table-column.column-region') || 'Region' }}
                                         </div>
                                         <div class="flex w-full text-sm">
                                             <UInput
@@ -468,7 +468,7 @@ const tabItems = computed(() => [
                                     <!-- REGIONAL CODE KONTRABON -->
                                     <div class="flex w-full">
                                         <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
-                                            {{ t('text.table-column.column-regional-code-kontrabon') || 'Regional Code Kontrabon' }}
+                                            {{ t('text.table-column.column-code') || 'Code' }}
                                         </div>
                                         <div class="flex w-full text-sm">
                                             <UInput
@@ -485,7 +485,7 @@ const tabItems = computed(() => [
                                     <!-- REGIONAL INITIAL KONTRABON -->
                                     <div class="flex w-full">
                                         <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
-                                            {{ t('text.table-column.column-regional-initial-kontrabon') || 'Regional Initial Kontrabon' }}
+                                            {{ t('text.table-column.column-initial') || 'Initial' }}
                                         </div>
                                         <div class="flex w-full text-sm">
                                             <UInput
@@ -502,7 +502,7 @@ const tabItems = computed(() => [
                                     <!-- REGIONAL NAME KONTRABON -->
                                     <div class="flex w-full">
                                         <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
-                                            {{ t('text.table-column.column-regional-name-kontrabon') || 'Regional Name Kontrabon' }}
+                                            {{ t('text.table-column.column-name') || 'Name' }}
                                         </div>
                                         <div class="flex w-full text-sm">
                                             <UInput
@@ -519,7 +519,7 @@ const tabItems = computed(() => [
                                     <!-- REGIONAL ADDRESS KONTRABON -->
                                     <div class="flex w-full">
                                         <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
-                                            {{ t('text.table-column.column-regional-address-kontrabon') || 'Regional Address Kontrabon' }}
+                                            {{ t('text.table-column.column-address') || 'Address' }}
                                         </div>
                                         <div class="flex w-full text-sm">
                                             <UInput
@@ -536,7 +536,7 @@ const tabItems = computed(() => [
                                     <!-- REGIONAL CITY KONTRABON -->
                                     <div class="flex w-full">
                                         <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
-                                            {{ t('text.table-column.column-regional-city-kontrabon') || 'Regional City Kontrabon' }}
+                                            {{ t('text.table-column.column-city') || 'City' }}
                                         </div>
                                         <div class="flex w-full text-sm">
                                             <UInput
@@ -553,7 +553,7 @@ const tabItems = computed(() => [
                                     <!-- REGIONAL REGION KONTRABON -->
                                     <div class="flex w-full">
                                         <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
-                                            {{ t('text.table-column.column-regional-region-kontrabon') || 'Regional Region Kontrabon' }}
+                                            {{ t('text.table-column.column-region') || 'Region' }}
                                         </div>
                                         <div class="flex w-full text-sm">
                                             <UInput
@@ -573,7 +573,7 @@ const tabItems = computed(() => [
                                     <!-- EBS CODE -->
                                     <div class="flex w-full">
                                         <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
-                                            {{ t('text.table-column.column-ebs-code') || 'EBS Code' }}
+                                            {{ t('text.table-column.column-code') || 'Code' }}
                                         </div>
                                         <div class="flex w-full text-sm">
                                             <UInput
@@ -590,7 +590,7 @@ const tabItems = computed(() => [
                                     <!-- EBS INITIAL -->
                                     <div class="flex w-full">
                                         <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
-                                            {{ t('text.table-column.column-ebs-initial') || 'EBS Initial' }}
+                                            {{ t('text.table-column.column-initial') || 'Initial' }}
                                         </div>
                                         <div class="flex w-full text-sm">
                                             <UInput
@@ -607,7 +607,7 @@ const tabItems = computed(() => [
                                     <!-- EBS NAME -->
                                     <div class="flex w-full">
                                         <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
-                                            {{ t('text.table-column.column-ebs-name') || 'EBS Name' }}
+                                            {{ t('text.table-column.column-name') || 'Name' }}
                                         </div>
                                         <div class="flex w-full text-sm">
                                             <UInput

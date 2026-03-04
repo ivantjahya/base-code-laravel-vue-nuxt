@@ -324,7 +324,11 @@
 
         "column-status": "Status",
         "column-description": "Deskripsi",
-        "column-code": "Kode"
+        "column-code": "Kode",
+        "column-initial": "Inisial",
+        "column-address": "Alamat",
+        "column-city": "Kota",
+        "column-region": "Wilayah"
     },
     "message": {
       "navigation": "Navigasi",
