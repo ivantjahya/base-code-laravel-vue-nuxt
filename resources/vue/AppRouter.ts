@@ -7,6 +7,7 @@ const userManagement = '/user-management';
 const regionalSite = '/regional-site';
 const approvalFlowManagement = '/approval-flow-management';
 const userGuideManagement = '/user-guide-management';
+const taxSupplierData = '/tax-supplier-data';
 const exploreNuxt = '/explore-nuxt';
 
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
@@ -69,6 +70,12 @@ const routes: Array<RouteRecordRaw> = [
         meta: { titleKey: 'page.user-guide-management', title: 'User Guide' },
     },
     {
+        path: taxSupplierData,
+        name: 'taxSupplierData',
+        component: () => import('./HomePages/PgExploreNuxt.vue'),
+        meta: { titleKey: 'page.tax-supplier-data', title: 'Tax Supplier Data' },
+    },
+    {
         path: exploreNuxt,
         name: 'exploreNuxt',
         component: () => import('./HomePages/PgExploreNuxt.vue'),
@@ -115,6 +122,7 @@ export const useWebStore = defineStore('web', {
         regionalSite: regionalSite,
         approvalFlowManagement: approvalFlowManagement,
         userGuideManagement: userGuideManagement,
+        taxSupplierData: taxSupplierData,
         exploreNuxt: exploreNuxt,
     }),
 });

@@ -19,6 +19,7 @@ class Company extends Model
      * city: string, nullable
      * region: string, nullable
      * status: integer, default 1
+     * initial: string(10), nullable
      * created_at: timestamp
      * updated_at: timestamp
      */
@@ -35,5 +36,6 @@ class Company extends Model
         'city',
         'region',
         'status',
+        'initial',
     ];
 }
