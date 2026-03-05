@@ -392,6 +392,7 @@ onMounted(async () => {
             <!-- Title Section -->
             <UCard class="mb-3" :ui="{ body: 'sm:py-3 sm:px-6' }">
                 <div class="flex items-center justify-between">
+
                     <div class="flex items-center gap-4">
 
                         <!-- BUTTON NEW -->
@@ -403,13 +404,40 @@ onMounted(async () => {
                         <h1 class="text-lg font-semibold text-gray-900 dark:text-white">
                             {{ t('text.profile-management-pg.list') || 'List of Profiles' }}
                         </h1>
+
                     </div>
+
                     <div>
+
+                        <!-- USER GUIDE -->
                         <UDrawer handle-only>
                             <UButton label="User Guide" color="neutral" variant="subtle"/>
 
-                            <template #content>
-                                <Placeholder class="h-48 m-4" />
+                            <template #body>
+
+                                <div class="flex items-center justify-between gap-4 mb-6">
+                                    <h2 class="text-highlighted font-semibold">List of User Guide for Profile</h2>
+                                </div>
+
+                                <USeparator class="mb-6"/>
+
+                                <!-- Nuxt UI Table -->
+                                <CmpCustomTable
+                                    :data="profileData"
+                                    :columns="columns"
+                                    :actions="actions"
+                                    :showNumberColumn="false"
+                                    :showFilters="true"
+                                    :loading="loadingTable"
+                                    :showLoadingOverlay="showLoadingOverlay"
+                                    :page-size="itemPerPage"
+                                    :current-page="currentPage"
+                                    :count-total-data="countTotalData"
+                                    :column-pinning="columnPinning"
+                                    @update:currentPage="handlePageChange"
+                                    @update:pageSize="handlePageSizeChange"
+                                    @search="handleSearch"
+                                />
                             </template>
                         </UDrawer>
 
