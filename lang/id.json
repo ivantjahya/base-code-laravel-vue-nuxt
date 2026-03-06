@@ -98,16 +98,20 @@
     "functional-profile-management-pg": {
         "list": "Daftar Data Profil Fungsional",
         "add-new-functional-profile": "Tambah Profil Fungsional Baru",
+        "edit-functional-profile": "Edit Profil Fungsional",
+        "view-functional-profile": "Lihat Profil Fungsional",
 
         "input-new-functional-profile-name": "Nama Prof. Fungsional",
         "input-new-functional-profile-name-placeholder": "Masukkan nama profil fungsional",
         "input-new-profile": "Profil",
         "input-new-profile-placeholder": "Pilih profil",
+        "input-company": "Perusahaan",
+        "input-company-placeholder": "Pilih perusahaan",
         "input-new-division": "Divisi",
+        "input-new-division-placeholder": "Pilih divisi",
         "input-new-limit": "Limit",
         "input-new-limit-placeholder": "Pilih limit",
-        "input-new-status": "Status",
-        "edit-profile": "Edit Profil Fungsional"
+        "input-new-status": "Status"
     },
     "user-management-pg": {
         "list": "Daftar Data Pengguna",
@@ -177,6 +181,7 @@
         "close": "Tutup",
         "check-all": "Centang Semua",
         "functional-profile": "Profil Fungsional",
+        "add": "Tambah",
         "add-row": "Tambah Baris"
     },
     "input-field": {

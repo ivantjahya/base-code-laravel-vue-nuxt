@@ -3,6 +3,7 @@
 use App\Http\Controllers\AppConstController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Master\MasterDataApprovalFlowController;
+use App\Http\Controllers\Master\MasterDataCompanyController;
 use App\Http\Controllers\Master\MasterDataFunctionalProfileController;
 use App\Http\Controllers\Master\MasterDataLimitController;
 use App\Http\Controllers\Master\MasterDataMenuController;
@@ -31,6 +32,11 @@ Route::prefix('v1')->middleware([XssProtection::class])->group(function () {
             /** Merch Struct */
             Route::prefix('merch-struct')->group(function () {
                 Route::get('/list-merch-struct-div-cat', [MasterDataMerchStructController::class, 'getMerchStructDivCatList'])->name('get-merch-struct-div-cat-list');
+            });
+
+            /** Company */
+            Route::prefix('company')->group(function () {
+                Route::get('/list', [MasterDataCompanyController::class, 'getCompanyList'])->name('get-company-list');
             });
 
             /** Limit */

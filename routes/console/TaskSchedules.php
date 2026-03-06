@@ -63,3 +63,17 @@ Schedule::call(function () {
         throw $e;
     }
 })->dailyAt('00:00')->name('middleware:master:site-ebs');
+
+/** User - Reset login attempt */
+Schedule::call(function () {
+    try {
+        app(PythonTaskMasterDataService::class)->processUserResetLoginAttempt();
+        Log::info('Scheduled middleware:master:user-reset-login-attempt completed successfully');
+    } catch (\Throwable $e) {
+        Log::error('Scheduled middleware:master:user-reset-login-attempt failed', [
+            'error' => $e->getMessage(),
+        ]);
+
+        throw $e;
+    }
+})->dailyAt('00:00')->name('middleware:master:user-reset-login-attempt');

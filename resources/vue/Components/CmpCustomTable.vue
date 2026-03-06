@@ -137,7 +137,6 @@ watch(searchQuery, (newQuery) => {
 
   // Debounce search to avoid too many API calls
   searchDebounceTimer = setTimeout(() => {
-    console.log('CmpCustomTable - Emitting search:', newQuery)
     emit('search', newQuery)
   }, 500) // Wait 500ms after user stops typing
 })
@@ -336,7 +335,7 @@ watch(rowSelection, (newVal) => {
         :column-pinning="columnPinning"
         class="shrink-0 border border-default rounded-lg"
         :ui="{
-          base: 'table-fixed border-separate border-spacing-0',
+          base: 'table-fixed border-separate border-spacing-0 text-xs',
           thead: '[&>tr]:bg-elevated/50 [&>tr]:after:content-none text-left',
           tbody: `
             [&>tr:last-child>td:first-child]:rounded-bl-lg
@@ -370,7 +369,7 @@ watch(rowSelection, (newVal) => {
     >
       <div class="flex items-center gap-4">
         <!-- Data Info -->
-        <div class="text-sm text-muted">
+        <div class="text-sm sm:text-xs md:text-sm lg:text-sm text-muted">
           <template v-if="showSelection">
             {{ table?.tableApi?.getFilteredSelectedRowModel().rows.length || 0 }} of
             {{ table?.tableApi?.getFilteredRowModel().rows.length || 0 }} row(s) selected.
@@ -386,7 +385,7 @@ watch(rowSelection, (newVal) => {
       <div class="flex items-center gap-3">
         <!-- Page Size Selector -->
         <div class="flex items-center gap-2">
-          <span class="text-sm text-muted">{{ t('text.table.rows-per-page') || 'Rows per page' }}</span>
+          <span class="sm:text-xs md:text-sm lg:text-sm text-muted">{{ t('text.table.rows-per-page') || 'Rows per page' }}</span>
           <USelect
             :model-value="pageSize"
             :items="pageSizeOptions"

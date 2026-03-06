@@ -45,9 +45,8 @@ class MasterDataFunctionalProfileController extends Controller
 
         /** Validate Input */
         $validate = Validator::make($request->all(), [
-            'code' => ['nullable', 'string'],
-            'name' => ['nullable', 'string'],
             'profile' => ['nullable', 'uuid'],
+            'company' => ['nullable', 'uuid'],
             'division' => ['nullable', 'uuid'],
             'limit_code' => ['nullable', 'string'],
             'status' => ['nullable', 'integer', 'in:0,1'],
@@ -64,9 +63,8 @@ class MasterDataFunctionalProfileController extends Controller
 
         try {
             $params = [
-                'code' => $validated['code'] ?? null,
-                'name' => $validated['name'] ?? null,
                 'profile_id' => $validated['profile'] ?? null,
+                'company_id' => $validated['company'] ?? null,
                 'merch_struct_id' => $validated['division'] ?? null,
                 'limit_code' => $validated['limit_code'] ?? null,
                 'status' => $validated['status'] ?? null,
@@ -118,11 +116,13 @@ class MasterDataFunctionalProfileController extends Controller
 
         /** Validate Input */
         $validate = Validator::make($request->all(), [
-            'name' => ['required', 'string'],
-            'profile' => ['required', 'uuid', 'exists:App\Models\Master\Profile,id'],
+            'profile_id' => ['required', 'uuid', 'exists:App\Models\Master\Profile,id'],
+            'company' => ['required', 'uuid', 'exists:App\Models\Master\Company,id'],
+            'division' => ['required', 'array'],
+            'division.*.id' => ['required', 'uuid'],
             'limit' => ['required', 'string', 'exists:App\Models\Master\Limit,code'],
-            'merch_struct' => ['required', 'uuid', 'exists:App\Models\Master\MerchStruct,id'],
-            'status' => ['required', 'integer', 'in:0,1'],
+            'start_date' => ['required', 'date'],
+            'end_date' => ['required', 'date', 'after_or_equal:start_date'],
         ]);
         if ($validate->fails()) {
             throw new ValidationException($validate);
@@ -131,11 +131,12 @@ class MasterDataFunctionalProfileController extends Controller
 
         try {
             $params = [
-                'name' => $validated['name'],
-                'profile_id' => $validated['profile'],
+                'profile_id' => $validated['profile_id'],
+                'company_id' => $validated['company'],
+                'division' => $validated['division'] ?? [],
                 'limit_code' => $validated['limit'],
-                'merch_struct_id' => $validated['merch_struct'],
-                'status' => (int) $validated['status'],
+                'start_date' => $validated['start_date'],
+                'end_date' => $validated['end_date'],
                 'user_id' => $user?->id,
             ];
             $data = $this->moduleMasterDataService->createFuncProfile($params);
@@ -165,11 +166,12 @@ class MasterDataFunctionalProfileController extends Controller
 
         /** Validate Input */
         $validate = Validator::make($request->all(), [
-            'name' => ['required', 'string'],
-            'profile' => ['required', 'uuid', 'exists:App\Models\Master\Profile,id'],
-            'limit' => ['required', 'string', 'exists:App\Models\Master\Limit,code'],
+            'profile_id' => ['required', 'uuid', 'exists:App\Models\Master\Profile,id'],
+            'company' => ['required', 'uuid', 'exists:App\Models\Master\Company,id'],
             'merch_struct' => ['required', 'uuid', 'exists:App\Models\Master\MerchStruct,id'],
-            'status' => ['required', 'integer', 'in:0,1'],
+            'limit' => ['required', 'string', 'exists:App\Models\Master\Limit,code'],
+            'start_date' => ['required', 'date'],
+            'end_date' => ['required', 'date', 'after_or_equal:start_date'],
         ]);
         if ($validate->fails()) {
             throw new ValidationException($validate);
@@ -178,11 +180,12 @@ class MasterDataFunctionalProfileController extends Controller
 
         try {
             $params = [
-                'name' => $validated['name'],
-                'profile_id' => $validated['profile'],
-                'limit_code' => $validated['limit'],
+                'profile_id' => $validated['profile_id'],
+                'company_id' => $validated['company'],
                 'merch_struct_id' => $validated['merch_struct'],
-                'status' => (int) $validated['status'],
+                'limit_code' => $validated['limit'],
+                'start_date' => $validated['start_date'],
+                'end_date' => $validated['end_date'],
                 'user_id' => $user?->id,
             ];
             $data = $this->moduleMasterDataService->updateFuncProfile($idValidated['id'], $params);

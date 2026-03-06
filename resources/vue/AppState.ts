@@ -59,6 +59,7 @@ export const useApiStore = defineStore('api', {
         getSiteList: '/api/v1/masterdata/site/list',
         getUserGuideList: '/api/v1/masterdata/user-guide/list',
         getPoStatusList: '/api/v1/masterdata/po-status/list',
+        getCompanyList: '/api/v1/masterdata/company/list',
     }),
 });
 

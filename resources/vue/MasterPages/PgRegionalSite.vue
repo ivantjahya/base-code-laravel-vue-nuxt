@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref, computed, h, resolveComponent, shallowRef, onMounted } from 'vue'
+import { ref, computed, h, resolveComponent, onMounted, getCurrentInstance } from 'vue'
 import { useI18n } from '../composables/useI18n'
 import { useApiStore } from '../AppState'
 import axios from 'axios'
-import { getCurrentInstance } from 'vue'
 import { useGlobalOptions } from '../composables/useGlobalOptions'
 import { useFormatters } from '../composables/useFormatters'
+import { useMenuPermission } from '../composables/useMenuPermission'
 import CmpLayout from '../Components/CmpLayout.vue'
 import CmpCustomTable from '../Components/CmpCustomTable.vue'
 import CmpAccordionFilter from '../Components/CmpAccordionFilter.vue'
@@ -15,11 +15,15 @@ import FormFilterRegionalSite from './Components/FormFilterRegionalSite.vue'
 const { t } = useI18n()
 const { statusOptions } = useGlobalOptions()
 const { formatDate } = useFormatters()
+const { hasMenuCtrl, MENU_CODE, CTRL_CODE } = useMenuPermission()
 const api = useApiStore()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
 const UButton = resolveComponent('UButton')
 const UBadge = resolveComponent('UBadge')
+
+// ========================= PERMISSIONS =========================
+const canViewDetailRegionalSite = computed(() => hasMenuCtrl(MENU_CODE.value.SUBMENU_REGIONAL_SITE, CTRL_CODE.value.MENU_CTRL_VIEW_DETAIL))
 
 // ========================= STATE FOR FILTER =========================
 const siteCodeFilter = ref('')
@@ -127,6 +131,7 @@ const actions = computed(() => [
         {
             label: t('text.button.view' as any) || 'View',
             icon: 'i-lucide-eye',
+            show: () => canViewDetailRegionalSite.value,
             onSelect: (row: any) => handleView(row)
         }
     ]

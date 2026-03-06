@@ -98,6 +98,24 @@ class PythonModuleMasterDataService
         );
     }
 
+    /** ------------------------------------- COMPANY ------------------------------------- */
+    /**
+     * Get company list from Python API
+     */
+    public function getCompanyList(): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(60)
+                ->get("{$this->baseUrl}/company/get_list")
+                ->throw(),
+            '/masterdata/company/get_list',
+            'Failed to get company list',
+            []
+        );
+    }
+
     /** ------------------------------------- LIMIT ------------------------------------- */
     /**
      * Get limit list from Python API
