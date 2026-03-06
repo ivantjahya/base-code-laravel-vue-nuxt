@@ -13,6 +13,7 @@ import CmpAccordionFilter from '../Components/CmpAccordionFilter.vue'
 import DialogFormProfile from './Components/DialogFormProfile.vue'
 import DialogFormFuncProfile from './Components/DialogFormFuncProfile.vue'
 import FormFilterProfile from './Components/FormFilterProfile.vue'
+import CmpDrawer from '../Components/CmpDrawer.vue'
 
 const { t } = useI18n()
 const { formatDate, formatCurrency, getDateString, stringToCalendarDate } = useFormatters()
@@ -392,6 +393,7 @@ onMounted(async () => {
             <!-- Title Section -->
             <UCard class="mb-3" :ui="{ body: 'sm:py-3 sm:px-6' }">
                 <div class="flex items-center justify-between">
+
                     <div class="flex items-center gap-4">
 
                         <!-- BUTTON NEW -->
@@ -403,6 +405,45 @@ onMounted(async () => {
                         <h1 class="text-lg font-semibold text-gray-900 dark:text-white">
                             {{ t('text.profile-management-pg.list') || 'List of Profiles' }}
                         </h1>
+
+                    </div>
+
+                    <div>
+
+                        <!-- USER GUIDE -->
+                        <!-- <UDrawer handle-only>
+                            <UButton label="User Guide" color="neutral" variant="subtle" icon="i-lucide-info" size="sm"/>
+
+                            <template #body>
+                                <div class="px-6">
+                                    <div class="flex items-center justify-between gap-4 mb-6">
+                                        <h1 class="text-highlighted font-semibold text-lg">List of User Guide for Profile</h1>
+                                    </div>
+
+                                    <USeparator class="mb-6"/>
+
+                                    <CmpCustomTable
+                                        :data="profileData"
+                                        :columns="columns"
+                                        :actions="actions"
+                                        :showNumberColumn="false"
+                                        :showFilters="true"
+                                        :loading="loadingTable"
+                                        :showLoadingOverlay="showLoadingOverlay"
+                                        :page-size="itemPerPage"
+                                        :current-page="currentPage"
+                                        :count-total-data="countTotalData"
+                                        :column-pinning="columnPinning"
+                                        @update:currentPage="handlePageChange"
+                                        @update:pageSize="handlePageSizeChange"
+                                        @search="handleSearch"
+                                        class="mb-6"
+                                    />
+                                </div>
+                            </template>
+                        </UDrawer> -->
+
+                        <CmpDrawer />
 
                     </div>
                 </div>
