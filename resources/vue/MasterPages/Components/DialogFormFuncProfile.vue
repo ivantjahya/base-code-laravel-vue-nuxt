@@ -3,9 +3,11 @@ import { ref, computed, watch, getCurrentInstance, h, resolveComponent } from 'v
 import axios from 'axios'
 import { useI18n } from '../../composables/useI18n'
 import { useApiStore } from '../../AppState'
+import { useFormatters } from '../../composables/useFormatters'
 import CmpCustomTable from '../../Components/CmpCustomTable.vue'
 import CmpAccordionFilter from '../../Components/CmpAccordionFilter.vue'
 import FormFilterFuncProfile from './FormFilterFuncProfile.vue'
+import DialogFormFuncProfileSubmit from './DialogFormFuncProfileSubmit.vue'
 
 const props = defineProps({
     open: {
@@ -39,6 +41,14 @@ const props = defineProps({
     divisionOptions: {
         type: Array as () => Array<{ label: string; value: string }>,
         default: () => []
+    },
+    canCreateFuncProfile: {
+        type: Boolean,
+        default: false
+    },
+    canUpdateFuncProfile: {
+        type: Boolean,
+        default: false
     }
 })
 
@@ -46,6 +56,7 @@ const emit = defineEmits(['update:open', 'submitted', 'close'])
 
 const { t } = useI18n()
 const api = useApiStore()
+const { formatDate } = useFormatters()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
 const UBadge = resolveComponent('UBadge')
@@ -63,30 +74,35 @@ const columns = computed(() => [
     {
         key: 'company',
         label: t('text.table-column.column-company'),
-        sortable: true
+        sortable: true,
+        cellRenderer: (_value: any, row: any) => row.company ? row.company?.code + ' - ' + row.company?.name : '-'
     },
     {
         key: 'division',
         label: t('text.table-column.column-division'),
-        sortable: true
+        sortable: true,
+        cellRenderer: (_value: any, row: any) => row.merch_struct ? row.merch_struct?.code + ' - ' + row.merch_struct?.name : '-'
     },
     {
         key: 'limit',
         label: t('text.table-column.column-limit'),
         sortable: true,
+        cellRenderer: (_value: any, row: any) => row.limit ? row.limit?.code : '-'
     },
     {
         key: 'start_date',
         label: t('text.table-column.column-start-date'),
         sortable: true,
+        formatter: (value: string) => formatDate(value)
     },
     {
         key: 'end_date',
         label: t('text.table-column.column-end-date'),
         sortable: true,
+        formatter: (value: string) => formatDate(value)
     },
     {
-        key: 'status',
+        key: 'is_active',
         label: t('text.table-column.column-status'),
         sortable: false,
         cellRenderer: (value: any, row: any) => {
@@ -102,8 +118,23 @@ const columns = computed(() => [
     },
 ])
 
+const actions = computed(() => [
+    [
+        {
+            label: t('text.button.edit' as any) || 'Edit',
+            icon: 'i-lucide-pencil',
+            onSelect: (row : any) => handleEdit(row)
+        }
+    ]
+])
+
+const columnPinning = ref({
+    right: ['actions']
+})
+
 // ========================= STATE FOR MODAL =========================
 const isSubmitting = ref(false)
+const profileId = ref<string | null>(null)
 const profileName = ref<string | null>(null)
 
 // Validation error states
@@ -111,8 +142,64 @@ const errors = ref({
     profileName: '',
 })
 
+// ========================= STATE FOR MODAL SUBMIT FUNCTIONAL PROFILE =========================
+const modalSubmitFuncProfileTitle = ref('')
+const modalSubmitFuncProfileOpen = ref(false)
+const editModeFuncProfile = ref(false)
+const editingIdFuncProfile = ref<string | null>(null)
+const editDataFuncProfile = ref({})
+
+const showModalSubmitFuncProfile = () => {
+    modalSubmitFuncProfileTitle.value = t('text.functional-profile-management-pg.add-new-functional-profile' as any) || 'Create New Functional Profile'
+    editModeFuncProfile.value = false
+    editingIdFuncProfile.value = null
+    editDataFuncProfile.value = {}
+    modalSubmitFuncProfileOpen.value = true
+}
+
+const closeModalSubmitFuncProfile = () => {
+    modalSubmitFuncProfileOpen.value = false
+}
+
+const onSubmittedFuncProfile = async () => {
+    await getFuncProfileList()
+}
+
+// ========================= ACTION =========================
+const getFuncProfileList = async () => {
+    loadingTable.value = true;
+
+    try {
+        const params = {
+            profile: profileId.value,
+            skip: (currentPage.value - 1) * itemPerPage.value,
+            limit: itemPerPage.value,
+            search: globalSearchQuery.value, // For global search, server-side
+            sort_by: 'merch_struct.code', // Example sort field, adjust as needed
+            sort_order: 'asc', // or 'desc'
+        }
+        const response = await axios.get(api.getFuncProfileList, { params });
+
+        functionalProfileData.value = response.data.data?.items || [];
+        countTotalData.value = response.data.data?.total || 0;
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        Swal?.fire({
+            icon: 'error',
+            title: t('text.message.error' as any) || 'Error!',
+            text: t('text.message.failed-to-load-data-msg' as any) || 'Failed to load data.',
+            confirmButtonText: 'OK'
+        });
+    } finally {
+        loadingTable.value = false;
+    }
+}
+
 const resetForm = () => {
+    profileId.value = null
     profileName.value = null
+    functionalProfileData.value = []
+    globalSearchQuery.value = ''
 
     errors.value = {
         profileName: '',
@@ -126,34 +213,66 @@ const closeModal = () => {
 
 watch(() => props.open, (newVal) => {
     if (newVal) {
-        console.log('Dialog opened with initial data:', props.initialData)
-        console.log('Edit mode:', props.editMode)
-        console.log('Editing ID:', props.editingId)
-        console.log('Company options:', props.companyOptions)
-        console.log('Limit options:', props.limitOptions)
-        console.log('Division options:', props.divisionOptions)
-
         if (props.editMode && props.initialData) {
+            profileId.value = props.editingId || null
             profileName.value = props.initialData.profileName || ''
         } else {
             resetForm()
         }
+        getFuncProfileList()
     }
 })
 
-// ========================= ACTION =========================
 const handlePageChange = (page: number) => {
     currentPage.value = page
+    getFuncProfileList()
 }
 
 const handlePageSizeChange = (size: number) => {
     itemPerPage.value = size
     currentPage.value = 1 // Reset to first page when changing page size
+    getFuncProfileList()
 }
 
 const handleSearch = (query: string) => { // For global search, server-side
     globalSearchQuery.value = query
     currentPage.value = 1 // Reset to first page when searching
+    getFuncProfileList()
+}
+
+const handleEdit = async (data: any) => {
+    const funcProfileId = String(data?.id || '')
+    if (!funcProfileId) return
+
+    loadingTable.value = true
+    try {
+        const response = await axios.get(`${api.getFuncProfileDetail}${funcProfileId}`)
+        const detail = response?.data?.data || response?.data || {}
+
+        modalSubmitFuncProfileTitle.value = t('text.functional-profile-management-pg.edit-functional-profile' as any) || 'Edit Functional Profile'
+        editModeFuncProfile.value = true
+        editingIdFuncProfile.value = funcProfileId
+        editDataFuncProfile.value = {
+            profile: detail?.profile || data?.profile || null,
+            company: detail?.company || data?.company || null,
+            merchStruct: detail?.merch_struct || data?.merch_struct || null,
+            limit: detail?.limit || data?.limit || null,
+            startDate: detail?.start_date || data?.start_date || null,
+            endDate: detail?.end_date || data?.end_date || null,
+            isActive: detail?.is_active || data?.is_active || false,
+        }
+        modalSubmitFuncProfileOpen.value = true
+    } catch (error: any) {
+        console.error('Error fetching functional profile detail:', error?.response?.data || error?.message)
+        Swal?.fire({
+            icon: 'error',
+            title: t('text.message.error' as any) || 'Error!',
+            text: t('text.message.failed-to-load-data-msg' as any) || 'Failed to load data.',
+            confirmButtonText: 'OK'
+        })
+    } finally {
+        loadingTable.value = false
+    }
 }
 
 // Submit create/update profile
@@ -223,81 +342,97 @@ const isOpen = computed({
         :dismissible="false"
         class="text-[16px] font-semibold"
         :ui="{
-            content: 'max-w-6xl',
+            content: `w-full mx-auto text-sm
+                sm:max-w-md sm:text-xs
+                md:max-w-2xl md:text-sm
+                lg:max-w-5xl lg:text-sm
+            `,
+            body: 'sm:pt-2 sm:px-6',
             footer: 'justify-end'
         }"
     >
         <template #body>
-            <!-- PROFILE -->
-             <div class="flex w-full">
-                <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
-                    {{ t('text.functional-profile-management-pg.input-new-profile') || 'Profile' }}
-                </div>
-                <div class="flex w-full text-sm">
-                    <UInput
-                        v-model="profileName"
-                        size="md"
-                        disabled
-                        class="w-full font-light text-base md:text-sm"
-                    />
-                </div>
-            </div>
-
-            <div class="mt-2">
-                <!-- Filters Section with Accordion -->
-                <!-- <CmpAccordionFilter>
-                    <FormFilterFuncProfile
-                        v-model:funcProfileCode="functionalProfileCodeFilter"
-                        v-model:funcProfileName="functionalProfileNameFilter"
-                        v-model:profile="profileFilter"
-                        v-model:division="divisionFilter"
-                        v-model:limit="limitFilter"
-                        v-model:status="statusFilter"
-                        :limit-options="limitOptions"
-                        :profile-options="profileOptions"
-                        :status-options="statusOptions"
-                        :division-options="divisionOptions"
-                        :loading="loadingTable"
-                        @clear="resetFilter"
-                        @find="onClickFindButton"
-                    />
-                </CmpAccordionFilter> -->
-    
-                <!-- Nuxt UI Table -->
-                <CmpCustomTable
-                    :data="functionalProfileData"
-                    :columns="columns"
-                    :actions="actions"
-                    :showNumberColumn="false"
-                    :showFilters="true"
-                    :loading="loadingTable"
-                    :showLoadingOverlay="showLoadingOverlay"
-                    :page-size="itemPerPage"
-                    :current-page="currentPage"
-                    :count-total-data="countTotalData"
-                    :column-pinning="columnPinning"
-                    @update:currentPage="handlePageChange"
-                    @update:pageSize="handlePageSizeChange"
-                    @search="handleSearch"
+            <div class="overflow-y-auto">
+                <!-- MODAL -->
+                <DialogFormFuncProfileSubmit
+                    :open="modalSubmitFuncProfileOpen"
+                    :title="modalSubmitFuncProfileTitle"
+                    :edit-mode="editModeFuncProfile"
+                    :editing-id="editingIdFuncProfile"
+                    :profile-data="props.initialData"
+                    :company-options="props.companyOptions"
+                    :limit-options="props.limitOptions"
+                    :division-options="props.divisionOptions"
+                    :initial-data="editDataFuncProfile"
+                    :can-update-func-profile="props.canUpdateFuncProfile"
+                    @update:open="modalSubmitFuncProfileOpen = $event"
+                    @submitted="onSubmittedFuncProfile"
+                    @close="closeModalSubmitFuncProfile"
                 />
+    
+                <!-- PROFILE -->
+                <div class="flex flex-col md:flex-row w-full gap-2">
+                    <!-- PROFILE -->
+                    <div class="flex w-full">
+                        <div class="w-full md:w-50 my-auto font-semibold">
+                            {{ t('text.functional-profile-management-pg.input-new-profile') || 'Profile' }}
+                        </div>
+                        <div class="flex w-full text-sm">
+                            <UInput
+                                v-model="profileName"
+                                size="md"
+                                disabled
+                                class="w-full font-light"
+                            />
+                        </div>
+                    </div>
+    
+                    <div class="px-2"></div>
+    
+                    <!-- BUTTON NEW -->
+                    <div class="flex w-full justify-end">
+                        <UButton
+                            v-if="props.canCreateFuncProfile"
+                            type="button"
+                            :disabled="isSubmitting"
+                            @click="showModalSubmitFuncProfile"
+                            class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[16px] px-5 sm:text-xs md:text-sm lg:text-sm"
+                        >
+                            {{ t('text.button.new').toUpperCase() || 'NEW' }}
+                        </UButton>
+                    </div>
+                </div>
+    
+                <div class="mt-2">    
+                    <!-- Nuxt UI Table -->
+                    <CmpCustomTable
+                        :data="functionalProfileData"
+                        :columns="columns"
+                        :actions="actions"
+                        :showNumberColumn="false"
+                        :showFilters="true"
+                        :loading="loadingTable"
+                        :showLoadingOverlay="showLoadingOverlay"
+                        :page-size="itemPerPage"
+                        :current-page="currentPage"
+                        :count-total-data="countTotalData"
+                        :column-pinning="columnPinning"
+                        @update:currentPage="handlePageChange"
+                        @update:pageSize="handlePageSizeChange"
+                        @search="handleSearch"
+                    />
+                </div>
             </div>
         </template>
 
         <template #footer>
             <UButton
-                v-if="!editMode"
-                class="bg-[#FEE9D6] text-[#F26524] hover:bg-[#FBD0AD] hover:text-[#E34613] active:bg-[#FBD0AD] active:text-[#E34613] text-[14px] px-5"
-                :disabled="isSubmitting"
-                @click="resetForm"
-            >{{ t('text.button.clear') || 'Clear' }}</UButton>
-
-            <UButton
-                class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[14px] px-5"
+                class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[14px] px-5 sm:text-xs md:text-sm lg:text-sm"
                 :loading="isSubmitting"
                 :disabled="isSubmitting"
-                @click="postSubmitFuncProfile"
+                @click="closeModal"
             >
-                {{ t('text.button.submit') || 'Submit' }}
+                {{ t('text.button.close') || 'Close' }}
             </UButton>
         </template>
     </UModal>

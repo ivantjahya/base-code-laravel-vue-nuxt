@@ -98,16 +98,20 @@
     "functional-profile-management-pg": {
         "list": "List of Functional Profiles",
         "add-new-functional-profile": "Add New Functional Profile",
+        "edit-functional-profile": "Edit Functional Profile",
+        "view-functional-profile": "View Functional Profile",
 
         "input-new-functional-profile-name": "Func. Prof. Name",
         "input-new-functional-profile-name-placeholder": "Enter functional profile name",
         "input-new-profile": "Profile",
         "input-new-profile-placeholder": "Select profile",
+        "input-company": "Company",
+        "input-company-placeholder": "Select company",
         "input-new-division": "Division",
+        "input-new-division-placeholder": "Select division",
         "input-new-limit": "Limit",
         "input-new-limit-placeholder": "Select limit",
-        "input-new-status": "Status",
-        "edit-profile": "Edit Functional Profile"
+        "input-new-status": "Status"
     },
     "user-management-pg": {
         "list": "List of Users",
@@ -177,6 +181,7 @@
         "close": "Close",
         "check-all": "Check All",
         "functional-profile": "Functional Profiles",
+        "add": "Add",
         "add-row": "Add Row"
     },
     "input-field": {

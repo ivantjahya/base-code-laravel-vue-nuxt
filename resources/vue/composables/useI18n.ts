@@ -64,6 +64,7 @@ type TranslationKey =
   | 'text.button.close'
   | 'text.button.check-all'
   | 'text.button.functional-profile'
+  | 'text.button.add'
   | 'text.button.add-row'
   | 'text.input-field.username'
   | 'text.input-field.username-placeholder'

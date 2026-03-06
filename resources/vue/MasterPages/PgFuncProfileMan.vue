@@ -5,6 +5,7 @@ import { useApiStore } from '../AppState'
 import axios from 'axios'
 import { getCurrentInstance } from 'vue'
 import { useGlobalOptions } from '../composables/useGlobalOptions'
+import { useFormatters } from '../composables/useFormatters'
 import CmpLayout from '../Components/CmpLayout.vue'
 import CmpCustomTable from '../Components/CmpCustomTable.vue'
 import CmpAccordionFilter from '../Components/CmpAccordionFilter.vue'
@@ -13,6 +14,7 @@ import FormFilterFuncProfile from './Components/FormFilterFuncProfile.vue'
 
 const { t } = useI18n()
 const { statusOptions } = useGlobalOptions()
+const { formatDate } = useFormatters()
 const api = useApiStore()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
@@ -20,23 +22,22 @@ const UButton = resolveComponent('UButton')
 const UBadge = resolveComponent('UBadge')
 
 // ========================= FILTER =========================
-const functionalProfileCodeFilter = ref('')
-const functionalProfileNameFilter = ref('')
 const profileFilter = ref<string | null>(null)
+const companyFilter = ref<string | null>(null)
 const divisionFilter = ref<string | null>(null)
 const limitFilter = ref<string | null>(null)
 const statusFilter = ref<string | null>(null)
 
 // For select options
-const limitOptions = ref<{ label: string; value: string }[]>([])
 const profileOptions = ref<{ label: string; value: string }[]>([])
+const companyOptions = ref<{ label: string; value: string }[]>([])
+const limitOptions = ref<{ label: string; value: string }[]>([])
 const divisionOptions = ref<{ label: string; value: string }[]>([])
 const divisionOptionsLoading = ref(false)
 
 const resetFilter = () => {
-    functionalProfileCodeFilter.value = ''
-    functionalProfileNameFilter.value = ''
     profileFilter.value = null
+    companyFilter.value = null
     divisionFilter.value = null
     limitFilter.value = null
     statusFilter.value = null
@@ -53,20 +54,16 @@ const globalSearchQuery = ref('') // For global search, server-side
 
 const columns = computed(() => [
     {
-        key: 'code',
-        label: t('text.table-column.column-code'),
-        sortable: true
-    },
-    {
-        key: 'name',
-        label: t('text.table-column.column-name'),
-        sortable: true
-    },
-    {
         key: 'profile',
         label: t('text.table-column.column-profile'),
         sortable: true,
         cellRenderer: (_value: any, row: any) => row.profile ? row.profile?.name : '-'
+    },
+    {
+        key: 'company',
+        label: t('text.table-column.column-company'),
+        sortable: true,
+        cellRenderer: (_value: any, row: any) => row.company ? row.company?.code + ' - ' + row.company?.name : '-'
     },
     {
         key: 'division',
@@ -81,7 +78,19 @@ const columns = computed(() => [
         cellRenderer: (_value: any, row: any) => row.limit ? row.limit?.code : '-'
     },
     {
-        key: 'status',
+        key: 'start_date',
+        label: t('text.table-column.column-start-date'),
+        sortable: true,
+        formatter: (value: string) => formatDate(value)
+    },
+    {
+        key: 'end_date',
+        label: t('text.table-column.column-end-date'),
+        sortable: true,
+        formatter: (value: string) => formatDate(value)
+    },
+    {
+        key: 'is_active',
         label: t('text.table-column.column-status'),
         sortable: false,
         cellRenderer: (value: any, row: any) => {
@@ -96,20 +105,6 @@ const columns = computed(() => [
         }
     },
 ])
-
-const actions = computed(() => [
-    [
-        {
-            label: t('text.button.edit' as any) || 'Edit',
-            icon: 'i-lucide-pencil',
-            onSelect: (row : any) => handleEdit(row)
-        }
-    ]
-])
-
-const columnPinning = ref({
-    right: ['actions']
-})
 
 // ========================= STATE FOR MODAL =========================
 const modalTitle = ref('')
@@ -141,16 +136,16 @@ const getFuncProfileList = async () => {
 
     try {
         const params = {
-            code: functionalProfileCodeFilter.value,
-            name: functionalProfileNameFilter.value,
             profile: profileFilter.value,
+            company: companyFilter.value,
             division: divisionFilter.value,
             limit_code: limitFilter.value,
             status: statusFilter.value,
             skip: (currentPage.value - 1) * itemPerPage.value,
             limiit: itemPerPage.value,
             search: globalSearchQuery.value, // For global search, server-side
-            sort_by: 'code',
+            sort_by: 'profile_name',
+            sort_order: 'asc',
         }
         const response = await axios.get(api.getFuncProfileList, { params });
 
@@ -166,43 +161,6 @@ const getFuncProfileList = async () => {
         });
     } finally {
         loadingTable.value = false;
-    }
-}
-
-const getLimitOptions = async () => {
-    limitOptions.value = [] // Clear options before fetching new data
-    try {
-        const params = {
-            skip: 0,
-            limit: 1000,
-            sort_by: 'code',
-            sort_order: 'asc',
-        }
-
-        const response = await axios.get(api.getLimitList, { params })
-        const sourceItems = response?.data?.data?.items || response?.data?.data || response?.data || []
-        const sourceArray = Array.isArray(sourceItems) ? sourceItems : []
-        const activeData = sourceArray.filter((item: any) => {
-            const rawActive = item?.is_active
-            return rawActive === true || rawActive === 1 || rawActive === '1'
-        })
-
-        const uniqueOptions = new Map<string, { label: string; value: string }>()
-        activeData.forEach((item: any) => {
-            const label = String(item?.code).trim()
-            const value = String(item?.code).trim()
-
-            if (!value) return
-            uniqueOptions.set(value, {
-                label: label,
-                value: value,
-            })
-        })
-
-        limitOptions.value = Array.from(uniqueOptions.values())
-    } catch (error) {
-        console.error('Error fetching limit options:', error)
-        limitOptions.value = []
     }
 }
 
@@ -240,6 +198,80 @@ const getProfileOptions = async () => {
     } catch (error) {
         console.error('Error fetching profile options:', error)
         profileOptions.value = []
+    }
+}
+
+const getCompanyOptions = async () => {
+    companyOptions.value = [] // Clear options before fetching new data
+    try {
+        const params = {
+            skip: 0,
+            limit: 1000,
+            sort_by: 'code',
+            sort_order: 'asc',
+        }
+
+        const response = await axios.get(api.getCompanyList, { params })
+        const sourceItems = response?.data?.items || []
+        const sourceArray = Array.isArray(sourceItems) ? sourceItems : []
+        const activeData = sourceArray.filter((item: any) => {
+            const rawActive = item?.status
+            return rawActive === true || rawActive === 1 || rawActive === '1'
+        })
+
+        const uniqueOptions = new Map<string, { label: string; value: string }>()
+        activeData.forEach((item: any) => {
+            const label = String(item?.code).trim() + ' - ' + String(item?.name).trim()
+            const value = String(item?.id).trim()
+
+            if (!value) return
+            uniqueOptions.set(value, {
+                label: label,
+                value: value,
+            })
+        })
+
+        companyOptions.value = Array.from(uniqueOptions.values())
+    } catch (error) {
+        console.error('Error fetching company options:', error)
+        companyOptions.value = []
+    }
+}
+
+const getLimitOptions = async () => {
+    limitOptions.value = [] // Clear options before fetching new data
+    try {
+        const params = {
+            skip: 0,
+            limit: 1000,
+            sort_by: 'code',
+            sort_order: 'asc',
+        }
+
+        const response = await axios.get(api.getLimitList, { params })
+        const sourceItems = response?.data?.data?.items || response?.data?.data || response?.data || []
+        const sourceArray = Array.isArray(sourceItems) ? sourceItems : []
+        const activeData = sourceArray.filter((item: any) => {
+            const rawActive = item?.is_active
+            return rawActive === true || rawActive === 1 || rawActive === '1'
+        })
+
+        const uniqueOptions = new Map<string, { label: string; value: string }>()
+        activeData.forEach((item: any) => {
+            const label = String(item?.code).trim()
+            const value = String(item?.code).trim()
+
+            if (!value) return
+            uniqueOptions.set(value, {
+                label: label,
+                value: value,
+            })
+        })
+
+        limitOptions.value = Array.from(uniqueOptions.values())
+    } catch (error) {
+        console.error('Error fetching limit options:', error)
+        limitOptions.value = []
     }
 }
 
@@ -298,21 +330,14 @@ const handleSearch = (query: string) => { // For global search, server-side
     getFuncProfileList()
 }
 
-const handleEdit = (data: any) => {
-    modalTitle.value = t('text.functional-profile-management-pg.edit-profile' as any) || 'Edit Functional Profile'
-    editMode.value = true
-    editingId.value = data.id
-    editData.value = data
-    modalSubmitOpen.value = true
-}
-
 // Fetch initial data on component mount
 onMounted(async () => {
     await Promise.all([
-        getLimitOptions(),
         getProfileOptions(),
+        getCompanyOptions(),
+        getLimitOptions(),
         getDivisionOptions(),
-        // getFuncProfileList()
+        getFuncProfileList()
     ]).catch((error) => {
         console.error('Error during initial data fetch:', error)
         Swal?.fire({
@@ -357,8 +382,9 @@ onMounted(async () => {
                 :edit-mode="editMode"
                 :editing-id="editingId"
                 :initial-data="editData"
-                :limit-options="limitOptions"
                 :profile-options="profileOptions"
+                :company-options="companyOptions"
+                :limit-options="limitOptions"
                 :division-options="divisionOptions"
                 :division-loading="divisionOptionsLoading"
                 @update:open="modalSubmitOpen = $event"
@@ -371,16 +397,16 @@ onMounted(async () => {
                 <!-- Filters Section with Accordion -->
                 <CmpAccordionFilter>
                     <FormFilterFuncProfile
-                        v-model:funcProfileCode="functionalProfileCodeFilter"
-                        v-model:funcProfileName="functionalProfileNameFilter"
                         v-model:profile="profileFilter"
+                        v-model:company="companyFilter"
                         v-model:division="divisionFilter"
                         v-model:limit="limitFilter"
                         v-model:status="statusFilter"
-                        :limit-options="limitOptions"
                         :profile-options="profileOptions"
-                        :status-options="statusOptions"
+                        :company-options="companyOptions"
+                        :limit-options="limitOptions"
                         :division-options="divisionOptions"
+                        :status-options="statusOptions"
                         :loading="loadingTable"
                         @clear="resetFilter"
                         @find="onClickFindButton"
@@ -391,7 +417,6 @@ onMounted(async () => {
                 <CmpCustomTable
                     :data="functionalProfileData"
                     :columns="columns"
-                    :actions="actions"
                     :showNumberColumn="false"
                     :showFilters="true"
                     :loading="loadingTable"
@@ -399,7 +424,6 @@ onMounted(async () => {
                     :page-size="itemPerPage"
                     :current-page="currentPage"
                     :count-total-data="countTotalData"
-                    :column-pinning="columnPinning"
                     @update:currentPage="handlePageChange"
                     @update:pageSize="handlePageSizeChange"
                     @search="handleSearch"

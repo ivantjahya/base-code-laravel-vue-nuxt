@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import { ref, computed, h, resolveComponent, shallowRef, onMounted } from 'vue'
-import type { TableColumn } from '@nuxt/ui'
-import { CalendarDate, DateFormatter, getLocalTimeZone, today } from '@internationalized/date'
+import { ref, computed, h, resolveComponent, shallowRef, onMounted, getCurrentInstance } from 'vue'
+import { CalendarDate } from '@internationalized/date'
 import { useI18n } from '../composables/useI18n'
 import { useFormatters } from '../composables/useFormatters'
 import { useMenuPermission } from '../composables/useMenuPermission'
 import { useApiStore } from '../AppState'
 import axios from 'axios'
-import { getCurrentInstance } from 'vue'
 import CmpLayout from '../Components/CmpLayout.vue'
 import CmpCustomTable from '../Components/CmpCustomTable.vue'
 import CmpAccordionFilter from '../Components/CmpAccordionFilter.vue'
@@ -15,17 +13,17 @@ import DialogFormLimit from './Components/DialogFormLimit.vue'
 import FormFilterLimit from './Components/FormFilterLimit.vue'
 
 const { t } = useI18n()
-const { formatDate, formatCurrency, getDateString, stringToCalendarDate } = useFormatters()
+const { formatDate, formatCurrency, getDateString } = useFormatters()
 const { hasMenuCtrl, MENU_CODE, CTRL_CODE } = useMenuPermission()
 const api = useApiStore()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
+const UButton = resolveComponent('UButton')
+const UBadge = resolveComponent('UBadge')
+
 // ========================= PERMISSIONS =========================
 const canCreateLimit = computed(() => hasMenuCtrl(MENU_CODE.value.SUBMENU_LIMITS, CTRL_CODE.value.MENU_CTRL_CREATE))
 const canUpdateLimit = computed(() => hasMenuCtrl(MENU_CODE.value.SUBMENU_LIMITS, CTRL_CODE.value.MENU_CTRL_UPDATE))
-
-const UButton = resolveComponent('UButton')
-const UBadge = resolveComponent('UBadge')
 
 // ========================= FILTER =========================
 const limitCodeFilter = ref('')

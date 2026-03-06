@@ -32,6 +32,8 @@ interface CacheKeyConst
 
     public const KEY_STATUS_USER_LOCKED = 'status-user-locked';
 
+    public const KEY_MASTER_COMPANY_LIST = 'master-company-list';
+
     /**
      * List of cache carbon time
      */

@@ -147,4 +147,21 @@ class PythonTaskMasterDataService
             []
         );
     }
+
+    /**
+     * Process data reset user login attempt from Python API
+     */
+    public function processUserResetLoginAttempt(): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(60)
+                ->post("{$this->baseUrl}/user/process_reset_login_attempt/sync")
+                ->throw(),
+            '/user/process_reset_login_attempt/sync',
+            'Failed to process reset user login attempt',
+            []
+        );
+    }
 }

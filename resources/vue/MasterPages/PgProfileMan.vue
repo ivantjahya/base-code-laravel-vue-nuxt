@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import { ref, computed, h, resolveComponent, shallowRef, onMounted } from 'vue'
-import type { TableColumn } from '@nuxt/ui'
-import { CalendarDate, DateFormatter, getLocalTimeZone, today } from '@internationalized/date'
+import { ref, computed, h, resolveComponent, onMounted, getCurrentInstance } from 'vue'
 import { useI18n } from '../composables/useI18n'
-import { useFormatters } from '../composables/useFormatters'
+import { useMenuPermission } from '../composables/useMenuPermission'
 import { useApiStore } from '../AppState'
 import axios from 'axios'
-import { getCurrentInstance } from 'vue'
 import CmpLayout from '../Components/CmpLayout.vue'
 import CmpCustomTable from '../Components/CmpCustomTable.vue'
 import CmpAccordionFilter from '../Components/CmpAccordionFilter.vue'
@@ -16,12 +13,18 @@ import FormFilterProfile from './Components/FormFilterProfile.vue'
 import CmpDrawer from '../Components/CmpDrawer.vue'
 
 const { t } = useI18n()
-const { formatDate, formatCurrency, getDateString, stringToCalendarDate } = useFormatters()
+const { hasMenuCtrl, MENU_CODE, CTRL_CODE } = useMenuPermission()
 const api = useApiStore()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
 const UButton = resolveComponent('UButton')
 const UBadge = resolveComponent('UBadge')
+
+// ========================= PERMISSIONS =========================
+const canCreateProfile = computed(() => hasMenuCtrl(MENU_CODE.value.SUBMENU_PROFILES, CTRL_CODE.value.MENU_CTRL_CREATE))
+const canUpdateProfile = computed(() => hasMenuCtrl(MENU_CODE.value.SUBMENU_PROFILES, CTRL_CODE.value.MENU_CTRL_UPDATE))
+const canCreateFuncProfile = computed(() => hasMenuCtrl(MENU_CODE.value.SUBMENU_FUNC_PROFILES, CTRL_CODE.value.MENU_CTRL_CREATE))
+const canUpdateFuncProfile = computed(() => hasMenuCtrl(MENU_CODE.value.SUBMENU_FUNC_PROFILES, CTRL_CODE.value.MENU_CTRL_UPDATE))
 
 // ========================= STATE FOR FILTER =========================
 const profileCodeFilter = ref('')
@@ -111,6 +114,7 @@ const columnPinning = ref({
 const modalTitle = ref('')
 const modalSubmitOpen = ref(false)
 const modalFuncProfileOpen = ref(false)
+const viewOnlyMode = ref(false)
 const editMode = ref(false)
 const editingId = ref<string | null>(null)
 const editData = ref({})
@@ -123,6 +127,7 @@ const limitOptions = ref<{ label: string; value: string }[]>([])
 
 const showModal = () => {
     modalTitle.value = t('text.profile-management-pg.add-new-profile' as any) || 'Create New Profile'
+    viewOnlyMode.value = false
     editMode.value = false
     editingId.value = null
     editData.value = {}
@@ -184,27 +189,27 @@ const getCompanyOptions = async () => {
             sort_order: 'asc',
         }
 
-        // const response = await axios.get(api.getCompanyList, { params })
-        // const sourceItems = response?.data?.data?.items || response?.data?.data || response?.data || []
-        // const sourceArray = Array.isArray(sourceItems) ? sourceItems : []
-        // const activeData = sourceArray.filter((item: any) => {
-        //     const rawActive = item?.is_active
-        //     return rawActive === true || rawActive === 1 || rawActive === '1'
-        // })
+        const response = await axios.get(api.getCompanyList, { params })
+        const sourceItems = response?.data?.items || []
+        const sourceArray = Array.isArray(sourceItems) ? sourceItems : []
+        const activeData = sourceArray.filter((item: any) => {
+            const rawActive = item?.status
+            return rawActive === true || rawActive === 1 || rawActive === '1'
+        })
 
-        // const uniqueOptions = new Map<string, { label: string; value: string }>()
-        // activeData.forEach((item: any) => {
-        //     const label = String(item?.code).trim()
-        //     const value = String(item?.code).trim()
+        const uniqueOptions = new Map<string, { label: string; value: string }>()
+        activeData.forEach((item: any) => {
+            const label = String(item?.code).trim() + ' - ' + String(item?.name).trim()
+            const value = String(item?.id).trim()
 
-        //     if (!value) return
-        //     uniqueOptions.set(value, {
-        //         label: label,
-        //         value: value,
-        //     })
-        // })
+            if (!value) return
+            uniqueOptions.set(value, {
+                label: label,
+                value: value,
+            })
+        })
 
-        // companyOptions.value = Array.from(uniqueOptions.values())
+        companyOptions.value = Array.from(uniqueOptions.values())
     } catch (error) {
         console.error('Error fetching company options:', error)
         companyOptions.value = []
@@ -256,7 +261,7 @@ const getDivisionOptions = async () => {
         const sourceItems = response?.data?.data?.items || response?.data?.data || response?.data || []
         const sourceArray = Array.isArray(sourceItems) ? sourceItems : []
         const divisionData = sourceArray.filter((item: any) => {
-            return item.parent_id === null
+            return item.parent_id === null && item.code != '0'
         })
 
         const uniqueOptions = new Map<string, { label: string; value: string }>()
@@ -311,6 +316,7 @@ const handleEdit = async (data: any) => {
         const rawMenuAccess = Array.isArray(detail?.menu_access) ? detail.menu_access : []
 
         modalTitle.value = t('text.profile-management-pg.edit-profile' as any) || 'Edit profile'
+        viewOnlyMode.value = !canUpdateProfile.value
         editMode.value = true
         editingId.value = profileId
         const rawProfileSource = detail?.is_internal ?? data?.is_internal ?? null
@@ -345,9 +351,11 @@ const handleFunctionalProfile = async (data: any) => {
         const detail = response?.data?.data || response?.data || {}
 
         modalTitle.value = t('text.button.functional-profile' as any) || 'Functional Profiles'
+        viewOnlyMode.value = !canUpdateProfile.value
         editMode.value = true
         editingId.value = profileId
         editFuncProfileData.value = {
+            profileId: detail?.id || data?.id || '',
             profileName: detail?.name || data?.name || '',
         }
         modalFuncProfileOpen.value = true
@@ -397,7 +405,7 @@ onMounted(async () => {
                     <div class="flex items-center gap-4">
 
                         <!-- BUTTON NEW -->
-                        <UButton type="button" @click="showModal" class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[16px] px-5">
+                        <UButton v-if="canCreateProfile" type="button" @click="showModal" class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[16px] px-5">
                             {{ t('text.button.new').toUpperCase() || 'NEW' }}
                         </UButton>
 
@@ -453,6 +461,7 @@ onMounted(async () => {
             <DialogFormProfile
                 :open="modalSubmitOpen"
                 :title="modalTitle"
+                :view-only="viewOnlyMode"
                 :edit-mode="editMode"
                 :editing-id="editingId"
                 :initial-data="editData"
@@ -470,6 +479,8 @@ onMounted(async () => {
                 :company-options="companyOptions"
                 :limit-options="limitOptions"
                 :division-options="divisionOptions"
+                :can-create-func-profile="canCreateFuncProfile"
+                :can-update-func-profile="canUpdateFuncProfile"
                 @update:open="modalFuncProfileOpen = $event"
                 @submitted="onSubmitted"
                 @close="closeModalFuncProfile"

@@ -16,6 +16,10 @@ const props = defineProps({
         type: String,
         default: ''
     },
+    viewOnly: {
+        type: Boolean,
+        default: false
+    },
     editMode: {
         type: Boolean,
         default: false
@@ -464,7 +468,7 @@ const debugCheckKeys = () => {
 
 watch(() => props.open, async (newVal) => {
     if (newVal) {
-        if (props.editMode && props.initialData) {
+        if ((props.editMode || props.viewOnly) && props.initialData) {
             profileName.value = props.initialData.profileName || ''
             description.value = props.initialData.description || ''
             profileSource.value = props.initialData.profileSource
@@ -604,6 +608,7 @@ const isOpen = computed({
                                 ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
                                 : ''
                         }"
+                        :disabled="viewOnly"
                     />
                     <p v-if="errors.profileName" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.profileName }}</p>
                 </div>
@@ -635,6 +640,7 @@ const isOpen = computed({
                                 ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
                                 : ''
                         }"
+                        :disabled="viewOnly"
                     />
                 </div>
             </UFormField>
@@ -669,6 +675,7 @@ const isOpen = computed({
                                 ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
                                 : ''
                         }"
+                        :disabled="viewOnly"
                     />
                     <p v-if="errors.profileSource" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.profileSource }}</p>
                 </div>
@@ -713,6 +720,7 @@ const isOpen = computed({
                                 tabindex="-1"
                                 @update:model-value="() => handleSelect()"
                                 @click.stop
+                                :disabled="viewOnly"
                             />
                         </template>
                         <template #item-label="{ item, handleSelect }">
@@ -721,6 +729,7 @@ const isOpen = computed({
                                 type="button"
                                 class="w-full text-left"
                                 @click.stop="handleSelect"
+                                :disabled="viewOnly"
                             >
                                 {{ item.label }}
                             </button>
@@ -737,7 +746,7 @@ const isOpen = computed({
                 <div class="flex items-center w-80 gap-2">
                     <UCheckbox
                         v-model="allAccessChecked"
-                        :disabled="isLoadingTree || items.length === 0"
+                        :disabled="isLoadingTree || items.length === 0 || viewOnly"
                     />
                     <span class="text-sm font-light">
                         {{ t('text.button.check-all') || 'Check All' }}
@@ -754,26 +763,36 @@ const isOpen = computed({
                 </template>
 
                 <div class="flex justify-start w-80">
-                    <USwitch v-model="valueSwitch" />
+                    <USwitch v-model="valueSwitch" :disabled="viewOnly" />
                 </div>
             </UFormField>
         </template>
 
         <template #footer>
             <UButton
-                v-if="!editMode"
+                v-if="!editMode && !viewOnly"
                 class="bg-[#FEE9D6] text-[#F26524] hover:bg-[#FBD0AD] hover:text-[#E34613] active:bg-[#FBD0AD] active:text-[#E34613] text-[14px] px-5"
                 :disabled="isSubmitting"
                 @click="resetForm"
             >{{ t('text.button.clear') || 'Clear' }}</UButton>
 
             <UButton
+                v-if="!viewOnly"
                 class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[14px] px-5"
                 :loading="isSubmitting"
                 :disabled="isSubmitting"
                 @click="postSubmitProfile"
             >
                 {{ t('text.button.submit') || 'Submit' }}
+            </UButton>
+
+            <!-- Close button — shown only in view-only mode -->
+            <UButton
+                v-if="viewOnly"
+                class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[14px] px-5"
+                @click="closeModal"
+            >
+                {{ t('text.button.close') || 'Close' }}
             </UButton>
         </template>
     </UModal>
