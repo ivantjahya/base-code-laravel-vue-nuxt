@@ -144,7 +144,7 @@ const getFuncProfileList = async () => {
             skip: (currentPage.value - 1) * itemPerPage.value,
             limiit: itemPerPage.value,
             search: globalSearchQuery.value, // For global search, server-side
-            sort_by: 'profile_name',
+            sort_by: 'profile.name',
             sort_order: 'asc',
         }
         const response = await axios.get(api.getFuncProfileList, { params });
