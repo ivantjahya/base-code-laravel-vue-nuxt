@@ -13,6 +13,7 @@ import CmpAccordionFilter from '../Components/CmpAccordionFilter.vue'
 import DialogFormProfile from './Components/DialogFormProfile.vue'
 import DialogFormFuncProfile from './Components/DialogFormFuncProfile.vue'
 import FormFilterProfile from './Components/FormFilterProfile.vue'
+import CmpDrawer from '../Components/CmpDrawer.vue'
 
 const { t } = useI18n()
 const { formatDate, formatCurrency, getDateString, stringToCalendarDate } = useFormatters()
@@ -410,36 +411,39 @@ onMounted(async () => {
                     <div>
 
                         <!-- USER GUIDE -->
-                        <UDrawer handle-only>
-                            <UButton label="User Guide" color="neutral" variant="subtle"/>
+                        <!-- <UDrawer handle-only>
+                            <UButton label="User Guide" color="neutral" variant="subtle" icon="i-lucide-info" size="sm"/>
 
                             <template #body>
+                                <div class="px-6">
+                                    <div class="flex items-center justify-between gap-4 mb-6">
+                                        <h1 class="text-highlighted font-semibold text-lg">List of User Guide for Profile</h1>
+                                    </div>
 
-                                <div class="flex items-center justify-between gap-4 mb-6">
-                                    <h2 class="text-highlighted font-semibold">List of User Guide for Profile</h2>
+                                    <USeparator class="mb-6"/>
+
+                                    <CmpCustomTable
+                                        :data="profileData"
+                                        :columns="columns"
+                                        :actions="actions"
+                                        :showNumberColumn="false"
+                                        :showFilters="true"
+                                        :loading="loadingTable"
+                                        :showLoadingOverlay="showLoadingOverlay"
+                                        :page-size="itemPerPage"
+                                        :current-page="currentPage"
+                                        :count-total-data="countTotalData"
+                                        :column-pinning="columnPinning"
+                                        @update:currentPage="handlePageChange"
+                                        @update:pageSize="handlePageSizeChange"
+                                        @search="handleSearch"
+                                        class="mb-6"
+                                    />
                                 </div>
-
-                                <USeparator class="mb-6"/>
-
-                                <!-- Nuxt UI Table -->
-                                <CmpCustomTable
-                                    :data="profileData"
-                                    :columns="columns"
-                                    :actions="actions"
-                                    :showNumberColumn="false"
-                                    :showFilters="true"
-                                    :loading="loadingTable"
-                                    :showLoadingOverlay="showLoadingOverlay"
-                                    :page-size="itemPerPage"
-                                    :current-page="currentPage"
-                                    :count-total-data="countTotalData"
-                                    :column-pinning="columnPinning"
-                                    @update:currentPage="handlePageChange"
-                                    @update:pageSize="handlePageSizeChange"
-                                    @search="handleSearch"
-                                />
                             </template>
-                        </UDrawer>
+                        </UDrawer> -->
+
+                        <CmpDrawer />
 
                     </div>
                 </div>
