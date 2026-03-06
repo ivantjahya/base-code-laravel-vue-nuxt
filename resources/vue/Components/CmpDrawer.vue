@@ -31,12 +31,11 @@ const drawerItems = computed(() => [
 
 <template>
     <UDrawer
-        handle-only
         :items="drawerItems"
         :ui="{
             wrapper: 'w-full',
             item: {
-                base: 'border-1 border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden',
+                base: 'border-1 border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden',
             }
         }">
         <UButton label="User Guide" color="neutral" variant="subtle" icon="i-lucide-info" size="sm"/>
