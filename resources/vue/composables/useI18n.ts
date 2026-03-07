@@ -66,6 +66,8 @@ type TranslationKey =
   | 'text.button.functional-profile'
   | 'text.button.add'
   | 'text.button.add-row'
+  | 'text.button.reset-password'
+  | 'text.button.unlock-user'
   | 'text.input-field.username'
   | 'text.input-field.username-placeholder'
   | 'text.input-field.password'

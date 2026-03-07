@@ -2,6 +2,7 @@
 import { ref, shallowRef } from 'vue'
 import type { CalendarDate } from '@internationalized/date'
 import { useI18n } from '../../composables/useI18n'
+import { TEXT_SIZE_CLASS, BUTTON_PRIMARY_CLASS, BUTTON_CLEAR_CLASS } from '../../constants'
 
 const { t } = useI18n()
 
@@ -51,14 +52,17 @@ const onFind = () => {
         <div class="flex flex-col md:flex-row w-full my-1 gap-2">
             <!-- LIMIT CODE -->
             <div class="flex w-full">
-                <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.limit-code') || 'Limit Code' }}</div>
+                <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">{{ t('text.input-field.limit-code') || 'Limit Code' }}</div>
                 <div class="flex w-full text-sm">
                     <UInput
                         :model-value="limitCode"
                         @update:model-value="$emit('update:limitCode', $event)"
                         :placeholder="t('text.input-field.limit-code-placeholder') || 'Enter limit code'"
                         size="md"
-                        class="w-full font-light text-base md:text-sm"
+                        class="w-full font-light"
+                        :ui="{
+                            base: TEXT_SIZE_CLASS
+                        }"
                     />
                 </div>
             </div>
@@ -67,7 +71,7 @@ const onFind = () => {
 
             <!-- START DATE -->
             <div class="flex w-full">
-                <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.start-date') || 'Start Date' }}</div>
+                <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">{{ t('text.input-field.start-date') || 'Start Date' }}</div>
                 <div class="flex w-full text-sm">
                     <UInputDate
                         :model-value="startDate"
@@ -76,6 +80,7 @@ const onFind = () => {
                         format="dd/mm/yyyy"
                         :max-value="endDate"
                         class="w-full border-[#CAD5E2] font-reguler focus:border-[#F26524]"
+                        :class="TEXT_SIZE_CLASS"
                     >
                         <template #trailing>
                             <UPopover v-model:open="isPopoverStartDateOpen">
@@ -106,7 +111,7 @@ const onFind = () => {
         <div class="flex flex-col md:flex-row w-full my-1 gap-2">
             <!-- MINIMUM -->
             <div class="flex w-full">
-                <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.min-amount') || 'Minimum' }}</div>
+                <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">{{ t('text.input-field.min-amount') || 'Minimum' }}</div>
                 <div class="flex w-full text-sm">
                     <UInputNumber
                         :model-value="minAmount"
@@ -117,6 +122,9 @@ const onFind = () => {
                             currency: 'IDR'
                         }"
                         class="w-full border-[#CAD5E2] font-reguler focus:border-[#F26524] "
+                        :ui="{
+                            base: TEXT_SIZE_CLASS
+                        }"
                     />
                 </div>
             </div>
@@ -125,7 +133,7 @@ const onFind = () => {
 
             <!-- END DATE -->
             <div class="flex w-full">
-                <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.end-date') || 'End Date' }}</div>
+                <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">{{ t('text.input-field.end-date') || 'End Date' }}</div>
                 <div class="flex w-full text-sm">
                     <UInputDate
                         :model-value="endDate"
@@ -134,6 +142,7 @@ const onFind = () => {
                         format="dd/mm/yyyy"
                         :min-value="startDate"
                         class="w-full border-[#CAD5E2] font-reguler focus:border-[#F26524]"
+                        :class="TEXT_SIZE_CLASS"
                     >
                         <template #trailing>
                             <UPopover v-model:open="isPopoverEndDateOpen">
@@ -164,7 +173,7 @@ const onFind = () => {
         <div class="flex flex-col md:flex-row w-full my-1 gap-2">
             <!-- MAXIMUM -->
             <div class="flex w-full">
-                <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.max-amount') || 'Maximum' }}</div>
+                <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">{{ t('text.input-field.max-amount') || 'Maximum' }}</div>
                 <div class="flex w-full text-sm">
                     <UInputNumber
                         :model-value="maxAmount"
@@ -175,6 +184,9 @@ const onFind = () => {
                             currency: 'IDR'
                         }"
                         class="w-full border-[#CAD5E2] font-reguler focus:border-[#F26524] "
+                        :ui="{
+                            base: TEXT_SIZE_CLASS
+                        }"
                     />
                 </div>
             </div>
@@ -186,13 +198,15 @@ const onFind = () => {
                 <div class="w-full md:w-50 my-auto text-base md:text-sm"></div>
                 <div class="flex w-full text-sm gap-2">
                     <UButton
-                        class="flex-1 w-full justify-center text-base md:text-sm text-[#F26524] hover:text-[#E34613] bg-[#FEE9D6] hover:bg-[#FBD0AD] active:bg-[#FBD0AD] active:text-[#E34613]"
+                        class="flex-1 w-full justify-center"
+                        :class="`${BUTTON_CLEAR_CLASS} ${TEXT_SIZE_CLASS}`"
                         :disabled="loading"
                         @click="onClear"
                     >{{ t('text.button.clear') || 'Clear' }}</UButton>
 
                     <UButton
-                        class="flex-3 w-full justify-center text-base md:text-sm text-white bg-[#F26524] hover:bg-[#E34613] active:bg-[#E34613]"
+                        class="flex-3 w-full justify-center"
+                        :class="`${BUTTON_PRIMARY_CLASS} ${TEXT_SIZE_CLASS}`"
                         :loading="loading"
                         size="md"
                         icon="i-lucide-search"

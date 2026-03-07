@@ -11,6 +11,7 @@ import CmpCustomTable from '../Components/CmpCustomTable.vue'
 import CmpAccordionFilter from '../Components/CmpAccordionFilter.vue'
 import DialogFormRegionalSite from './Components/DialogFormRegionalSite.vue'
 import FormFilterRegionalSite from './Components/FormFilterRegionalSite.vue'
+import { TEXT_TITLE_SIZE_CLASS, TITLE_TEXT_CLASS, TABLE_TEXT_STATUS_SIZE_CLASS } from '../constants'
 
 const { t } = useI18n()
 const { statusOptions } = useGlobalOptions()
@@ -54,7 +55,7 @@ const columns = computed(() => [
         key: 'site',
         label: t('text.table-column.column-site-code'),
         sortable: true,
-        size: 136,
+        size: 127,
     },
     {
         key: 'initial',
@@ -120,7 +121,7 @@ const columns = computed(() => [
             return h(UBadge, {
                 variant: 'subtle',
                 color: badgeColor,
-                class: 'text-xs'
+                class: TABLE_TEXT_STATUS_SIZE_CLASS
             }, () => statusText)
         }
     },
@@ -245,7 +246,7 @@ onMounted(() => {
                     <div class="flex items-center">
 
                         <!-- TITLE -->
-                        <h1 class="text-lg font-semibold text-gray-900 dark:text-white">
+                        <h1 :class="`${TITLE_TEXT_CLASS} ${TEXT_TITLE_SIZE_CLASS}`">
                             {{ t('text.regional-site-pg.list') || 'List of Regional Sites' }}
                         </h1>
 

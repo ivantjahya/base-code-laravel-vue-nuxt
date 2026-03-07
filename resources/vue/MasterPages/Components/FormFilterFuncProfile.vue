@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, shallowRef } from 'vue'
 import { useI18n } from '../../composables/useI18n'
+import { TEXT_SIZE_CLASS, BUTTON_PRIMARY_CLASS, BUTTON_CLEAR_CLASS } from '../../constants'
 
 const { t } = useI18n()
 
@@ -68,7 +69,7 @@ const onFind = () => {
 
             <!-- PROFILE -->
             <div class="flex w-full">
-                <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.profile') || 'Profile' }}</div>
+                <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">{{ t('text.input-field.profile') || 'Profile' }}</div>
                 <div class="flex w-full text-sm">
                     <USelectMenu
                         :model-value="profile"
@@ -79,6 +80,11 @@ const onFind = () => {
                         option-attribute="label"
                         :placeholder="t('text.input-field.profile-placeholder') || 'Select profile'"
                         class="w-full font-reguler"
+                        :ui="{
+                            base: TEXT_SIZE_CLASS,
+                            content: TEXT_SIZE_CLASS,
+                            item: TEXT_SIZE_CLASS
+                        }"
                     />
                 </div>
             </div>
@@ -87,7 +93,7 @@ const onFind = () => {
 
             <!-- DIVISION -->
             <div class="flex w-full">
-                <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.division') || 'Division' }}</div>
+                <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">{{ t('text.input-field.division') || 'Division' }}</div>
                 <div class="flex w-full text-sm">
                     <USelectMenu
                         :model-value="division"
@@ -98,6 +104,11 @@ const onFind = () => {
                         option-attribute="label"
                         :placeholder="t('text.input-field.division-placeholder') || 'Select division'"
                         class="w-full font-reguler"
+                        :ui="{
+                            base: TEXT_SIZE_CLASS,
+                            content: TEXT_SIZE_CLASS,
+                            item: TEXT_SIZE_CLASS
+                        }"
                     />
                 </div>
             </div>
@@ -108,7 +119,7 @@ const onFind = () => {
 
             <!-- COMPANY -->
             <div class="flex w-full">
-                <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.functional-profile-management-pg.input-company') || 'Company' }}</div>
+                <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">{{ t('text.functional-profile-management-pg.input-company') || 'Company' }}</div>
                 <div class="flex w-full text-sm">
                     <USelectMenu
                         :model-value="company"
@@ -119,6 +130,11 @@ const onFind = () => {
                         option-attribute="label"
                         :placeholder="t('text.functional-profile-management-pg.input-company-placeholder') || 'Select company'"
                         class="w-full font-reguler"
+                        :ui="{
+                            base: TEXT_SIZE_CLASS,
+                            content: TEXT_SIZE_CLASS,
+                            item: TEXT_SIZE_CLASS
+                        }"
                     />
                 </div>
             </div>
@@ -127,7 +143,7 @@ const onFind = () => {
 
             <!-- LIMIT -->
             <div class="flex w-full">
-                <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.limit') || 'Limit' }}</div>
+                <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">{{ t('text.input-field.limit') || 'Limit' }}</div>
                 <div class="flex w-full text-sm">
                     <USelectMenu
                         :model-value="limit"
@@ -138,6 +154,11 @@ const onFind = () => {
                         option-attribute="label"
                         :placeholder="t('text.input-field.limit-placeholder') || 'Select limit'"
                         class="w-full font-reguler"
+                        :ui="{
+                            base: TEXT_SIZE_CLASS,
+                            content: TEXT_SIZE_CLASS,
+                            item: TEXT_SIZE_CLASS
+                        }"
                     />
                 </div>
             </div>
@@ -148,7 +169,7 @@ const onFind = () => {
 
             <!-- STATUS -->
             <div class="flex w-full">
-                <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.status') || 'Status' }}</div>
+                <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">{{ t('text.input-field.status') || 'Status' }}</div>
                 <div class="flex w-full text-sm">
                     <USelectMenu
                         :model-value="status"
@@ -159,6 +180,11 @@ const onFind = () => {
                         option-attribute="label"
                         :placeholder="t('text.input-field.status-placeholder') || 'Select status'"
                         class="w-full font-reguler"
+                        :ui="{
+                            base: TEXT_SIZE_CLASS,
+                            content: TEXT_SIZE_CLASS,
+                            item: TEXT_SIZE_CLASS
+                        }"
                     />
                 </div>
             </div>
@@ -167,16 +193,18 @@ const onFind = () => {
 
             <!-- BUTTON FIND -->
             <div class="flex w-full mb-1">
-                <div class="w-full md:w-50 my-auto text-base md:text-sm"></div>
+                <div class="w-full md:w-50 my-auto" :class="TEXT_SIZE_CLASS"></div>
                 <div class="flex w-full text-sm gap-2">
                     <UButton
-                        class="flex-1 w-full justify-center text-base md:text-sm text-[#F26524] hover:text-[#E34613] bg-[#FEE9D6] hover:bg-[#FBD0AD] active:bg-[#FBD0AD] active:text-[#E34613]"
+                        class="flex-1 w-full justify-center"
+                        :class="`${BUTTON_CLEAR_CLASS} ${TEXT_SIZE_CLASS}`"
                         :disabled="loading"
                         @click="onClear"
                     >{{ t('text.button.clear') || 'Clear' }}</UButton>
 
                     <UButton
-                        class="flex-3 w-full justify-center text-base md:text-sm text-white bg-[#F26524] hover:bg-[#E34613] active:bg-[#E34613]"
+                        class="flex-3 w-full justify-center"
+                        :class="`${BUTTON_PRIMARY} ${TEXT_SIZE_CLASS}`"
                         :loading="loading"
                         size="md"
                         icon="i-lucide-search"

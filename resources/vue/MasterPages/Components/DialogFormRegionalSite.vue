@@ -2,6 +2,7 @@
 import { ref, computed, watch, nextTick } from 'vue'
 import { useI18n } from '../../composables/useI18n'
 import { useFormatters } from '../../composables/useFormatters'
+import { TEXT_SIZE_CLASS, TEXT_TITLE_SIZE_CLASS, TITLE_MODAL_TEXT_CLASS, INPUT_FIELD_WARN_CLASS, BUTTON_PRIMARY_CLASS, BUTTON_CLEAR_CLASS } from '../../constants'
 
 const props = defineProps({
     open: {
@@ -155,13 +156,9 @@ const tabItems = computed(() => [
         v-model:open="isOpen"
         :title="title"
         :dismissible="false"
-        class="text-[16px] font-semibold"
+        :class="TITLE_MODAL_TEXT_CLASS"
         :ui="{
-            content: `w-full mx-auto
-                sm:max-w-md sm:text-xs
-                md:max-w-2xl md:text-sm
-                lg:max-w-5xl lg:text-sm
-            `,
+            content: `w-full mx-auto sm:max-w-md md:max-w-2xl lg:max-w-5xl`,
             body: 'sm:pt-2 sm:px-6',
             footer: 'justify-end'
         }"
@@ -178,7 +175,7 @@ const tabItems = computed(() => [
                                 wrapper: 'flex',
                                 base: 'justify-center',
                                 active: 'border-b-2 border-primary-500 text-primary-500',
-                                inactive: 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+                                inactive: 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200',
                             },
                             indicator: 'hidden'
                         }
@@ -191,7 +188,7 @@ const tabItems = computed(() => [
                                 <div class="flex flex-col md:flex-row w-full gap-2">
                                     <!-- SITE -->
                                     <div class="flex w-full">
-                                        <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
+                                        <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">
                                             {{ t('text.table-column.column-site') || 'Site' }}
                                         </div>
                                         <div class="flex w-full text-sm">
@@ -199,7 +196,10 @@ const tabItems = computed(() => [
                                                 v-model="site"
                                                 size="md"
                                                 :disabled="viewMode"
-                                                class="w-full font-light text-base md:text-sm"
+                                                class="w-full font-light"
+                                                :ui="{
+                                                    base: TEXT_SIZE_CLASS
+                                                }"
                                             />
                                         </div>
                                     </div>
@@ -208,7 +208,7 @@ const tabItems = computed(() => [
 
                                     <!-- SITE START DATE -->
                                     <div class="flex w-full">
-                                        <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
+                                        <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">
                                             {{ t('text.table-column.column-start-date') || 'Site Start Date' }}
                                         </div>
                                         <div class="flex w-full text-sm">
@@ -216,7 +216,10 @@ const tabItems = computed(() => [
                                                 v-model="startDate"
                                                 size="md"
                                                 :disabled="viewMode"
-                                                class="w-full font-light text-base md:text-sm"
+                                                class="w-full font-light"
+                                                :ui="{
+                                                    base: TEXT_SIZE_CLASS
+                                                }"
                                             />
                                         </div>
                                     </div>
@@ -225,7 +228,7 @@ const tabItems = computed(() => [
                                 <div class="flex flex-col md:flex-row w-full gap-2">
                                     <!-- SITE NAME -->
                                     <div class="flex w-full">
-                                        <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
+                                        <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">
                                             {{ t('text.table-column.column-name') || 'Name' }}
                                         </div>
                                         <div class="flex w-full text-sm">
@@ -233,7 +236,10 @@ const tabItems = computed(() => [
                                                 v-model="siteName"
                                                 size="md"
                                                 :disabled="viewMode"
-                                                class="w-full font-light text-base md:text-sm"
+                                                class="w-full font-light"
+                                                :ui="{
+                                                    base: TEXT_SIZE_CLASS
+                                                }"
                                             />
                                         </div>
                                     </div>
@@ -242,7 +248,7 @@ const tabItems = computed(() => [
 
                                     <!-- SITE END DATE -->
                                     <div class="flex w-full">
-                                        <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
+                                        <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">
                                             {{ t('text.table-column.column-end-date') || 'Site End Date' }}
                                         </div>
                                         <div class="flex w-full text-sm">
@@ -250,7 +256,10 @@ const tabItems = computed(() => [
                                                 v-model="endDate"
                                                 size="md"
                                                 :disabled="viewMode"
-                                                class="w-full font-light text-base md:text-sm"
+                                                class="w-full font-light"
+                                                :ui="{
+                                                    base: TEXT_SIZE_CLASS
+                                                }"
                                             />
                                         </div>
                                     </div>
@@ -259,7 +268,7 @@ const tabItems = computed(() => [
                                 <div class="flex flex-col md:flex-row w-full gap-2">
                                     <!-- SITE ADDRESS -->
                                     <div class="flex w-full">
-                                        <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
+                                        <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">
                                             {{ t('text.table-column.column-address') || 'Address' }}
                                         </div>
                                         <div class="flex w-full text-sm" ref="siteAddressInputRef" @mouseenter="checkSiteAddressOverflow">
@@ -279,7 +288,10 @@ const tabItems = computed(() => [
                                                     v-model="siteAddress" 
                                                     size="md"
                                                     :disabled="viewMode"
-                                                    class="w-full font-light text-base md:text-sm"
+                                                    class="w-full font-light"
+                                                    :ui="{
+                                                        base: TEXT_SIZE_CLASS
+                                                    }"
                                                 />
                                             </UTooltip>
                                         </div>
@@ -289,7 +301,7 @@ const tabItems = computed(() => [
 
                                     <!-- SITE IM AUTO -->
                                     <div class="flex w-full">
-                                        <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
+                                        <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">
                                             {{ t('text.table-column.column-site-im-auto-flag') || 'IM Auto Flag' }}
                                         </div>
                                         <div class="flex w-full text-sm">
@@ -301,7 +313,7 @@ const tabItems = computed(() => [
                                 <div class="flex flex-col md:flex-row w-full gap-2">
                                     <!-- SITE CITY -->
                                     <div class="flex w-full">
-                                        <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
+                                        <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">
                                             {{ t('text.table-column.column-city') || 'City' }}
                                         </div>
                                         <div class="flex w-full text-sm">
@@ -309,7 +321,10 @@ const tabItems = computed(() => [
                                                 v-model="siteCity"
                                                 size="md"
                                                 :disabled="viewMode"
-                                                class="w-full font-light text-base md:text-sm"
+                                                class="w-full font-light"
+                                                :ui="{
+                                                    base: TEXT_SIZE_CLASS
+                                                }"
                                             />
                                         </div>
                                     </div>
@@ -318,7 +333,7 @@ const tabItems = computed(() => [
 
                                     <!-- SITE DC FLAG -->
                                     <div class="flex w-full">
-                                        <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
+                                        <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">
                                             {{ t('text.table-column.column-site-dc-flag') || 'DC Flag' }}
                                         </div>
                                         <div class="flex w-full text-sm">
@@ -330,7 +345,7 @@ const tabItems = computed(() => [
                                 <div class="flex flex-col md:flex-row w-full gap-2">
                                     <!-- SITE REGION -->
                                     <div class="flex w-full">
-                                        <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
+                                        <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">
                                             {{ t('text.table-column.column-region') || 'Region' }}
                                         </div>
                                         <div class="flex w-full text-sm">
@@ -338,7 +353,10 @@ const tabItems = computed(() => [
                                                 v-model="siteRegion"
                                                 size="md"
                                                 :disabled="viewMode"
-                                                class="w-full font-light text-base md:text-sm"
+                                                class="w-full font-light"
+                                                :ui="{
+                                                    base: TEXT_SIZE_CLASS
+                                                }"
                                             />
                                         </div>
                                     </div>
@@ -347,7 +365,7 @@ const tabItems = computed(() => [
 
                                     <!-- SITE STATUS -->
                                     <div class="flex w-full">
-                                        <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
+                                        <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">
                                             {{ t('text.table-column.column-status') || 'Status' }}
                                         </div>
                                         <div class="flex w-full text-sm">
@@ -362,7 +380,7 @@ const tabItems = computed(() => [
                                 <div class="flex flex-col md:flex-row w-full gap-2">
                                     <!-- COMPANY CODE -->
                                     <div class="flex w-full">
-                                        <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
+                                        <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">
                                             {{ t('text.table-column.column-code') || 'Code' }}
                                         </div>
                                         <div class="flex w-full text-sm">
@@ -370,7 +388,10 @@ const tabItems = computed(() => [
                                                 v-model="companyCode"
                                                 size="md"
                                                 :disabled="viewMode"
-                                                class="w-full font-light text-base md:text-sm"
+                                                class="w-full font-light"
+                                                :ui="{
+                                                    base: TEXT_SIZE_CLASS
+                                                }"
                                             />
                                         </div>
                                     </div>
@@ -379,7 +400,7 @@ const tabItems = computed(() => [
                                 <div class="flex flex-col md:flex-row w-full gap-2">
                                     <!-- COMPANY INITIAL -->
                                     <div class="flex w-full">
-                                        <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
+                                        <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">
                                             {{ t('text.table-column.column-initial') || 'Initial' }}
                                         </div>
                                         <div class="flex w-full text-sm">
@@ -387,7 +408,10 @@ const tabItems = computed(() => [
                                                 v-model="companyInitial"
                                                 size="md"
                                                 :disabled="viewMode"
-                                                class="w-full font-light text-base md:text-sm"
+                                                class="w-full font-light"
+                                                :ui="{
+                                                    base: TEXT_SIZE_CLASS
+                                                }"
                                             />
                                         </div>
                                     </div>
@@ -396,7 +420,7 @@ const tabItems = computed(() => [
                                 <div class="flex flex-col md:flex-row w-full gap-2">
                                     <!-- COMPANY NAME -->
                                     <div class="flex w-full">
-                                        <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
+                                        <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">
                                             {{ t('text.table-column.column-name') || 'Name' }}
                                         </div>
                                         <div class="flex w-full text-sm">
@@ -404,7 +428,10 @@ const tabItems = computed(() => [
                                                 v-model="companyName"
                                                 size="md"
                                                 :disabled="viewMode"
-                                                class="w-full font-light text-base md:text-sm"
+                                                class="w-full font-light"
+                                                :ui="{
+                                                    base: TEXT_SIZE_CLASS
+                                                }"
                                             />
                                         </div>
                                     </div>
@@ -413,7 +440,7 @@ const tabItems = computed(() => [
                                 <div class="flex flex-col md:flex-row w-full gap-2">
                                     <!-- COMPANY ADDRESS -->
                                     <div class="flex w-full">
-                                        <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
+                                        <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">
                                             {{ t('text.table-column.column-address') || 'Address' }}
                                         </div>
                                         <div class="flex w-full text-sm">
@@ -421,7 +448,10 @@ const tabItems = computed(() => [
                                                 v-model="companyAddress"
                                                 size="md"
                                                 :disabled="viewMode"
-                                                class="w-full font-light text-base md:text-sm"
+                                                class="w-full font-light"
+                                                :ui="{
+                                                    base: TEXT_SIZE_CLASS
+                                                }"
                                             />
                                         </div>
                                     </div>
@@ -430,7 +460,7 @@ const tabItems = computed(() => [
                                 <div class="flex flex-col md:flex-row w-full gap-2">
                                     <!-- COMPANY CITY -->
                                     <div class="flex w-full">
-                                        <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
+                                        <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">
                                             {{ t('text.table-column.column-city') || 'City' }}
                                         </div>
                                         <div class="flex w-full text-sm">
@@ -438,7 +468,10 @@ const tabItems = computed(() => [
                                                 v-model="companyCity"
                                                 size="md"
                                                 :disabled="viewMode"
-                                                class="w-full font-light text-base md:text-sm"
+                                                class="w-full font-light"
+                                                :ui="{
+                                                    base: TEXT_SIZE_CLASS
+                                                }"
                                             />
                                         </div>
                                     </div>
@@ -447,7 +480,7 @@ const tabItems = computed(() => [
                                 <div class="flex flex-col md:flex-row w-full gap-2">
                                     <!-- COMPANY REGION -->
                                     <div class="flex w-full">
-                                        <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
+                                        <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">
                                             {{ t('text.table-column.column-region') || 'Region' }}
                                         </div>
                                         <div class="flex w-full text-sm">
@@ -455,7 +488,10 @@ const tabItems = computed(() => [
                                                 v-model="companyRegion"
                                                 size="md"
                                                 :disabled="viewMode"
-                                                class="w-full font-light text-base md:text-sm"
+                                                class="w-full font-light"
+                                                :ui="{
+                                                    base: TEXT_SIZE_CLASS
+                                                }"
                                             />
                                         </div>
                                     </div>
@@ -467,7 +503,7 @@ const tabItems = computed(() => [
                                 <div class="flex flex-col md:flex-row w-full gap-2">
                                     <!-- REGIONAL CODE KONTRABON -->
                                     <div class="flex w-full">
-                                        <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
+                                        <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">
                                             {{ t('text.table-column.column-code') || 'Code' }}
                                         </div>
                                         <div class="flex w-full text-sm">
@@ -475,7 +511,10 @@ const tabItems = computed(() => [
                                                 v-model="regionalCodeKontrabon"
                                                 size="md"
                                                 :disabled="viewMode"
-                                                class="w-full font-light text-base md:text-sm"
+                                                class="w-full font-light"
+                                                :ui="{
+                                                    base: TEXT_SIZE_CLASS
+                                                }"
                                             />
                                         </div>
                                     </div>
@@ -484,7 +523,7 @@ const tabItems = computed(() => [
                                 <div class="flex flex-col md:flex-row w-full gap-2">
                                     <!-- REGIONAL INITIAL KONTRABON -->
                                     <div class="flex w-full">
-                                        <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
+                                        <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">
                                             {{ t('text.table-column.column-initial') || 'Initial' }}
                                         </div>
                                         <div class="flex w-full text-sm">
@@ -492,7 +531,10 @@ const tabItems = computed(() => [
                                                 v-model="regionalInitialKontrabon"
                                                 size="md"
                                                 :disabled="viewMode"
-                                                class="w-full font-light text-base md:text-sm"
+                                                class="w-full font-light"
+                                                :ui="{
+                                                    base: TEXT_SIZE_CLASS
+                                                }"
                                             />
                                         </div>
                                     </div>
@@ -501,7 +543,7 @@ const tabItems = computed(() => [
                                 <div class="flex flex-col md:flex-row w-full gap-2">
                                     <!-- REGIONAL NAME KONTRABON -->
                                     <div class="flex w-full">
-                                        <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
+                                        <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">
                                             {{ t('text.table-column.column-name') || 'Name' }}
                                         </div>
                                         <div class="flex w-full text-sm">
@@ -509,7 +551,10 @@ const tabItems = computed(() => [
                                                 v-model="regionalNameKontrabon"
                                                 size="md"
                                                 :disabled="viewMode"
-                                                class="w-full font-light text-base md:text-sm"
+                                                class="w-full font-light"
+                                                :ui="{
+                                                    base: TEXT_SIZE_CLASS
+                                                }"
                                             />
                                         </div>
                                     </div>
@@ -518,7 +563,7 @@ const tabItems = computed(() => [
                                 <div class="flex flex-col md:flex-row w-full gap-2">
                                     <!-- REGIONAL ADDRESS KONTRABON -->
                                     <div class="flex w-full">
-                                        <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
+                                        <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">
                                             {{ t('text.table-column.column-address') || 'Address' }}
                                         </div>
                                         <div class="flex w-full text-sm">
@@ -526,7 +571,10 @@ const tabItems = computed(() => [
                                                 v-model="regionalAddressKontrabon"
                                                 size="md"
                                                 :disabled="viewMode"
-                                                class="w-full font-light text-base md:text-sm"
+                                                class="w-full font-light"
+                                                :ui="{
+                                                    base: TEXT_SIZE_CLASS
+                                                }"
                                             />
                                         </div>
                                     </div>
@@ -535,7 +583,7 @@ const tabItems = computed(() => [
                                 <div class="flex flex-col md:flex-row w-full gap-2">
                                     <!-- REGIONAL CITY KONTRABON -->
                                     <div class="flex w-full">
-                                        <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
+                                        <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">
                                             {{ t('text.table-column.column-city') || 'City' }}
                                         </div>
                                         <div class="flex w-full text-sm">
@@ -543,7 +591,10 @@ const tabItems = computed(() => [
                                                 v-model="regionalCityKontrabon"
                                                 size="md"
                                                 :disabled="viewMode"
-                                                class="w-full font-light text-base md:text-sm"
+                                                class="w-full font-light"
+                                                :ui="{
+                                                    base: TEXT_SIZE_CLASS
+                                                }"
                                             />
                                         </div>
                                     </div>
@@ -552,7 +603,7 @@ const tabItems = computed(() => [
                                 <div class="flex flex-col md:flex-row w-full gap-2">
                                     <!-- REGIONAL REGION KONTRABON -->
                                     <div class="flex w-full">
-                                        <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
+                                        <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">
                                             {{ t('text.table-column.column-region') || 'Region' }}
                                         </div>
                                         <div class="flex w-full text-sm">
@@ -560,7 +611,10 @@ const tabItems = computed(() => [
                                                 v-model="regionalRegionKontrabon"
                                                 size="md"
                                                 :disabled="viewMode"
-                                                class="w-full font-light text-base md:text-sm"
+                                                class="w-full font-light"
+                                                :ui="{
+                                                    base: TEXT_SIZE_CLASS
+                                                }"
                                             />
                                         </div>
                                     </div>
@@ -572,7 +626,7 @@ const tabItems = computed(() => [
                                 <div class="flex flex-col md:flex-row w-full gap-2">
                                     <!-- EBS CODE -->
                                     <div class="flex w-full">
-                                        <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
+                                        <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">
                                             {{ t('text.table-column.column-code') || 'Code' }}
                                         </div>
                                         <div class="flex w-full text-sm">
@@ -580,7 +634,10 @@ const tabItems = computed(() => [
                                                 v-model="codeEbs"
                                                 size="md"
                                                 :disabled="viewMode"
-                                                class="w-full font-light text-base md:text-sm"
+                                                class="w-full font-light"
+                                                :ui="{
+                                                    base: TEXT_SIZE_CLASS
+                                                }"
                                             />
                                         </div>
                                     </div>
@@ -589,7 +646,7 @@ const tabItems = computed(() => [
                                 <div class="flex flex-col md:flex-row w-full gap-2">
                                     <!-- EBS INITIAL -->
                                     <div class="flex w-full">
-                                        <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
+                                        <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">
                                             {{ t('text.table-column.column-initial') || 'Initial' }}
                                         </div>
                                         <div class="flex w-full text-sm">
@@ -597,7 +654,10 @@ const tabItems = computed(() => [
                                                 v-model="initialEbs"
                                                 size="md"
                                                 :disabled="viewMode"
-                                                class="w-full font-light text-base md:text-sm"
+                                                class="w-full font-light"
+                                                :ui="{
+                                                    base: TEXT_SIZE_CLASS
+                                                }"
                                             />
                                         </div>
                                     </div>
@@ -606,7 +666,7 @@ const tabItems = computed(() => [
                                 <div class="flex flex-col md:flex-row w-full gap-2">
                                     <!-- EBS NAME -->
                                     <div class="flex w-full">
-                                        <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">
+                                        <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">
                                             {{ t('text.table-column.column-name') || 'Name' }}
                                         </div>
                                         <div class="flex w-full text-sm">
@@ -614,7 +674,10 @@ const tabItems = computed(() => [
                                                 v-model="nameEbs"
                                                 size="md"
                                                 :disabled="viewMode"
-                                                class="w-full font-light text-base md:text-sm"
+                                                class="w-full font-light"
+                                                :ui="{
+                                                    base: TEXT_SIZE_CLASS
+                                                }"
                                             />
                                         </div>
                                     </div>
@@ -628,7 +691,7 @@ const tabItems = computed(() => [
 
         <template #footer>
             <UButton
-                class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[14px] px-5"
+                :class="`${BUTTON_PRIMARY_CLASS} ${TEXT_SIZE_CLASS}`"
                 :loading="isSubmitting"
                 :disabled="isSubmitting"
                 @click="closeModal"

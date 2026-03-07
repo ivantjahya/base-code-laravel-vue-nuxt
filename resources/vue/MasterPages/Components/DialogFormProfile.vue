@@ -6,6 +6,7 @@ import { useGlobalOptions } from '../../composables/useGlobalOptions'
 import axios from 'axios'
 import type { TreeItem } from '@nuxt/ui'
 import type { TreeItemSelectEvent } from 'reka-ui'
+import { TEXT_SIZE_CLASS, TEXT_TITLE_SIZE_CLASS, TITLE_MODAL_TEXT_CLASS, INPUT_FIELD_WARN_CLASS, BUTTON_PRIMARY_CLASS, BUTTON_CLEAR_CLASS } from '../../constants'
 
 const props = defineProps({
     open: {
@@ -573,7 +574,7 @@ const isOpen = computed({
         v-model:open="isOpen"
         :title="title"
         :dismissible="false"
-        class="text-[16px] font-semibold"
+        :class="TITLE_MODAL_TEXT_CLASS"
         :ui="{
             footer: 'justify-end',
             // content: 'h-[500px] flex flex-col', // Fixed height
@@ -591,7 +592,7 @@ const isOpen = computed({
                 }"
             >
                 <template #label>
-                    <span class="flex items-center gap-1">
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
                         {{ t('text.profile-management-pg.input-new-profile-name') || 'Profile Name' }}
                         <span class="text-red-500">*</span>
                     </span>
@@ -604,13 +605,15 @@ const isOpen = computed({
                         :placeholder="t('text.profile-management-pg.input-new-profile-name-placeholder') || 'Enter profile name'"
                         class="w-full"
                         :ui="{
-                            base: errors.profileName
+                            base: `${TEXT_SIZE_CLASS} ${
+                                errors.profileName
                                 ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
                                 : ''
+                            }`
                         }"
                         :disabled="viewOnly"
                     />
-                    <p v-if="errors.profileName" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.profileName }}</p>
+                    <p v-if="errors.profileName" :class="INPUT_FIELD_WARN_CLASS">{{ errors.profileName }}</p>
                 </div>
             </UFormField>
 
@@ -624,7 +627,7 @@ const isOpen = computed({
                 }"
             >
                 <template #label>
-                    <span class="flex items-center gap-1">
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
                         {{ t('text.profile-management-pg.input-new-description') || 'Description' }}
                     </span>
                 </template>
@@ -636,9 +639,11 @@ const isOpen = computed({
                         autoresize
                         class="w-full font-light"
                         :ui="{
-                            base: errors.description
+                            base: `${TEXT_SIZE_CLASS} ${
+                                errors.description
                                 ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
                                 : ''
+                            }`
                         }"
                         :disabled="viewOnly"
                     />
@@ -655,7 +660,7 @@ const isOpen = computed({
                 }"
             >
                 <template #label>
-                    <span class="flex items-center gap-1">
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
                         {{ t('text.profile-management-pg.input-new-profile-source') || 'Profile Source' }}
                         <span class="text-red-500">*</span>
                     </span>
@@ -671,13 +676,17 @@ const isOpen = computed({
                         :placeholder="t('text.input-field.profile-source-placeholder') || 'Select profile source'"
                         class="w-full font-light"
                         :ui="{
-                            base: errors.profileSource
+                            base: `${TEXT_SIZE_CLASS} ${
+                                errors.profileSource
                                 ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
                                 : ''
+                            }`,
+                            content: TEXT_SIZE_CLASS,
+                            item: TEXT_SIZE_CLASS
                         }"
                         :disabled="viewOnly"
                     />
-                    <p v-if="errors.profileSource" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.profileSource }}</p>
+                    <p v-if="errors.profileSource" :class="INPUT_FIELD_WARN_CLASS">{{ errors.profileSource }}</p>
                 </div>
             </UFormField>
 
@@ -691,7 +700,7 @@ const isOpen = computed({
                 }"
             >
                 <template #label>
-                    <span class="flex items-center gap-1">
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
                         {{ t('text.profile-management-pg.input-new-access-right') || 'Access Right' }}
                         <span class="text-red-500">*</span>
                     </span>
@@ -711,7 +720,7 @@ const isOpen = computed({
                         :ui="{
                             link: 'hover:bg-gray-50 dark:hover:bg-gray-800/50',
                             active: 'bg-transparent hover:bg-gray-50 dark:hover:bg-gray-800/50', // This specifically targets the highlighted background
-                            linkLabel: 'text-gray-700 dark:text-gray-200' // Ensure the text doesn't turn white/primary on selection
+                            linkLabel: `${TEXT_SIZE_CLASS} text-gray-700 dark:text-gray-200` // Ensure the text doesn't turn white/primary on selection
                         }"
                     >
                         <template #item-leading="{ selected, indeterminate, handleSelect }">
@@ -738,7 +747,7 @@ const isOpen = computed({
                     </UTree>
                     <p v-if="isLoadingTree" class="text-xs md:text-sm text-gray-500">{{ t('text.message.loading') }}</p>
                 </div>
-                <p v-if="errors.accessRight" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.accessRight }}</p>
+                <p v-if="errors.accessRight" :class="INPUT_FIELD_WARN_CLASS">{{ errors.accessRight }}</p>
             </UFormField>
 
             <!-- CHECK ALL -->
@@ -748,7 +757,7 @@ const isOpen = computed({
                         v-model="allAccessChecked"
                         :disabled="isLoadingTree || items.length === 0 || viewOnly"
                     />
-                    <span class="text-sm font-light">
+                    <span class="font-light" :class="TEXT_SIZE_CLASS">
                         {{ t('text.button.check-all') || 'Check All' }}
                     </span>
                 </div>
@@ -757,7 +766,7 @@ const isOpen = computed({
             <!-- STATUS -->
             <UFormField orientation="horizontal" class="mb-2" >
                 <template #label>
-                    <span class="flex items-center gap-1">
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
                         {{ t('text.profile-management-pg.input-new-status') || 'Status' }}
                     </span>
                 </template>
@@ -771,14 +780,14 @@ const isOpen = computed({
         <template #footer>
             <UButton
                 v-if="!editMode && !viewOnly"
-                class="bg-[#FEE9D6] text-[#F26524] hover:bg-[#FBD0AD] hover:text-[#E34613] active:bg-[#FBD0AD] active:text-[#E34613] text-[14px] px-5"
+                :class="`${BUTTON_CLEAR_CLASS} ${TEXT_SIZE_CLASS}`"
                 :disabled="isSubmitting"
                 @click="resetForm"
             >{{ t('text.button.clear') || 'Clear' }}</UButton>
 
             <UButton
                 v-if="!viewOnly"
-                class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[14px] px-5"
+                :class="`${BUTTON_PRIMARY_CLASS} ${TEXT_SIZE_CLASS}`"
                 :loading="isSubmitting"
                 :disabled="isSubmitting"
                 @click="postSubmitProfile"
@@ -789,7 +798,7 @@ const isOpen = computed({
             <!-- Close button — shown only in view-only mode -->
             <UButton
                 v-if="viewOnly"
-                class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[14px] px-5"
+                :class="`${BUTTON_PRIMARY_CLASS} ${TEXT_SIZE_CLASS}`"
                 @click="closeModal"
             >
                 {{ t('text.button.close') || 'Close' }}

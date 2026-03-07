@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, h, resolveComponent, shallowRef, onMounted } from 'vue'
+import { ref, computed, h, resolveComponent, onMounted } from 'vue'
 import { useI18n } from '../composables/useI18n'
 import { useApiStore } from '../AppState'
 import axios from 'axios'
@@ -10,9 +10,9 @@ import CmpCustomTable from '../Components/CmpCustomTable.vue'
 import CmpAccordionFilter from '../Components/CmpAccordionFilter.vue'
 import DialogFormUser from './Components/DialogFormUser.vue'
 import FormFilterUser from './Components/FormFilterUser.vue'
+import { TEXT_SIZE_CLASS, TEXT_TITLE_SIZE_CLASS, TITLE_TEXT_CLASS, TABLE_TEXT_STATUS_SIZE_CLASS, BUTTON_PRIMARY_CLASS } from '../constants'
 
 const { t } = useI18n()
-const { statusOptions } = useGlobalOptions()
 const api = useApiStore()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
@@ -83,7 +83,7 @@ const columns = computed(() => [
             return h(UBadge, {
                 variant: 'subtle',
                 color: badgeColor,
-                class: 'text-xs'
+                class: TABLE_TEXT_STATUS_SIZE_CLASS
             }, () => statusText)
         }
     }
@@ -95,6 +95,16 @@ const actions = computed(() => [
             label: t('text.button.edit' as any) || 'Edit',
             icon: 'i-lucide-pencil',
             onSelect: (row : any) => handleEdit(row)
+        },
+        {
+            label: t('text.button.reset-password' as any) || 'Reset Password',
+            icon: 'i-lucide-key-round',
+            onSelect: (row : any) => handleResetPassword(row)
+        },
+        {
+            label: t('text.button.unlock-user' as any) || 'Unlock User',
+            icon: 'i-lucide-lock-open',
+            onSelect: (row : any) => handleUnlockUser(row)
         }
     ]
 ])
@@ -139,9 +149,7 @@ const getUserList = async () => {
             search: globalSearchQuery.value, // For global search, server-side
             sort_by: 'username',
         }
-        console.log('Request Params:', params);
         const response = await axios.get(api.getUserList, { params });
-        console.log('API Response:', response.data);
 
         userData.value = response.data.data?.items.map((item: any) => ({
             ...item,
@@ -149,7 +157,6 @@ const getUserList = async () => {
             status: item.status === 1 ? 'Active' : 'Inactive'
         }));
         countTotalData.value = response.data.data?.total || 0;
-
     } catch (error) {
         console.error('Error fetching data:', error);
         Swal?.fire({
@@ -195,8 +202,6 @@ const getProfileOptions = async () => {
         })
 
         profileOptions.value = Array.from(uniqueOptions.values())
-        // console.log(profileOptions.value);
-
     } catch (error) {
         console.error('Error fetching profile options:', error)
         profileOptions.value = []
@@ -225,7 +230,7 @@ const getSiteOptions = async () => {
 
         const uniqueOptions = new Map<string, { label: string; value: string }>()
         sourceArray.forEach((item: any) => {
-            const label = String(item?.name).trim()
+            const label = String(item?.site).trim() + ' - ' + String(item?.initial).trim()
             const value = String(item?.id).trim()
 
             if (!value) return
@@ -236,16 +241,13 @@ const getSiteOptions = async () => {
         })
 
         siteOptions.value = Array.from(uniqueOptions.values())
-        // console.log(siteOptions.value);
-
-
     } catch (error) {
         console.error('Error fetching site options:', error)
         siteOptions.value = []
     }
 }
 
-const getcategoryOptions = async () => {
+const getCategoryOptions = async () => {
     categoryOptions.value = []
     categoryOptionsLoading.value = true
 
@@ -282,7 +284,6 @@ const getcategoryOptions = async () => {
         })
 
         categoryOptions.value = Array.from(uniqueOptions.values())
-
     } catch (error) {
         console.error('Error fetching category options:', error)
         categoryOptions.value = []
@@ -321,12 +322,84 @@ const handleEdit = (data: any) => {
     modalSubmitOpen.value = true
 }
 
+const handleResetPassword = (data: any) => {
+    loadingTable.value = true
+
+    Swal?.fire({
+        title: t('text.user-management-pg.reset-password' as any) || 'Reset Password',
+        text: t('text.user-management-pg.reset-password-confirm-msg' as any) || 'Are you sure you want to reset the password for this user?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: t('text.button.yes' as any).toUpperCase() || 'YES',
+        cancelButtonText: t('text.button.no' as any).toUpperCase() || 'NO',
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                await axios.put(`${api.postResetPassword}${data.id}`)
+                
+                Swal?.fire({
+                    icon: 'success',
+                    title: t('text.message.success' as any) || 'Success!',
+                    text: t('text.user-management-pg.reset-password-success-msg' as any) || 'Password has been reset successfully.',
+                    confirmButtonText: t('text.button.ok' as any) || 'OK'
+                })
+                getUserList() // Refresh the user list after resetting password
+            } catch (error) {
+                loadingTable.value = false
+                console.error('Error resetting password:', error)
+                Swal?.fire({
+                    icon: 'error',
+                    title: t('text.message.error' as any) || 'Error!',
+                    text: t('text.user-management-pg.reset-password-failed-msg' as any) || 'Failed to reset password.',
+                    confirmButtonText: t('text.button.ok' as any) || 'OK'
+                })
+            }
+        }
+    })
+}
+
+const handleUnlockUser = (data: any) => {
+    loadingTable.value = true
+
+    Swal?.fire({
+        title: t('text.user-management-pg.unlock-user' as any) || 'Unlock User',
+        text: t('text.user-management-pg.unlock-user-confirm-msg' as any) || 'Are you sure you want to unlock this user?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: t('text.button.yes' as any).toUpperCase() || 'YES',
+        cancelButtonText: t('text.button.no' as any).toUpperCase() || 'NO',
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                await axios.put(`${api.postUnlockUser}${data.id}`)
+
+                Swal?.fire({
+                    icon: 'success',
+                    title: t('text.message.success' as any) || 'Success!',
+                    text: t('text.user-management-pg.unlock-user-success-msg' as any) || 'User has been unlocked successfully.',
+                    confirmButtonText: t('text.button.ok' as any) || 'OK'
+                })
+                getUserList() // Refresh the user list after unlocking
+            } catch (error) {
+                loadingTable.value = false
+                console.error('Error unlocking user:', error)
+                Swal?.fire({
+                    icon: 'error',
+                    title: t('text.message.error' as any) || 'Error!',
+                    text: t('text.user-management-pg.unlock-user-failed-msg' as any) || 'Failed to unlock user.',
+                    confirmButtonText: t('text.button.ok' as any) || 'OK'
+                })
+            }
+        }
+    })
+}
+
 // Fetch initial data on component mount
 onMounted(async () => {
     await Promise.all([
         getProfileOptions(),
         getSiteOptions(),
-        getcategoryOptions(),
+        getCategoryOptions(),
         getUserList()
     ]).catch((error) => {
         console.error('Error during initial data fetch:', error)
@@ -352,12 +425,12 @@ onMounted(async () => {
                     <div class="flex items-center gap-4">
 
                         <!-- BUTTON NEW -->
-                        <UButton type="button" @click="showModal" class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[16px] px-5">
+                        <UButton type="button" @click="showModal" :class="`${BUTTON_PRIMARY_CLASS} ${TEXT_SIZE_CLASS}`">
                             {{ t('text.button.new').toUpperCase() || 'NEW' }}
                         </UButton>
 
                         <!-- TITLE -->
-                        <h1 class="text-lg font-semibold text-gray-900 dark:text-white">
+                        <h1 :class="`${TITLE_TEXT_CLASS} ${TEXT_TITLE_SIZE_CLASS}`">
                             {{ t('text.user-management-pg.list') || 'List of Users' }}
                         </h1>
 
@@ -373,6 +446,7 @@ onMounted(async () => {
                 :editing-id="editingId"
                 :initial-data="editData"
                 :profile-options="profileOptions"
+                :category-options="categoryOptions"
                 :site-options="siteOptions"
                 @update:open="modalSubmitOpen = $event"
                 @submitted="onSubmitted"

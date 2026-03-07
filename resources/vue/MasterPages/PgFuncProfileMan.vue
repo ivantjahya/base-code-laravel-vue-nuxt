@@ -9,8 +9,8 @@ import { useFormatters } from '../composables/useFormatters'
 import CmpLayout from '../Components/CmpLayout.vue'
 import CmpCustomTable from '../Components/CmpCustomTable.vue'
 import CmpAccordionFilter from '../Components/CmpAccordionFilter.vue'
-import DialogFormFuncProfile from './Components/DialogFormFuncProfile.vue'
 import FormFilterFuncProfile from './Components/FormFilterFuncProfile.vue'
+import { TEXT_TITLE_SIZE_CLASS, TITLE_TEXT_CLASS, TABLE_TEXT_STATUS_SIZE_CLASS } from '../constants'
 
 const { t } = useI18n()
 const { statusOptions } = useGlobalOptions()
@@ -94,40 +94,37 @@ const columns = computed(() => [
         label: t('text.table-column.column-status'),
         sortable: false,
         cellRenderer: (value: any, row: any) => {
-            const statusText = value ? t('text.message.active' as any) || 'Active' : t('text.message.not-active' as any) || 'Not Active'
-            const badgeColor = value ? 'success' : 'primary'
+            let statusText = ''
+            let badgeColor = ''
 
-            return h(UBadge, {
-                variant: 'subtle',
-                color: badgeColor,
-                class: 'text-xs'
-            }, () => statusText)
+            const today = new Date()
+            const endDate = row.end_date ? new Date(row.end_date) : null
+
+            if (value) {
+                statusText = t('text.message.active' as any) || 'Active'
+                badgeColor = 'success'
+            } else {
+                if (endDate && endDate < today) {
+                    statusText = t('text.message.expired' as any) || 'Expired'
+                    badgeColor = 'error'
+                } else {
+                    statusText = t('text.message.not-active' as any) || 'Not Active'
+                    badgeColor = 'primary'
+                }
+            }
+
+            return h(
+                UBadge,
+                {
+                    variant: 'subtle',
+                    color: badgeColor,
+                    class: TABLE_TEXT_STATUS_SIZE_CLASS
+                },
+                () => statusText
+            )
         }
     },
 ])
-
-// ========================= STATE FOR MODAL =========================
-const modalTitle = ref('')
-const modalSubmitOpen = ref(false)
-const editMode = ref(false)
-const editingId = ref<string | null>(null)
-const editData = ref({})
-
-const showModal = () => {
-    modalTitle.value = t('text.functional-profile-management-pg.add-new-functional-profile' as any) || 'Create New Profile'
-    editMode.value = false
-    editingId.value = null
-    editData.value = {}
-    modalSubmitOpen.value = true
-}
-
-const closeModal = () => {
-    modalSubmitOpen.value = false
-}
-
-const onSubmitted = async () => {
-    await getFuncProfileList()
-}
 
 // ========================= ACTION =========================
 const getFuncProfileList = async () => {
@@ -361,36 +358,14 @@ onMounted(async () => {
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-4">
 
-                        <!-- BUTTON NEW -->
-                        <!-- <UButton type="button" @click="showModal" class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[16px] px-5">
-                            {{ t('text.button.new').toUpperCase() || 'NEW' }}
-                        </UButton> -->
-
                         <!-- TITLE -->
-                        <h1 class="text-lg font-semibold text-gray-900 dark:text-white">
+                        <h1 :class="`${TITLE_TEXT_CLASS} ${TEXT_TITLE_SIZE_CLASS}`">
                             {{ t('text.functional-profile-management-pg.list') || 'List of Functional Profiles' }}
                         </h1>
 
                     </div>
                 </div>
             </UCard>
-
-            <!-- MODAL -->
-            <DialogFormFuncProfile
-                :open="modalSubmitOpen"
-                :title="modalTitle"
-                :edit-mode="editMode"
-                :editing-id="editingId"
-                :initial-data="editData"
-                :profile-options="profileOptions"
-                :company-options="companyOptions"
-                :limit-options="limitOptions"
-                :division-options="divisionOptions"
-                :division-loading="divisionOptionsLoading"
-                @update:open="modalSubmitOpen = $event"
-                @submitted="onSubmitted"
-                @close="closeModal"
-            />
 
             <!-- MAIN CONTENT -->
             <UCard>
@@ -429,8 +404,6 @@ onMounted(async () => {
                     @search="handleSearch"
                 />
             </UCard>
-
         </div>
-
     </CmpLayout>
 </template>

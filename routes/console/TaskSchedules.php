@@ -77,3 +77,17 @@ Schedule::call(function () {
         throw $e;
     }
 })->dailyAt('00:00')->name('middleware:master:user-reset-login-attempt');
+
+/** User - Inactive User */
+Schedule::call(function () {
+    try {
+        app(PythonTaskMasterDataService::class)->processInactiveUser();
+        Log::info('Scheduled middleware:master:user-inactive completed successfully');
+    } catch (\Throwable $e) {
+        Log::error('Scheduled middleware:master:user-inactive failed', [
+            'error' => $e->getMessage(),
+        ]);
+
+        throw $e;
+    }
+})->dailyAt('00:00')->name('middleware:master:user-inactive');

@@ -11,6 +11,7 @@ import DialogFormProfile from './Components/DialogFormProfile.vue'
 import DialogFormFuncProfile from './Components/DialogFormFuncProfile.vue'
 import FormFilterProfile from './Components/FormFilterProfile.vue'
 import CmpDrawer from '../Components/CmpDrawer.vue'
+import { TEXT_SIZE_CLASS, TEXT_TITLE_SIZE_CLASS, TITLE_TEXT_CLASS, TABLE_TEXT_STATUS_SIZE_CLASS, BUTTON_PRIMARY_CLASS } from '../constants'
 
 const { t } = useI18n()
 const { hasMenuCtrl, MENU_CODE, CTRL_CODE } = useMenuPermission()
@@ -84,7 +85,7 @@ const columns = computed(() => [
             return h(UBadge, {
                 variant: 'subtle',
                 color: badgeColor,
-                class: 'text-xs'
+                class: TABLE_TEXT_STATUS_SIZE_CLASS
             }, () => statusText)
         }
     },
@@ -401,23 +402,20 @@ onMounted(async () => {
             <!-- Title Section -->
             <UCard class="mb-3" :ui="{ body: 'sm:py-3 sm:px-6' }">
                 <div class="flex items-center justify-between">
-
                     <div class="flex items-center gap-4">
 
                         <!-- BUTTON NEW -->
-                        <UButton v-if="canCreateProfile" type="button" @click="showModal" class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[16px] px-5">
+                        <UButton v-if="canCreateProfile" type="button" @click="showModal" :class="`${BUTTON_PRIMARY_CLASS} ${TEXT_SIZE_CLASS}`">
                             {{ t('text.button.new').toUpperCase() || 'NEW' }}
                         </UButton>
 
                         <!-- TITLE -->
-                        <h1 class="text-lg font-semibold text-gray-900 dark:text-white">
+                        <h1 :class="`${TITLE_TEXT_CLASS} ${TEXT_TITLE_SIZE_CLASS}`">
                             {{ t('text.profile-management-pg.list') || 'List of Profiles' }}
                         </h1>
-
                     </div>
 
                     <div>
-
                         <!-- USER GUIDE -->
                         <!-- <UDrawer handle-only>
                             <UButton label="User Guide" color="neutral" variant="subtle" icon="i-lucide-info" size="sm"/>
@@ -450,9 +448,7 @@ onMounted(async () => {
                                 </div>
                             </template>
                         </UDrawer> -->
-
                         <CmpDrawer />
-
                     </div>
                 </div>
             </UCard>

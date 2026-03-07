@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Master\KontrabonRegional;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Cache;
 

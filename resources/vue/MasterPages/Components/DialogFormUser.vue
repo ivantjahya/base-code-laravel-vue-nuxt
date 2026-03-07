@@ -8,6 +8,7 @@ import { useApiStore } from '../../AppState'
 import axios from 'axios'
 import type { TreeItemSelectEvent } from 'reka-ui'
 import type { TreeItem } from '@nuxt/ui'
+import { TEXT_SIZE_CLASS, TEXT_TITLE_SIZE_CLASS, TITLE_MODAL_TEXT_CLASS, INPUT_FIELD_WARN_CLASS, BUTTON_PRIMARY_CLASS, BUTTON_CLEAR_CLASS } from '../../constants'
 
 const props = defineProps({
     open: {
@@ -34,6 +35,10 @@ const props = defineProps({
         type: Array as () => Array<{ label: string; value: string }>,
         default: () => []
     },
+    categoryOptions: {
+        type: Array as () => Array<{ label: string; value: string }>,
+        default: () => []
+    },
     siteOptions: {
         type: Array as () => Array<{ label: string; value: string }>,
         default: () => []
@@ -43,54 +48,50 @@ const props = defineProps({
 const emit = defineEmits(['update:open', 'submitted', 'close'])
 
 const { t } = useI18n()
-const { formatDate, formatCurrency, getDateString, stringToCalendarDate } = useFormatters()
+const { getDateString, stringToCalendarDate } = useFormatters()
 const api = useApiStore()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
+// ========================= STATE FOR MODAL =========================
 const isSubmitting = ref(false)
 
 const username = ref<string>('')
 const name = ref<string>('')
-const description = ref<string>('')
-
-const profileValue = ref(['SUPERADMIN', 'ADMIN', 'MD FASHION', 'MD FRESH'])
-const profile = ref<string | null>(null)
-const categoryValue = ref(['A1 - MISSY', 'A2 - YOUNG', 'A3 - INTIMATE', 'A4 - BRANDED OUTRIGHT NORMAL'])
-const category = ref<string | null>(null)
-const siteValue = ref(['YJP - YOGYA JUNCTION PARAHYANGAN', 'S60 - YOGYA SUNDA 60', 'YJS - YOGYA JUNCTION SUMBERSARI', 'KPT - YOGYA KEPATIHAN'])
-const site = ref<string | null>(null)
+const selectedProfile = ref<string | null>(null)
+const selectedCategoryArr = ref<string[]>([])
+const selectedSiteArr = ref<string[]>([])
 
 const inputValidityDate = ref<any>(null)
 const modelValueValidity = shallowRef<CalendarDate>()
 const isPopoverFormValidityDateOpen = ref(false)
 
-const valueSwitch = ref(true)
+// const profile = ref<string | null>(null)
+// const category = ref<string | null>(null)
+// const site = ref<string | null>(null)
 
 // Validation error states
 const errors = ref({
     username: '',
     name: '',
-    description: '',
     profile: '',
     category: '',
     site: '',
     validityDate: ''
 })
 
+// ========================= ACTION =========================
 const resetForm = () => {
     username.value = ''
     name.value = ''
-    description.value = ''
-    profile.value = null
-    category.value = null
-    site.value = null
+    selectedProfile.value = null
+    selectedCategoryArr.value = []
+    selectedSiteArr.value = []
     modelValueValidity.value = undefined
-    valueSwitch.value = true
+    
     // Reset errors
     errors.value = {
         username: '',
         name: '',
-        description: '',
         profile: '',
         category: '',
         site: '',
@@ -105,15 +106,15 @@ const closeModal = () => {
 
 watch(() => props.open, (newVal) => {
     if (newVal) {
+        console.log('Dialog opened with initial data:', props.initialData)
+
         if (props.editMode && props.initialData) {
             username.value = props.initialData.username || ''
             name.value = props.initialData.name || ''
-            description.value = props.initialData.description || ''
-            profile.value = props.initialData.profile || null
-            category.value = props.initialData.category || null
-            site.value = props.initialData.site || null
-            modelValueValidity.value = stringToCalendarDate(props.initialData.validity_date)
-            valueSwitch.value = props.initialData.status ?? true
+            selectedProfile.value = props.initialData.profile?.id || null
+            selectedCategoryArr.value = props.initialData.category?.map((cat: any) => cat.id) || []
+            selectedSiteArr.value = props.initialData.site?.map((site: any) => site.id) || []
+            modelValueValidity.value = stringToCalendarDate(props.initialData.valid_date)
         } else {
             resetForm()
         }
@@ -121,12 +122,11 @@ watch(() => props.open, (newVal) => {
 })
 
 // Submit create/update profile
-const postSubmitProfile = async () => {
+const postSubmitUser = async () => {
     // Reset errors
     errors.value = {
         username: '',
         name: '',
-        description: '',
         profile: '',
         category: '',
         site: '',
@@ -146,17 +146,17 @@ const postSubmitProfile = async () => {
         hasError = true
     }
 
-    if (!profile.value) {
+    if (!selectedProfile.value) {
         errors.value.profile = t('auth.validation.required' as any) || 'This field is required'
         hasError = true
     }
 
-    if (!category.value) {
+    if (selectedCategoryArr.value.length === 0) {
         errors.value.category = t('auth.validation.required' as any) || 'This field is required'
         hasError = true
     }
 
-    if (!site.value) {
+    if (selectedSiteArr.value.length === 0) {
         errors.value.site = t('auth.validation.required' as any) || 'This field is required'
         hasError = true
     }
@@ -172,28 +172,31 @@ const postSubmitProfile = async () => {
 
     isSubmitting.value = true
     try {
-
+        const categoryPayload = selectedCategoryArr.value.map(categoryId => categoryId)
+        const sitePayload = selectedSiteArr.value.map(siteId => siteId)
         const validityDate = getDateString(modelValueValidity.value)
 
         const payload = {
             username: username.value,
             name: name.value,
-            description: description.value,
-            profile: profile.value,
-            category: category.value,
-            site: site.value,
+            profile: selectedProfile.value,
+            category: categoryPayload,
+            site: sitePayload,
             validity_date: validityDate,
-            status: valueSwitch.value ? 1 : 0
         }
 
-        // let response
-        // if (props.editMode && props.editingId) {
-        //     // Update existing profile
-        //     response = await axios.put(`${api.postProfileUpdate}${props.editingId}`, payload)
-        // } else {
-        //     // Create new profile
-        //     response = await axios.post(api.postProfileCreate, payload)
-        // }
+        let response
+        if (props.editMode && props.editingId) {
+            console.log('Editing user with ID:', props.editingId)
+            console.log('Payload to submit:', JSON.stringify(payload, null, 2))
+            return
+            response = await axios.put(`${api.postProfileUpdate}${props.editingId}`, payload)
+        } else {
+            console.log('Creating new user')
+            console.log('Payload to submit:', JSON.stringify(payload, null, 2))
+            return
+            response = await axios.post(api.postProfileCreate, payload)
+        }
 
         Swal?.fire({
             icon: 'success',
@@ -224,9 +227,14 @@ const isOpen = computed({
 </script>
 
 <template>
-    <UModal v-model:open="isOpen" :title="title" :dismissible="false" class="text-[16px] font-semibold" :ui="{ footer: 'justify-end' }">
+    <UModal
+        v-model:open="isOpen"
+        :title="title"
+        :dismissible="false"
+        :class="TITLE_MODAL_TEXT_CLASS"
+        :ui="{ footer: 'justify-end' }"
+    >
         <template #body>
-
             <!-- USERNAME -->
             <UFormField
                 orientation="horizontal"
@@ -236,9 +244,8 @@ const isOpen = computed({
                     error: 'hidden',
                 }"
             >
-
                 <template #label>
-                    <span class="flex items-center gap-1">
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
                         {{ t('text.user-management-pg.input-new-username') || 'Username' }}
                         <span class="text-red-500">*</span>
                     </span>
@@ -251,14 +258,16 @@ const isOpen = computed({
                         :placeholder="t('text.user-management-pg.input-new-username-placeholder') || 'Enter username'"
                         class="w-full font-light"
                         :ui="{
-                            base: errors.username
+                            base: `${TEXT_SIZE_CLASS} ${
+                                errors.username
                                 ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
                                 : ''
+                            }`
                         }"
+                        :disabled="props.editMode"
                     />
-                    <p v-if="errors.username" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.username }}</p>
+                    <p v-if="errors.username" :class="INPUT_FIELD_WARN_CLASS">{{ errors.username }}</p>
                 </div>
-
             </UFormField>
 
             <!-- NAME -->
@@ -270,9 +279,8 @@ const isOpen = computed({
                     error: 'hidden',
                 }"
             >
-
                 <template #label>
-                    <span class="flex items-center gap-1">
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
                         {{ t('text.user-management-pg.input-new-name') || 'Name' }}
                         <span class="text-red-500">*</span>
                     </span>
@@ -285,46 +293,15 @@ const isOpen = computed({
                         :placeholder="t('text.user-management-pg.input-new-name-placeholder') || 'Enter name'"
                         class="w-full font-light"
                         :ui="{
-                            base: errors.name
+                            base: `${TEXT_SIZE_CLASS} ${
+                                errors.name
                                 ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
                                 : ''
+                            }`
                         }"
                     />
-                    <p v-if="errors.name" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.name }}</p>
+                    <p v-if="errors.name" :class="INPUT_FIELD_WARN_CLASS">{{ errors.name }}</p>
                 </div>
-
-            </UFormField>
-
-            <!-- DESCRIPTION -->
-            <UFormField
-                orientation="horizontal"
-                class="mb-2"
-                :error="!!errors.description"
-                :ui="{
-                    error: 'hidden',
-                }"
-            >
-
-                <template #label>
-                    <span class="flex items-center gap-1">
-                        {{ t('text.user-management-pg.input-new-description') || 'Description' }}
-                    </span>
-                </template>
-
-                <div class="w-80">
-                    <UTextarea
-                        v-model="description"
-                        :maxrows="5"
-                        autoresize
-                        class="w-full font-light"
-                        :ui="{
-                            base: errors.description
-                                ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
-                                : ''
-                        }"
-                    />
-                </div>
-
             </UFormField>
 
             <!-- PROFILE -->
@@ -336,9 +313,8 @@ const isOpen = computed({
                     error: 'hidden',
                 }"
             >
-
                 <template #label>
-                    <span class="flex items-center gap-1">
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
                         {{ t('text.user-management-pg.input-new-profile') || 'Profile' }}
                         <span class="text-red-500">*</span>
                     </span>
@@ -346,7 +322,7 @@ const isOpen = computed({
 
                 <div class="w-80">
                     <USelectMenu
-                        v-model="profile"
+                        v-model="selectedProfile"
                         :items="profileOptions"
                         value-key="value"
                         value-attribute="value"
@@ -354,14 +330,17 @@ const isOpen = computed({
                         :placeholder="t('text.user-management-pg.input-new-profile-placeholder') || 'Select profile'"
                         class="w-full font-light"
                         :ui="{
-                            base: errors.profile
+                            base: `${TEXT_SIZE_CLASS} ${
+                                errors.profile
                                 ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
                                 : ''
+                            }`,
+                            content: TEXT_SIZE_CLASS,
+                            item: TEXT_SIZE_CLASS
                         }"
                     />
-                    <p v-if="errors.profile" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.profile }}</p>
+                    <p v-if="errors.profile" :class="INPUT_FIELD_WARN_CLASS">{{ errors.profile }}</p>
                 </div>
-
             </UFormField>
 
             <!-- CATEGORY -->
@@ -373,9 +352,8 @@ const isOpen = computed({
                     error: 'hidden',
                 }"
             >
-
                 <template #label>
-                    <span class="flex items-center gap-1">
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
                         {{ t('text.user-management-pg.input-new-category') || 'Category' }}
                         <span class="text-red-500">*</span>
                     </span>
@@ -383,20 +361,23 @@ const isOpen = computed({
 
                 <div class="w-80">
                     <USelectMenu
+                        v-model="selectedCategoryArr"
+                        :items="categoryOptions"
                         multiple
-                        v-model="category"
-                        :items="categoryValue"
-                        placeholder="Select category"
+                        :placeholder="t('text.user-management-pg.input-new-category-placeholder') || 'Select category'"
                         class="w-full font-light"
                         :ui="{
-                            base: errors.category
+                            base: `${TEXT_SIZE_CLASS} ${
+                                errors.category
                                 ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
                                 : ''
+                            }`,
+                            content: TEXT_SIZE_CLASS,
+                            item: TEXT_SIZE_CLASS
                         }"
                     />
-                    <p v-if="errors.category" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.category }}</p>
+                    <p v-if="errors.category" :class="INPUT_FIELD_WARN_CLASS">{{ errors.category }}</p>
                 </div>
-
             </UFormField>
 
             <!-- SITE -->
@@ -408,9 +389,8 @@ const isOpen = computed({
                     error: 'hidden',
                 }"
             >
-
                 <template #label>
-                    <span class="flex items-center gap-1">
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
                         {{ t('text.user-management-pg.input-new-site') || 'Site' }}
                         <span class="text-red-500">*</span>
                     </span>
@@ -418,20 +398,23 @@ const isOpen = computed({
 
                 <div class="w-80">
                     <USelectMenu
-                        multiple
-                        v-model="site"
+                        v-model="selectedSiteArr"
                         :items="siteOptions"
-                        placeholder="Select site"
+                        multiple
+                        :placeholder="t('text.user-management-pg.input-new-site-placeholder') || 'Select site'"
                         class="w-full font-light"
                         :ui="{
-                            base: errors.site
+                            base: `${TEXT_SIZE_CLASS} ${
+                                errors.site
                                 ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
                                 : ''
+                            }`,
+                            content: TEXT_SIZE_CLASS,
+                            item: TEXT_SIZE_CLASS
                         }"
                     />
-                    <p v-if="errors.site" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.site }}</p>
+                    <p v-if="errors.site" :class="INPUT_FIELD_WARN_CLASS">{{ errors.site }}</p>
                 </div>
-
             </UFormField>
 
             <!-- VALIDITY DATE -->
@@ -443,9 +426,8 @@ const isOpen = computed({
                     error: 'hidden',
                 }"
             >
-
                 <template #label>
-                    <span class="flex items-center gap-1">
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
                         {{ t('text.user-management-pg.input-new-validity-date') || 'Validity Date' }}
                         <span class="text-red-500">*</span>
                     </span>
@@ -455,8 +437,10 @@ const isOpen = computed({
                     <UInputDate
                         ref="inputValidityDate"
                         v-model="modelValueValidity"
-                        locale="id-ID" format="dd/mm/yyyy"
+                        locale="en-GB"
+                        format="dd/mm/yyyy"
                         class="w-full font-light"
+                        :class="TEXT_SIZE_CLASS"
                         :ui="{
                             base: errors.validityDate
                                 ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
@@ -484,21 +468,7 @@ const isOpen = computed({
                             </UPopover>
                         </template>
                     </UInputDate>
-                    <p v-if="errors.validityDate" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.validityDate }}</p>
-                </div>
-
-            </UFormField>
-
-            <!-- STATUS -->
-            <UFormField orientation="horizontal" class="mb-2" >
-                <template #label>
-                    <span class="flex items-center gap-1">
-                        {{ t('text.user-management-pg.input-new-status') || 'Status' }}
-                    </span>
-                </template>
-
-                <div class="flex justify-start w-80">
-                    <USwitch v-model="valueSwitch" />
+                    <p v-if="errors.validityDate" :class="INPUT_FIELD_WARN_CLASS">{{ errors.validityDate }}</p>
                 </div>
             </UFormField>
         </template>
@@ -506,16 +476,16 @@ const isOpen = computed({
         <template #footer>
             <UButton
                 v-if="!editMode"
-                class="bg-[#FEE9D6] text-[#F26524] hover:bg-[#FBD0AD] hover:text-[#E34613] active:bg-[#FBD0AD] active:text-[#E34613] text-[14px] px-5"
+                :class="`${BUTTON_CLEAR_CLASS} ${TEXT_SIZE_CLASS}`"
                 :disabled="isSubmitting"
                 @click="resetForm"
             >{{ t('text.button.clear') || 'Clear' }}</UButton>
 
             <UButton
-                class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[14px] px-5"
+                :class="`${BUTTON_PRIMARY_CLASS} ${TEXT_SIZE_CLASS}`"
                 :loading="isSubmitting"
                 :disabled="isSubmitting"
-                @click="postSubmitProfile"
+                @click="postSubmitUser"
             >
                 {{ t('text.button.submit') || 'Submit' }}
             </UButton>

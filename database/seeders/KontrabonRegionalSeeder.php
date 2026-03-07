@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Master\KontrabonRegional;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class KontrabonRegionalSeeder extends Seeder
@@ -20,7 +19,7 @@ class KontrabonRegionalSeeder extends Seeder
                 'name' => 'DC JAKARTA',
                 'address' => 'WISMA EKA JIWA RUKO NO:26-27 JL.ARTERI MANGGA DUA RAYA.',
                 'city' => 'JAKARTA PUSAT',
-                'region' => 'DKI JAKARTA'
+                'region' => 'DKI JAKARTA',
             ],
             [
                 'code' => 'H01',
@@ -28,7 +27,7 @@ class KontrabonRegionalSeeder extends Seeder
                 'name' => 'YOGYA CENTER',
                 'address' => 'JL. SOEKARNO HATTA NO.236',
                 'city' => 'BANDUNG',
-                'region' => 'JAWA BARAT'
+                'region' => 'JAWA BARAT',
             ],
             [
                 'code' => 'H02',
@@ -36,7 +35,7 @@ class KontrabonRegionalSeeder extends Seeder
                 'name' => 'GRIYA CENTER',
                 'address' => 'JL. SOEKARNO HATTA NO.236',
                 'city' => 'BANDUNG',
-                'region' => 'JAWA BARAT'
+                'region' => 'JAWA BARAT',
             ],
             [
                 'code' => 'H05',
@@ -44,7 +43,7 @@ class KontrabonRegionalSeeder extends Seeder
                 'name' => 'JUNCTION CENTER',
                 'address' => 'JL. SUNDA NO.83',
                 'city' => 'BANDUNG',
-                'region' => 'JAWA BARAT'
+                'region' => 'JAWA BARAT',
             ],
             [
                 'code' => 'H06',
@@ -52,7 +51,7 @@ class KontrabonRegionalSeeder extends Seeder
                 'name' => 'RUKO SAWOJAJAR',
                 'address' => 'JL. SAWOJAJAR NO.37',
                 'city' => 'BOGOR',
-                'region' => 'JAWA BARAT'
+                'region' => 'JAWA BARAT',
             ],
             [
                 'code' => 'S02',
@@ -60,7 +59,7 @@ class KontrabonRegionalSeeder extends Seeder
                 'name' => 'YOGYA GARUT',
                 'address' => 'JL. SILIWANGI NO.21',
                 'city' => 'GARUT',
-                'region' => 'JAWA BARAT'
+                'region' => 'JAWA BARAT',
             ],
             [
                 'code' => 'S03',
@@ -68,7 +67,7 @@ class KontrabonRegionalSeeder extends Seeder
                 'name' => 'YOGYA GRAND CIREBON',
                 'address' => 'JL. KARANG GETAS NO.64',
                 'city' => 'CIREBON',
-                'region' => 'JAWA BARAT'
+                'region' => 'JAWA BARAT',
             ],
             [
                 'code' => 'S04',
@@ -76,7 +75,7 @@ class KontrabonRegionalSeeder extends Seeder
                 'name' => 'YOGYA PURWAKARTA',
                 'address' => 'JL. JEND SUDIRMAN NO.5',
                 'city' => 'PURWAKARTA',
-                'region' => 'JAWA BARAT'
+                'region' => 'JAWA BARAT',
             ],
             [
                 'code' => 'S05',
@@ -84,7 +83,7 @@ class KontrabonRegionalSeeder extends Seeder
                 'name' => 'YOGYA SUKABUMI',
                 'address' => 'JL. LLRE MARTADINATA NO.3',
                 'city' => 'SUKABUMI',
-                'region' => 'JAWA BARAT'
+                'region' => 'JAWA BARAT',
             ],
             [
                 'code' => 'S07',
@@ -92,7 +91,7 @@ class KontrabonRegionalSeeder extends Seeder
                 'name' => 'YOGYA TASIK HZ',
                 'address' => 'JL. HZ MUSTOFA NO.124',
                 'city' => 'TASIKMALAYA',
-                'region' => 'JAWA BARAT'
+                'region' => 'JAWA BARAT',
             ],
             [
                 'code' => 'S08',
@@ -100,7 +99,7 @@ class KontrabonRegionalSeeder extends Seeder
                 'name' => 'YOGYA TEGAL',
                 'address' => 'JL. AR. HAKIM NO.16',
                 'city' => 'TEGAL',
-                'region' => 'JAWA TENGAH'
+                'region' => 'JAWA TENGAH',
             ],
         ];
 

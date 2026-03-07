@@ -79,7 +79,7 @@ return new class extends Migration
         if (Schema::hasColumn('mid_ebs_sites', 'company_region')) {
             Schema::table('mid_ebs_sites', function (Blueprint $table) {
                 $table->dropColumn('company_region');
-            });        
+            });
         }
         if (Schema::hasColumn('mid_ebs_sites', 'regional_code')) {
             Schema::table('mid_ebs_sites', function (Blueprint $table) {

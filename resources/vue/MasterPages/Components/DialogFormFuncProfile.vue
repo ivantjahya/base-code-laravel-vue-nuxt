@@ -8,6 +8,7 @@ import CmpCustomTable from '../../Components/CmpCustomTable.vue'
 import CmpAccordionFilter from '../../Components/CmpAccordionFilter.vue'
 import FormFilterFuncProfile from './FormFilterFuncProfile.vue'
 import DialogFormFuncProfileSubmit from './DialogFormFuncProfileSubmit.vue'
+import { TEXT_SIZE_CLASS, TEXT_TITLE_SIZE_CLASS, TITLE_MODAL_TEXT_CLASS, INPUT_FIELD_WARN_CLASS, BUTTON_PRIMARY_CLASS, BUTTON_CLEAR_CLASS, TABLE_TEXT_STATUS_SIZE_CLASS } from '../../constants'
 
 const props = defineProps({
     open: {
@@ -112,7 +113,7 @@ const columns = computed(() => [
             return h(UBadge, {
                 variant: 'subtle',
                 color: badgeColor,
-                class: 'text-xs'
+                class: TABLE_TEXT_STATUS_SIZE_CLASS
             }, () => statusText)
         }
     },
@@ -340,13 +341,9 @@ const isOpen = computed({
         v-model:open="isOpen"
         :title="title"
         :dismissible="false"
-        class="text-[16px] font-semibold"
+        :class="TITLE_MODAL_TEXT_CLASS"
         :ui="{
-            content: `w-full mx-auto text-sm
-                sm:max-w-md sm:text-xs
-                md:max-w-2xl md:text-sm
-                lg:max-w-5xl lg:text-sm
-            `,
+            content: `w-full mx-auto sm:max-w-md md:max-w-2xl lg:max-w-5xl`,
             body: 'sm:pt-2 sm:px-6',
             footer: 'justify-end'
         }"
@@ -374,7 +371,7 @@ const isOpen = computed({
                 <div class="flex flex-col md:flex-row w-full gap-2">
                     <!-- PROFILE -->
                     <div class="flex w-full">
-                        <div class="w-full md:w-50 my-auto font-semibold">
+                        <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">
                             {{ t('text.functional-profile-management-pg.input-new-profile') || 'Profile' }}
                         </div>
                         <div class="flex w-full text-sm">
@@ -383,6 +380,9 @@ const isOpen = computed({
                                 size="md"
                                 disabled
                                 class="w-full font-light"
+                                :ui="{
+                                    base: TEXT_SIZE_CLASS
+                                }"
                             />
                         </div>
                     </div>
@@ -396,7 +396,7 @@ const isOpen = computed({
                             type="button"
                             :disabled="isSubmitting"
                             @click="showModalSubmitFuncProfile"
-                            class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[16px] px-5 sm:text-xs md:text-sm lg:text-sm"
+                            :class="`${BUTTON_PRIMARY_CLASS} ${TEXT_SIZE_CLASS}`"
                         >
                             {{ t('text.button.new').toUpperCase() || 'NEW' }}
                         </UButton>
@@ -427,7 +427,7 @@ const isOpen = computed({
 
         <template #footer>
             <UButton
-                class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[14px] px-5 sm:text-xs md:text-sm lg:text-sm"
+                :class="`${BUTTON_PRIMARY_CLASS} ${TEXT_SIZE_CLASS}`"
                 :loading="isSubmitting"
                 :disabled="isSubmitting"
                 @click="closeModal"

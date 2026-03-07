@@ -164,4 +164,21 @@ class PythonTaskMasterDataService
             []
         );
     }
+
+    /**
+     * Process data inactive user from Python API
+     */
+    public function processInactiveUser(): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(60)
+                ->post("{$this->baseUrl}/user/process_inactive_user/sync")
+                ->throw(),
+            '/user/process_inactive_user/sync',
+            'Failed to process inactive user',
+            []
+        );
+    }
 }

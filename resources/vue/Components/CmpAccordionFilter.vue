@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from '../composables/useI18n'
+import { TEXT_SIZE_CLASS } from '../constants'
 
 const { t } = useI18n()
 
@@ -38,7 +39,8 @@ const accordionItems = computed(() => [
                 wrapper: 'w-full',
                 item: {
                     base: 'border-1 border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden',
-                }
+                },
+                trigger: TEXT_SIZE_CLASS
             }"
         >
             <template #content>

@@ -130,7 +130,15 @@
         "input-new-site-placeholder": "Pilih lokasi",
         "input-new-validity-date": "Tanggal Berlaku",
         "input-new-status": "Status",
-        "edit-user": "Edit User"
+        "edit-user": "Edit User",
+        "reset-password": "Reset Kata Sandi",
+        "unlock-user": "Buka Kunci User",
+        "reset-password-confirm-msg": "Apakah Anda yakin ingin mereset kata sandi untuk pengguna ini?",
+        "reset-password-success-msg": "Kata sandi telah berhasil direset.",
+        "reset-password-failed-msg": "Gagal mereset kata sandi.",
+        "unlock-user-confirm-msg": "Apakah Anda yakin ingin membuka kunci pengguna ini?",
+        "unlock-user-success-msg": "Pengguna telah berhasil dibuka kuncinya.",
+        "unlock-user-failed-msg": "Gagal membuka kunci pengguna."
     },
     "approval-flow-management-pg": {
         "list": "Daftar Data Alur Persetujuan",
@@ -182,7 +190,12 @@
         "check-all": "Centang Semua",
         "functional-profile": "Profil Fungsional",
         "add": "Tambah",
-        "add-row": "Tambah Baris"
+        "add-row": "Tambah Baris",
+        "reset-password": "Reset Kata Sandi",
+        "unlock-user": "Buka Kunci Pengguna",
+        "yes": "Ya",
+        "no": "Tidak",
+        "ok": "OK"
     },
     "input-field": {
         "username": "ID Pengguna",
@@ -354,7 +367,8 @@
       "external": "Eksternal",
       "active": "Aktif",
       "not-active": "Tidak Aktif",
-      "locked": "Terkunci"
+      "locked": "Terkunci",
+      "expired": "Kedaluarsa"
     }
   },
   "auth": {
