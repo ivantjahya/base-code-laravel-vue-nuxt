@@ -5,16 +5,12 @@ namespace App\Http\Controllers\Master;
 use App\Exceptions\CommonCustomException;
 use App\Http\Controllers\Controller;
 use App\Services\PythonModuleMasterDataService;
-use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationException;
 
 class MasterDataPoStatusController extends Controller
 {
-
     private PythonModuleMasterDataService $moduleMasterDataService;
 
     public function __construct(PythonModuleMasterDataService $moduleMasterDataService)
@@ -33,11 +29,11 @@ class MasterDataPoStatusController extends Controller
         try {
 
             $data = $this->moduleMasterDataService->getPoStatusList();
+
             return response()->json($data);
 
         } catch (\Throwable $e) {
             throw new CommonCustomException($e->getMessage(), 500, $e);
         }
     }
-
 }

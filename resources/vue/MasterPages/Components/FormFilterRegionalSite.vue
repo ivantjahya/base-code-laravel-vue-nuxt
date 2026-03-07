@@ -2,6 +2,7 @@
 import { ref, shallowRef } from 'vue'
 import type { CalendarDate } from '@internationalized/date'
 import { useI18n } from '../../composables/useI18n'
+import { TEXT_SIZE_CLASS, BUTTON_PRIMARY_CLASS, BUTTON_CLEAR_CLASS } from '../../constants'
 
 const { t } = useI18n()
 
@@ -60,7 +61,10 @@ const onFind = () => {
                         @update:model-value="$emit('update:siteCode', $event)"
                         :placeholder="t('text.input-field.site-code-placeholder') || 'Enter site code'"
                         size="md"
-                        class="w-full font-light text-base md:text-sm"
+                        class="w-full font-light"
+                        :ui="{
+                            base: TEXT_SIZE_CLASS
+                        }"
                     />
                 </div>
             </div>
@@ -76,7 +80,10 @@ const onFind = () => {
                         @update:model-value="$emit('update:regionalName', $event)"
                         :placeholder="t('text.input-field.regional-name-kontrabon-placeholder') || 'Enter regional name kontrabon'"
                         size="md"
-                        class="w-full font-light text-base md:text-sm"
+                        class="w-full font-light"
+                        :ui="{
+                            base: TEXT_SIZE_CLASS
+                        }"
                     />
                 </div>
             </div>
@@ -94,7 +101,10 @@ const onFind = () => {
                         @update:model-value="$emit('update:siteName', $event)"
                         :placeholder="t('text.input-field.site-name-placeholder') || 'Enter site name'"
                         size="md"
-                        class="w-full font-light text-base md:text-sm"
+                        class="w-full font-light"
+                        :ui="{
+                            base: TEXT_SIZE_CLASS
+                        }"
                     />
                 </div>
             </div>
@@ -113,7 +123,13 @@ const onFind = () => {
                         value-attribute="id"
                         option-attribute="label"
                         :placeholder="t('text.input-field.status-placeholder') || 'Select status'"
-                        class="w-full font-reguler"/>
+                        class="w-full font-reguler"
+                        :ui="{
+                            base: TEXT_SIZE_CLASS,
+                            content: TEXT_SIZE_CLASS,
+                            item: TEXT_SIZE_CLASS
+                        }"
+                    />
                 </div>
             </div>
 
@@ -130,7 +146,10 @@ const onFind = () => {
                         @update:model-value="$emit('update:regionalCode', $event)"
                         :placeholder="t('text.input-field.regional-code-kontrabon-placeholder') || 'Enter regional code kontrabon'"
                         size="md"
-                        class="w-full font-light text-base md:text-sm"
+                        class="w-full font-light"
+                        :ui="{
+                            base: TEXT_SIZE_CLASS
+                        }"
                     />
                 </div>
             </div>
@@ -142,13 +161,15 @@ const onFind = () => {
                 <div class="w-full md:w-50 my-auto text-base md:text-sm"></div>
                 <div class="flex w-full text-sm gap-2">
                     <UButton
-                        class="flex-1 w-full justify-center text-base md:text-sm text-[#F26524] hover:text-[#E34613] bg-[#FEE9D6] hover:bg-[#FBD0AD] active:bg-[#FBD0AD] active:text-[#E34613]"
+                        class="flex-1 w-full justify-center"
+                        :class="`${BUTTON_CLEAR_CLASS} ${TEXT_SIZE_CLASS}`"
                         :disabled="loading"
                         @click="onClear"
                     >{{ t('text.button.clear') || 'Clear' }}</UButton>
 
                     <UButton
-                        class="flex-3 w-full justify-center text-base md:text-sm text-white bg-[#F26524] hover:bg-[#E34613] active:bg-[#E34613]"
+                        class="flex-3 w-full justify-center"
+                        :class="`${BUTTON_PRIMARY} ${TEXT_SIZE_CLASS}`"
                         :loading="loading"
                         size="md"
                         icon="i-lucide-search"

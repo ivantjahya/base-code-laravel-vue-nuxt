@@ -52,6 +52,11 @@ export const useApiStore = defineStore('api', {
         postFuncProfileUpdate: '/api/v1/masterdata/func-profile/update/', // + id
         getMerchStructDivCatList: '/api/v1/masterdata/merch-struct/list-merch-struct-div-cat',
         getUserList: '/api/v1/masterdata/user/list',
+        getUserDetail: '/api/v1/masterdata/user/detail/', // + id
+        postUserCreate: '/api/v1/masterdata/user/create',
+        postUserUpdate: '/api/v1/masterdata/user/update/', // + id
+        postResetPassword: '/api/v1/masterdata/user/reset-password/', // + id
+        postUnlockUser: '/api/v1/masterdata/user/unlock/', // + id
         getApprovalFlowList: '/api/v1/masterdata/approval-flow/list',
         getApprovalFlowDetail: '/api/v1/masterdata/approval-flow/detail/', // + id
         postApprovalFlowCreate: '/api/v1/masterdata/approval-flow/create',

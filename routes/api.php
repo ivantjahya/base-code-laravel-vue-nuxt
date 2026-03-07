@@ -8,11 +8,11 @@ use App\Http\Controllers\Master\MasterDataFunctionalProfileController;
 use App\Http\Controllers\Master\MasterDataLimitController;
 use App\Http\Controllers\Master\MasterDataMenuController;
 use App\Http\Controllers\Master\MasterDataMerchStructController;
+use App\Http\Controllers\Master\MasterDataPoStatusController;
 use App\Http\Controllers\Master\MasterDataProfileController;
 use App\Http\Controllers\Master\MasterDataRegionalSiteController;
 use App\Http\Controllers\Master\MasterDataUserController;
 use App\Http\Controllers\Master\MasterDataUserGuideController;
-use App\Http\Controllers\Master\MasterDataPoStatusController;
 use App\Http\Middleware\XssProtection;
 use Illuminate\Support\Facades\Route;
 
@@ -86,6 +86,15 @@ Route::prefix('v1')->middleware([XssProtection::class])->group(function () {
             /** User */
             Route::prefix('user')->group(function () {
                 Route::get('/list', [MasterDataUserController::class, 'getUserList'])->name('get-user-list');
+                Route::get('/detail/{id}', [MasterDataUserController::class, 'getUserDetail'])->name('get-user-detail');
+                Route::middleware(['can:has-user-create-perm'])->group(function () {
+                    Route::post('/create', [MasterDataUserController::class, 'postUserCreate'])->name('post-user-create');
+                });
+                Route::middleware(['can:has-user-update-perm'])->group(function () {
+                    Route::put('/update/{id}', [MasterDataUserController::class, 'postUserUpdate'])->name('post-user-update');
+                    Route::put('/reset-password/{id}', [MasterDataUserController::class, 'postResetPassword'])->name('post-reset-password');
+                    Route::put('/unlock/{id}', [MasterDataUserController::class, 'postUnlockUser'])->name('post-unlock-user');
+                });
             });
 
             /** Approval Flow */

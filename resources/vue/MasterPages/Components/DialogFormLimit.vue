@@ -6,6 +6,7 @@ import { useI18n } from '../../composables/useI18n'
 import { useFormatters } from '../../composables/useFormatters'
 import { useApiStore } from '../../AppState'
 import axios from 'axios'
+import { TEXT_SIZE_CLASS, TEXT_TITLE_SIZE_CLASS, TITLE_MODAL_TEXT_CLASS, INPUT_FIELD_WARN_CLASS, BUTTON_PRIMARY_CLASS, BUTTON_CLEAR_CLASS } from '../../constants'
 
 const props = defineProps({
     open: {
@@ -210,7 +211,13 @@ const isOpen = computed({
 </script>
 
 <template>
-    <UModal v-model:open="isOpen" :title="title" :dismissible="false" class="text-[16px] font-semibold" :ui="{ footer: 'justify-end' }">
+    <UModal
+        v-model:open="isOpen"
+        :title="title"
+        :dismissible="false"
+        :class="TITLE_MODAL_TEXT_CLASS"
+        :ui="{ footer: 'justify-end' }"
+    >
         <template #body>
             <!-- MINIMUM -->
             <UFormField
@@ -222,7 +229,7 @@ const isOpen = computed({
                 }"
             >
                 <template #label>
-                    <span class="flex items-center gap-1">
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
                         {{ t('text.limit-management-pg.input-new-minimum') || 'Minimum' }}
                         <span class="text-red-500">*</span>
                     </span>
@@ -240,13 +247,15 @@ const isOpen = computed({
                         }"
                         class="w-full font-reguler"
                         :ui="{
-                            base: errors.valueMin
+                            base: `${TEXT_SIZE_CLASS} ${
+                                errors.valueMin
                                 ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
                                 : ''
+                            }`
                         }"
                     />
                 </div>
-                <p v-if="errors.valueMin" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.valueMin }}</p>
+                <p v-if="errors.valueMin" :class="INPUT_FIELD_WARN_CLASS">{{ errors.valueMin }}</p>
             </UFormField>
 
             <!-- MAXIMUM -->
@@ -259,7 +268,7 @@ const isOpen = computed({
                 }"
             >
                 <template #label>
-                    <span class="flex items-center gap-1">
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
                         {{ t('text.limit-management-pg.input-new-maximum') || 'Maximum' }}
                         <span class="text-red-500">*</span>
                     </span>
@@ -276,12 +285,14 @@ const isOpen = computed({
                         }"
                         class="w-full font-reguler"
                         :ui="{
-                            base: errors.valueMin
+                            base: `${TEXT_SIZE_CLASS} ${
+                                errors.valueMax
                                 ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
                                 : ''
+                            }`
                         }"
                     />
-                    <p v-if="errors.valueMax" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.valueMax }}</p>
+                    <p v-if="errors.valueMax" :class="INPUT_FIELD_WARN_CLASS">{{ errors.valueMax }}</p>
                 </div>
             </UFormField>
 
@@ -295,7 +306,7 @@ const isOpen = computed({
                 }"
             >
                 <template #label>
-                    <span class="flex items-center gap-1">
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
                         {{ t('text.limit-management-pg.input-new-start-date') || 'Start Date' }}
                         <span class="text-red-500">*</span>
                     </span>
@@ -310,6 +321,7 @@ const isOpen = computed({
                         :max-value="modelValueEnd"
                         :disabled="editMode || extendMode || viewOnly"
                         class="w-full font-reguler"
+                        :class="TEXT_SIZE_CLASS"
                         :ui="{
                             base: errors.startDate
                                 ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
@@ -339,7 +351,7 @@ const isOpen = computed({
                             </UPopover>
                         </template>
                     </UInputDate>
-                    <p v-if="errors.startDate" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.startDate }}</p>
+                    <p v-if="errors.startDate" :class="INPUT_FIELD_WARN_CLASS">{{ errors.startDate }}</p>
                 </div>
             </UFormField>
 
@@ -353,7 +365,7 @@ const isOpen = computed({
                 }"
             >
                 <template #label>
-                    <span class="flex items-center gap-1">
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
                         {{ t('text.limit-management-pg.input-new-end-date') || 'End Date' }}
                         <span class="text-red-500">*</span>
                     </span>
@@ -368,6 +380,7 @@ const isOpen = computed({
                         :min-value="modelValueStart"
                         :disabled="editMode || viewOnly"
                         class="w-full font-reguler"
+                        :class="TEXT_SIZE_CLASS"
                         :ui="{
                             base: errors.endDate
                                 ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
@@ -397,7 +410,7 @@ const isOpen = computed({
                             </UPopover>
                         </template>
                     </UInputDate>
-                    <p v-if="errors.endDate" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.endDate }}</p>
+                    <p v-if="errors.endDate" :class="INPUT_FIELD_WARN_CLASS">{{ errors.endDate }}</p>
                 </div>
             </UFormField>
         </template>
@@ -406,7 +419,7 @@ const isOpen = computed({
             <!-- Clear button — only in create mode -->
             <UButton
                 v-if="!editMode && !extendMode && !viewOnly"
-                class="bg-[#FEE9D6] text-[#F26524] hover:bg-[#FBD0AD] hover:text-[#E34613] active:bg-[#FBD0AD] active:text-[#E34613] text-[14px] px-5"
+                :class="`${BUTTON_CLEAR_CLASS} ${TEXT_SIZE_CLASS}`"
                 :disabled="isSubmitting"
                 @click="resetForm"
             >{{ t('text.button.clear') || 'Clear' }}</UButton>
@@ -414,7 +427,7 @@ const isOpen = computed({
             <!-- Submit button — hidden in view-only mode -->
             <UButton
                 v-if="!viewOnly"
-                class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[14px] px-5"
+                :class="`${BUTTON_PRIMARY_CLASS} ${TEXT_SIZE_CLASS}`"
                 :loading="isSubmitting"
                 :disabled="isSubmitting"
                 @click="postSubmitLimit"
@@ -425,7 +438,7 @@ const isOpen = computed({
             <!-- Close button — shown only in view-only mode -->
             <UButton
                 v-if="viewOnly"
-                class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[14px] px-5"
+                :class="`${BUTTON_PRIMARY_CLASS} ${TEXT_SIZE_CLASS}`"
                 @click="closeModal"
             >
                 {{ t('text.button.close') || 'Close' }}

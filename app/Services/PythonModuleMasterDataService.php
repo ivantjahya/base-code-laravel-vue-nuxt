@@ -410,23 +410,6 @@ class PythonModuleMasterDataService
         );
     }
 
-    /**
-     * Get site detail by ID from Python API
-     */
-    // public function getSiteDetail(string $id): array
-    // {
-    //     return $this->handleApiRequest(
-    //         fn () => Http::acceptJson()
-    //             ->connectTimeout(3)
-    //             ->timeout(60)
-    //             ->get("{$this->baseUrl}/site/{$id}")
-    //             ->throw(),
-    //         "/masterdata/site/{$id}",
-    //         'Failed to get site detail',
-    //         ['site_id' => $id]
-    //     );
-    // }
-
     /** ------------------------------------- USER ------------------------------------- */
     /**
      * Get user list from Python API
@@ -442,6 +425,91 @@ class PythonModuleMasterDataService
             '/masterdata/user/get_list',
             'Failed to get user list',
             ['params' => $params]
+        );
+    }
+
+    /**
+     * Get user detail by ID from Python API
+     */
+    public function getUserDetail(string $id): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(60)
+                ->get("{$this->baseUrl}/user/{$id}")
+                ->throw(),
+            "/masterdata/user/{$id}",
+            'Failed to get user detail',
+            ['user_id' => $id]
+        );
+    }
+
+    /**
+     * Create new user in Python API
+     */
+    public function createUser(array $data): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(30)
+                ->post("{$this->baseUrl}/user/post_create", $data)
+                ->throw(),
+            '/masterdata/user/post_create',
+            'Failed to create user',
+            ['request_data' => $data]
+        );
+    }
+
+    /**
+     * Update user in Python API
+     */
+    public function updateUser(string $id, array $data): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(30)
+                ->put("{$this->baseUrl}/user/post_update/{$id}", $data)
+                ->throw(),
+            "/masterdata/user/post_update/{$id}",
+            'Failed to update user',
+            ['user_id' => $id, 'request_data' => $data]
+        );
+    }
+
+    /**
+     * Reset password for user in Python API
+     */
+    public function resetPassword(string $id, array $data): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(30)
+                ->put("{$this->baseUrl}/user/post_reset_password/{$id}", $data)
+                ->throw(),
+            "/masterdata/user/post_reset_password/{$id}",
+            'Failed to reset user password',
+            ['user_id' => $id, 'request_data' => $data]
+        );
+    }
+
+    /**
+     * Unlock user in Python API
+     */
+    public function unlockUser(string $id, array $data): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(30)
+                ->put("{$this->baseUrl}/user/post_unlock/{$id}", $data)
+                ->throw(),
+            "/masterdata/user/post_unlock/{$id}",
+            'Failed to unlock user',
+            ['user_id' => $id, 'request_data' => $data]
         );
     }
 
@@ -464,7 +532,7 @@ class PythonModuleMasterDataService
     }
 
     /**
-     * Get functional profile detail by ID from Python API
+     * Get approval flow detail by ID from Python API
      */
     public function getApprovalFlowDetail(string $id): array
     {
@@ -549,6 +617,4 @@ class PythonModuleMasterDataService
             ['params' => $params]
         );
     }
-
-
 }

@@ -198,5 +198,4 @@ class MasterDataApprovalFlowController extends Controller
         }
 
     }
-
 }

@@ -2,6 +2,7 @@
 import { ref, computed, h, resolveComponent, watch } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
 import { useI18n } from '../composables/useI18n'
+import { TABLE_TEXT_SIZE_CLASS } from '../constants'
 import CmpLoadingOverlay from './CmpLoadingOverlay.vue'
 
 const { t } = useI18n()
@@ -201,6 +202,7 @@ const tableColumns = computed<TableColumn<any>[]>(() => {
     const alignBodyClass = col.alignBody === 'right' ? 'text-right' : col.alignBody === 'center' ? 'text-center' : 'text-left'
 
     if (col.sortable) {
+      // For sortable columns
       cols.push({
         accessorKey: col.key,
         ...(col.size ? { size: col.size } : {}),
@@ -209,7 +211,7 @@ const tableColumns = computed<TableColumn<any>[]>(() => {
 
           return h(
             'div',
-            { class: alignHeaderClass },
+            { class: `${alignHeaderClass} ${TABLE_TEXT_SIZE_CLASS}` },
             h(UButton, {
               color: 'neutral',
               variant: 'ghost',
@@ -219,7 +221,7 @@ const tableColumns = computed<TableColumn<any>[]>(() => {
                   ? 'i-lucide-arrow-up-narrow-wide'
                   : 'i-lucide-arrow-down-wide-narrow'
                 : 'i-lucide-arrow-up-down',
-              class: '-mx-2.5 text-xs md:text-sm lg:text-base',
+              class: `-mx-2.5 ${TABLE_TEXT_SIZE_CLASS}`,
               onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
             })
           )
@@ -236,14 +238,19 @@ const tableColumns = computed<TableColumn<any>[]>(() => {
             content = value
           }
 
-          return h('div', { class: alignBodyClass }, content)
+          return h('div', { class: `${alignBodyClass} ${TABLE_TEXT_SIZE_CLASS}` }, content)
         }
       })
     } else {
+      // For non-sortable columns
       cols.push({
         accessorKey: col.key,
         ...(col.size ? { size: col.size } : {}),
-        header: () => h('div', { class: alignHeaderClass }, col.label),
+        header: () => h(
+          'div',
+          { class: `${alignHeaderClass} ${TABLE_TEXT_SIZE_CLASS}` },
+          col.label
+        ),
         cell: ({ row }) => {
           const value = row.getValue(col.key)
           let content
@@ -256,7 +263,7 @@ const tableColumns = computed<TableColumn<any>[]>(() => {
             content = value
           }
 
-          return h('div', { class: alignBodyClass }, content)
+          return h('div', { class: `${alignBodyClass} ${TABLE_TEXT_SIZE_CLASS}` }, content)
         }
       })
     }
@@ -266,11 +273,11 @@ const tableColumns = computed<TableColumn<any>[]>(() => {
   if (props.showActions && props.actions && props.actions.length > 0) {
     cols.push({
       id: 'actions',
-      header: () => h('div', { class: 'text-right' }, ''),
+      header: () => h('div', { class: `text-right ${TABLE_TEXT_SIZE_CLASS}` }, ''),
       cell: ({ row }) => {
         return h(
           'div',
-          { class: 'text-center' },
+          { class: `text-center ${TABLE_TEXT_SIZE_CLASS}` },
           h(
             UDropdownMenu,
             {
@@ -278,18 +285,18 @@ const tableColumns = computed<TableColumn<any>[]>(() => {
                 align: 'end'
               },
               ui: {
-                content: 'min-w-36 border-1 border-gray-200 dark:border-gray-700',
-                item: 'px-2 gap-2',   // Change the horizontal gap between the icon and text
+                content: `min-w-36 border-1 border-gray-200 dark:border-gray-700 ${TABLE_TEXT_SIZE_CLASS}`,
+                item: `px-2 gap-2 ${TABLE_TEXT_SIZE_CLASS}`,   // Change the horizontal gap between the icon and text
                 itemLeadingIcon: 'size-4.5' // Change icon size specifically
               },
-              items: getRowActions(row)
+              items: getRowActions(row),
             },
             () =>
               h(UButton, {
                 icon: 'i-lucide-ellipsis-vertical',
                 color: 'neutral',
                 variant: 'ghost',
-                size: 'sm'
+                size: 'sm',
               })
           )
         )
@@ -321,6 +328,9 @@ watch(rowSelection, (newVal) => {
         :placeholder="t('text.input-field.search')"
         size="lg"
         class="max-w-xs w-full rounded-lg"
+        :ui="{
+          base: TABLE_TEXT_SIZE_CLASS
+        }"
       />
     </div>
 
@@ -369,7 +379,7 @@ watch(rowSelection, (newVal) => {
     >
       <div class="flex items-center gap-4">
         <!-- Data Info -->
-        <div class="text-sm sm:text-xs md:text-sm lg:text-sm text-muted">
+        <div class="text-muted" :class="TABLE_TEXT_SIZE_CLASS">
           <template v-if="showSelection">
             {{ table?.tableApi?.getFilteredSelectedRowModel().rows.length || 0 }} of
             {{ table?.tableApi?.getFilteredRowModel().rows.length || 0 }} row(s) selected.
@@ -385,12 +395,17 @@ watch(rowSelection, (newVal) => {
       <div class="flex items-center gap-3">
         <!-- Page Size Selector -->
         <div class="flex items-center gap-2">
-          <span class="sm:text-xs md:text-sm lg:text-sm text-muted">{{ t('text.table.rows-per-page') || 'Rows per page' }}</span>
+          <span class="text-muted" :class="TABLE_TEXT_SIZE_CLASS">{{ t('text.table.rows-per-page') || 'Rows per page' }}</span>
           <USelect
             :model-value="pageSize"
             :items="pageSizeOptions"
             @update:model-value="handlePageSizeChange"
             class="w-20"
+            :ui="{
+              base: TABLE_TEXT_SIZE_CLASS,
+              content: TABLE_TEXT_SIZE_CLASS,
+              item: TABLE_TEXT_SIZE_CLASS
+            }"
           />
         </div>
 
@@ -402,6 +417,11 @@ watch(rowSelection, (newVal) => {
           @update:page="handlePageChange"
           show-edges
           :sibling-count="1"
+          :ui="{
+            base: TABLE_TEXT_SIZE_CLASS,
+            content: TABLE_TEXT_SIZE_CLASS,
+            item: TABLE_TEXT_SIZE_CLASS
+          }"
         />
       </div>
     </div>

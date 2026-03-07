@@ -5,6 +5,7 @@ import axios from 'axios'
 import { useI18n } from '../../composables/useI18n'
 import { useApiStore } from '../../AppState'
 import { useFormatters } from '../../composables/useFormatters'
+import { TEXT_SIZE_CLASS, TEXT_TITLE_SIZE_CLASS, TITLE_MODAL_TEXT_CLASS, INPUT_FIELD_WARN_CLASS, BUTTON_PRIMARY_CLASS, BUTTON_CLEAR_CLASS, TABLE_TEXT_STATUS_SIZE_CLASS } from '../../constants'
 
 const props = defineProps({
     open: {
@@ -315,9 +316,14 @@ const isOpen = computed({
 </script>
 
 <template>
-    <UModal v-model:open="isOpen" :title="title" :dismissible="false" class="text-[16px] font-semibold" :ui="{ footer: 'justify-end' }">
+    <UModal
+        v-model:open="isOpen"
+        :title="title"
+        :dismissible="false"
+        :class="TITLE_MODAL_TEXT_CLASS"
+        :ui="{ footer: 'justify-end' }"
+    >
         <template #body>
-
             <!-- PROFILE NAME -->
             <UFormField
                 orientation="horizontal"
@@ -328,7 +334,7 @@ const isOpen = computed({
                 }"
             >
                 <template #label>
-                    <span class="flex items-center gap-1">
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
                         {{ t('text.profile-management-pg.input-new-profile-name') || 'Profile Name' }}
                         <span class="text-red-500">*</span>
                     </span>
@@ -341,12 +347,14 @@ const isOpen = computed({
                         :placeholder="t('text.profile-management-pg.input-new-profile-name-placeholder') || 'Enter profile name'"
                         class="w-80 border-[#CAD5E2] font-light"
                         :ui="{
-                            base: errors.profileName
+                            base: `${TEXT_SIZE_CLASS} ${
+                                errors.profileName
                                 ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
                                 : ''
+                            }`
                         }"
                     />
-                    <p v-if="errors.profileName" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.profileName }}</p>
+                    <p v-if="errors.profileName" :class="INPUT_FIELD_WARN_CLASS">{{ errors.profileName }}</p>
                 </div>
             </UFormField>
 
@@ -360,7 +368,7 @@ const isOpen = computed({
                 }"
             >
                 <template #label>
-                    <span class="flex items-center gap-1">
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
                         {{ t('text.functional-profile-management-pg.input-company') || 'Company' }}
                         <span class="text-red-500">*</span>
                     </span>
@@ -375,13 +383,17 @@ const isOpen = computed({
                         :placeholder="t('text.functional-profile-management-pg.input-company-placeholder') || 'Select company'"
                         class="w-80 font-light"
                         :ui="{
-                            base: errors.company
+                            base: `${TEXT_SIZE_CLASS} ${
+                                errors.company
                                 ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
                                 : ''
+                            }`,
+                            content: TEXT_SIZE_CLASS,
+                            item: TEXT_SIZE_CLASS
                         }"
                         :disabled="disableForm"
                     />
-                    <p v-if="errors.company" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.company }}</p>
+                    <p v-if="errors.company" :class="INPUT_FIELD_WARN_CLASS">{{ errors.company }}</p>
                 </div>
             </UFormField>
 
@@ -395,7 +407,7 @@ const isOpen = computed({
                 }"
             >
                 <template #label>
-                    <span class="flex items-center gap-1">
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
                         {{ t('text.input-field.division') || 'Division' }}
                         <span class="text-red-500">*</span>
                     </span>
@@ -410,6 +422,9 @@ const isOpen = computed({
                             :key="division.value"
                             :model-value="selectedDivisionArr.includes(division.value)"
                             :label="division.label"
+                            :ui="{
+                                label: TEXT_SIZE_CLASS
+                            }"
                             @update:model-value="(val) => {
                                 if (val) {
                                     if (!selectedDivisionArr.includes(division.value)) selectedDivisionArr.push(division.value)
@@ -435,14 +450,18 @@ const isOpen = computed({
                         :placeholder="t('text.functional-profile-management-pg.input-new-division-placeholder') || 'Select division'"
                         class="w-80 font-light"
                         :ui="{
-                            base: errors.division
+                            base: `${TEXT_SIZE_CLASS} ${
+                                errors.division
                                 ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
                                 : ''
+                            }`,
+                            content: TEXT_SIZE_CLASS,
+                            item: TEXT_SIZE_CLASS
                         }"
                         :disabled="disableForm"
                     />
                 </div>
-                <p v-if="errors.division" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.division }}</p>
+                <p v-if="errors.division" :class="INPUT_FIELD_WARN_CLASS">{{ errors.division }}</p>
             </UFormField>
             
             <!-- CHECK ALL -->
@@ -452,7 +471,7 @@ const isOpen = computed({
                         v-model="allDivisionsChecked"
                         :disabled="divisionOptions.length === 0 || disableForm"
                     />
-                    <span class="text-sm font-light">
+                    <span class="font-light" :class="TEXT_SIZE_CLASS">
                         {{ t('text.button.check-all') || 'Check All' }}
                     </span>
                 </div>
@@ -468,7 +487,7 @@ const isOpen = computed({
                 }"
             >
                 <template #label>
-                    <span class="flex items-center gap-1">
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
                         {{ t('text.input-field.limit') || 'Limit' }}
                         <span class="text-red-500">*</span>
                     </span>
@@ -483,13 +502,17 @@ const isOpen = computed({
                         :placeholder="t('text.functional-profile-management-pg.input-new-limit-placeholder') || 'Select limit'"
                         class="w-80 font-light"
                         :ui="{
-                            base: errors.limit
+                            base: `${TEXT_SIZE_CLASS} ${
+                                errors.limit
                                 ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
                                 : ''
+                            }`,
+                            content: TEXT_SIZE_CLASS,
+                            item: TEXT_SIZE_CLASS
                         }"
                         :disabled="disableForm"
                     />
-                    <p v-if="errors.limit" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.limit }}</p>
+                    <p v-if="errors.limit" :class="INPUT_FIELD_WARN_CLASS">{{ errors.limit }}</p>
                 </div>
             </UFormField>
 
@@ -503,7 +526,7 @@ const isOpen = computed({
                 }"
             >
                 <template #label>
-                    <span class="flex items-center gap-1">
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
                         {{ t('text.input-field.start-date') || 'Start Date' }}
                         <span class="text-red-500">*</span>
                     </span>
@@ -517,6 +540,7 @@ const isOpen = computed({
                         format="dd/mm/yyyy"
                         :max-value="modelValueEnd"
                         class="w-full font-reguler"
+                        :class="TEXT_SIZE_CLASS"
                         :ui="{
                             base: errors.startDate
                                 ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
@@ -547,7 +571,7 @@ const isOpen = computed({
                             </UPopover>
                         </template>
                     </UInputDate>
-                    <p v-if="errors.startDate" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.startDate }}</p>
+                    <p v-if="errors.startDate" :class="INPUT_FIELD_WARN_CLASS">{{ errors.startDate }}</p>
                 </div>
             </UFormField>
 
@@ -561,7 +585,7 @@ const isOpen = computed({
                 }"
             >
                 <template #label>
-                    <span class="flex items-center gap-1">
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
                         {{ t('text.input-field.end-date') || 'End Date' }}
                         <span class="text-red-500">*</span>
                     </span>
@@ -575,6 +599,7 @@ const isOpen = computed({
                         format="dd/mm/yyyy"
                         :min-value="modelValueStart"
                         class="w-full font-reguler"
+                        :class="TEXT_SIZE_CLASS"
                         :ui="{
                             base: errors.endDate
                                 ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
@@ -605,7 +630,7 @@ const isOpen = computed({
                             </UPopover>
                         </template>
                     </UInputDate>
-                    <p v-if="errors.endDate" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.endDate }}</p>
+                    <p v-if="errors.endDate" :class="INPUT_FIELD_WARN_CLASS">{{ errors.endDate }}</p>
                 </div>
             </UFormField>
         </template>
@@ -613,14 +638,14 @@ const isOpen = computed({
         <template #footer>
             <UButton
                 v-if="!editMode && props.canUpdateFuncProfile"
-                class="bg-[#FEE9D6] text-[#F26524] hover:bg-[#FBD0AD] hover:text-[#E34613] active:bg-[#FBD0AD] active:text-[#E34613] text-[14px] px-5"
+                :class="`${BUTTON_CLEAR_CLASS} ${TEXT_SIZE_CLASS}`"
                 :disabled="isSubmitting"
                 @click="resetFormfuncProfile"
             >{{ t('text.button.clear') || 'Clear' }}</UButton>
 
             <UButton
                 v-if="props.canUpdateFuncProfile"
-                class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[14px] px-5"
+                :class="`${BUTTON_PRIMARY_CLASS} ${TEXT_SIZE_CLASS}`"
                 :loading="isSubmitting"
                 :disabled="isSubmitting"
                 @click="postSubmitFuncProfile"
@@ -630,7 +655,7 @@ const isOpen = computed({
 
             <UButton
                 v-if="!props.canUpdateFuncProfile"
-                class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[14px] px-5"
+                :class="`${BUTTON_PRIMARY_CLASS} ${TEXT_SIZE_CLASS}`"
                 @click="closeModal"
             >
                 {{ t('text.button.close') || 'Close' }}

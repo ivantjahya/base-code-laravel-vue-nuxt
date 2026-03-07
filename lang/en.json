@@ -130,7 +130,15 @@
         "input-new-site-placeholder": "Select site",
         "input-new-validity-date": "Validity Date",
         "input-new-status": "Status",
-        "edit-user": "Edit User"
+        "edit-user": "Edit User",
+        "reset-password": "Reset Password",
+        "unlock-user": "Unlock User",
+        "reset-password-confirm-msg": "Are you sure you want to reset the password for this user?",
+        "reset-password-success-msg": "Password has been reset successfully.",
+        "reset-password-failed-msg": "Failed to reset password.",
+        "unlock-user-confirm-msg": "Are you sure you want to unlock this user?",
+        "unlock-user-success-msg": "User has been unlocked successfully.",
+        "unlock-user-failed-msg": "Failed to unlock user."
     },
     "approval-flow-management-pg": {
         "list": "List of Approval Flows",
@@ -182,7 +190,12 @@
         "check-all": "Check All",
         "functional-profile": "Functional Profiles",
         "add": "Add",
-        "add-row": "Add Row"
+        "add-row": "Add Row",
+        "reset-password": "Reset Password",
+        "unlock-user": "Unlock User",
+        "yes": "Yes",
+        "no": "No",
+        "ok": "OK"
     },
     "input-field": {
         "username": "Username",
@@ -354,7 +367,8 @@
       "external": "External",
       "active": "Active",
       "not-active": "Not Active",
-      "locked": "Locked"
+      "locked": "Locked",
+      "expired": "Expired"
     }
   },
   "auth": {
