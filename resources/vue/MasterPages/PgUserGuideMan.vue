@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, h, resolveComponent, shallowRef, onMounted } from 'vue'
-import type { TableColumn } from '@nuxt/ui'
-import { CalendarDate, DateFormatter, getLocalTimeZone, today } from '@internationalized/date'
 import { useI18n } from '../composables/useI18n'
-import { useFormatters } from '../composables/useFormatters'
+import { useMenuPermission } from '../composables/useMenuPermission'
 import { useApiStore } from '../AppState'
 import axios from 'axios'
 import { getCurrentInstance } from 'vue'
@@ -12,13 +10,20 @@ import CmpCustomTable from '../Components/CmpCustomTable.vue'
 import CmpAccordionFilter from '../Components/CmpAccordionFilter.vue'
 import DialogFormUserGuide from './Components/DialogFormUserGuide.vue'
 import FormFilterUserGuide from './Components/FormFilterUserGuide.vue'
+import { TEXT_SIZE_CLASS, TEXT_TITLE_SIZE_CLASS, TITLE_TEXT_CLASS, TABLE_TEXT_STATUS_SIZE_CLASS, BUTTON_PRIMARY_CLASS } from '../constants'
 
 const { t } = useI18n()
-const { formatDate, formatCurrency, getDateString, stringToCalendarDate } = useFormatters()
+const { hasMenuCtrl, MENU_CODE, CTRL_CODE } = useMenuPermission()
 const api = useApiStore()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
 const UButton = resolveComponent('UButton')
+const UBadge = resolveComponent('UBadge')
+
+// ========================= PERMISSIONS =========================
+const canCreateUserGuide = computed(() => hasMenuCtrl(MENU_CODE.value.SUBMENU_USER_GUIDE, CTRL_CODE.value.MENU_CTRL_CREATE))
+const canUpdateUserGuide = computed(() => hasMenuCtrl(MENU_CODE.value.SUBMENU_USER_GUIDE, CTRL_CODE.value.MENU_CTRL_UPDATE))
+const canDeleteUserGuide = computed(() => hasMenuCtrl(MENU_CODE.value.SUBMENU_USER_GUIDE, CTRL_CODE.value.MENU_CTRL_DELETE))
 
 // ========================= FILTER =========================
 const codeFilter = ref('')
@@ -61,14 +66,18 @@ const columns = computed(() => [
     {
         key: 'status',
         label: t('text.table-column.column-status'),
-        sortable: true,
-        formatter: (value: number) => value === 1 ? 'Active' : 'Inactive'
-    },
-    {
-        key: 'actions',
-        label: '',
         sortable: false,
-    }
+        cellRenderer: (value: any, row: any) => {
+            const statusText = value ? t('text.message.active' as any) || 'Active' : t('text.message.not-active' as any) || 'Not Active'
+            const badgeColor = value ? 'success' : 'primary'
+
+            return h(UBadge, {
+                variant: 'subtle',
+                color: badgeColor,
+                class: TABLE_TEXT_STATUS_SIZE_CLASS
+            }, () => statusText)
+        }
+    },
 ])
 
 const actions = computed(() => [
@@ -76,14 +85,19 @@ const actions = computed(() => [
         {
             label: t('text.button.edit' as any) || 'Edit',
             icon: 'i-lucide-pencil',
-            onSelect: (row) => handleEdit(row)
+            onSelect: (row: any) => handleEdit(row)
         }
     ]
 ])
 
-// ========================= MODAL =========================
+const columnPinning = ref({
+    right: ['actions']
+})
+
+// ========================= STATE FOR MODAL =========================
 const modalTitle = ref('')
 const modalSubmitOpen = ref(false)
+const viewOnlyMode = ref(false)
 const editMode = ref(false)
 const editingId = ref<string | null>(null)
 const editData = ref({})
@@ -184,30 +198,26 @@ onMounted(() => {
 
             <!-- Title Section -->
             <UCard class="mb-3" :ui="{ body: 'sm:py-3 sm:px-6' }">
-
                 <div class="flex items-center justify-between">
-
                     <div class="flex items-center gap-4">
 
                         <!-- BUTTON NEW -->
-                        <UButton type="button" @click="showModal" class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[16px] px-5">
+                        <UButton v-if="canCreateUserGuide" type="button" @click="showModal" :class="`${BUTTON_PRIMARY_CLASS} ${TEXT_SIZE_CLASS}`">
                             {{ t('text.button.new').toUpperCase() || 'NEW' }}
                         </UButton>
 
-                        <h1 class="text-lg font-semibold text-gray-900 dark:text-white">
+                        <h1 :class="`${TITLE_TEXT_CLASS} ${TEXT_TITLE_SIZE_CLASS}`">
                             {{ t('text.user-guide-management-pg.list') || 'List of User Guides' }}
                         </h1>
-
                     </div>
-
                 </div>
-
             </UCard>
 
             <!-- MODAL -->
             <DialogFormUserGuide
                 :open="modalSubmitOpen"
                 :title="modalTitle"
+                :view-only="viewOnlyMode"
                 :edit-mode="editMode"
                 :editing-id="editingId"
                 :initial-data="editData"
@@ -243,6 +253,7 @@ onMounted(() => {
                     :page-size="itemPerPage"
                     :current-page="currentPage"
                     :count-total-data="countTotalData"
+                    :column-pinning="columnPinning"
                     @update:currentPage="handlePageChange"
                     @update:pageSize="handlePageSizeChange"
                     @search="handleSearch"

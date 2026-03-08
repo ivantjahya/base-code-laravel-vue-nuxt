@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, h, resolveComponent, shallowRef, onMounted } from 'vue'
 import { useI18n } from '../composables/useI18n'
+import { useMenuPermission } from '../composables/useMenuPermission'
 import { useApiStore } from '../AppState'
 import axios from 'axios'
 import { getCurrentInstance } from 'vue'
@@ -10,14 +11,20 @@ import CmpCustomTable from '../Components/CmpCustomTable.vue'
 import CmpAccordionFilter from '../Components/CmpAccordionFilter.vue'
 import DialogFormApprovalFlow from './Components/DialogFormApprovalFlow.vue'
 import FormFilterApprovalFlow from './Components/FormFilterApprovalFlow.vue'
+import { TEXT_SIZE_CLASS, TEXT_TITLE_SIZE_CLASS, TITLE_TEXT_CLASS, TABLE_TEXT_STATUS_SIZE_CLASS, BUTTON_PRIMARY_CLASS } from '../constants'
 
 const { t } = useI18n()
+const { hasMenuCtrl, MENU_CODE, CTRL_CODE } = useMenuPermission()
 const { statusOptions } = useGlobalOptions()
 const api = useApiStore()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
 const UButton = resolveComponent('UButton')
 const UBadge = resolveComponent('UBadge')
+
+// ========================= PERMISSIONS =========================
+const canCreateApprovalFlow = computed(() => hasMenuCtrl(MENU_CODE.value.SUBMENU_APPROVAL_FLOW, CTRL_CODE.value.MENU_CTRL_CREATE))
+const canUpdateApprovalFlow = computed(() => hasMenuCtrl(MENU_CODE.value.SUBMENU_APPROVAL_FLOW, CTRL_CODE.value.MENU_CTRL_UPDATE))
 
 // ========================= STATE FOR FILTER =========================
 const approvalFlowCodeFilter = ref('')
@@ -77,7 +84,7 @@ const columns = computed(() => [
             return h(UBadge, {
                 variant: 'subtle',
                 color: badgeColor,
-                class: 'text-xs'
+                class: TABLE_TEXT_STATUS_SIZE_CLASS
             }, () => statusText)
         }
     },
@@ -96,12 +103,14 @@ const actions = computed(() => [
 // ========================= STATE FOR MODAL =========================
 const modalTitle = ref('')
 const modalSubmitOpen = ref(false)
+const viewOnlyMode = ref(false)
 const editMode = ref(false)
 const editingId = ref<string | null>(null)
 const editData = ref({})
 
 const showModal = () => {
     modalTitle.value = t('text.approval-flow-management-pg.add-new-approval-flow' as any) || 'Create New Approval Flow'
+    viewOnlyMode.value = false
     editMode.value = false
     editingId.value = null
     editData.value = {}
@@ -211,7 +220,6 @@ const getDivisionOptions = async () => {
         })
 
         divisionOptions.value = Array.from(uniqueOptions.values())
-
     } catch (error) {
         console.error('Error fetching division options:', error)
         divisionOptions.value = []
@@ -231,7 +239,7 @@ const getPoStatusOptions = async () => {
 
         const uniqueOptions = new Map<string, { label: string; value: string }>()
         sourceArray.forEach((item: any) => {
-            const label = String(item?.description).trim()
+            const label = String(item?.code).trim() + ' - ' + String(item?.description).trim()
             const value = String(item?.id).trim()
 
             if (!value) return
@@ -242,7 +250,6 @@ const getPoStatusOptions = async () => {
         })
 
         poStatusOptions.value = Array.from(uniqueOptions.values())
-
     } catch (error) {
         console.error('Error fetching po status options:', error)
         poStatusOptions.value = []
@@ -283,9 +290,8 @@ const handleEdit = async (data: any) => {
         const detail = response?.data?.data || response?.data || {}
         console.log("cek : " + detail);
 
-        // const rawMenuAccess = Array.isArray(detail?.menu_access) ? detail.menu_access : []
-
         modalTitle.value = t('text.approval-flow-management-pg.edit-approval-flow' as any) || 'Edit Approval Flow'
+        viewOnlyMode.value = !canUpdateApprovalFlow.value
         editMode.value = true
         editingId.value = profileId
         const rawProfileSource = detail?.is_internal ?? data?.is_internal ?? null
@@ -341,15 +347,14 @@ onMounted(async () => {
                     <div class="flex items-center gap-4">
 
                         <!-- BUTTON NEW -->
-                        <UButton type="button" @click="showModal" class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[16px] px-5">
+                        <UButton v-if="canCreateApprovalFlow" type="button" @click="showModal" :class="`${BUTTON_PRIMARY_CLASS} ${TEXT_SIZE_CLASS}`">
                             {{ t('text.button.new').toUpperCase() || 'NEW' }}
                         </UButton>
 
                         <!-- TITLE -->
-                        <h1 class="text-lg font-semibold text-gray-900 dark:text-white">
+                        <h1 :class="`${TITLE_TEXT_CLASS} ${TEXT_TITLE_SIZE_CLASS}`">
                             {{ t('text.approval-flow-management-pg.list') || 'List of Approval Flows' }}
                         </h1>
-
                     </div>
                 </div>
             </UCard>
@@ -358,6 +363,7 @@ onMounted(async () => {
             <DialogFormApprovalFlow
                 :open="modalSubmitOpen"
                 :title="modalTitle"
+                :view-only="viewOnlyMode"
                 :edit-mode="editMode"
                 :editing-id="editingId"
                 :initial-data="editData"

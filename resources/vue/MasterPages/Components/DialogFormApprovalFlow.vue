@@ -3,6 +3,7 @@ import { ref, computed, watch, getCurrentInstance, nextTick } from 'vue'
 import { useI18n } from '../../composables/useI18n'
 import { useApiStore } from '../../AppState'
 import axios from 'axios'
+import { TEXT_SIZE_CLASS, TEXT_TITLE_SIZE_CLASS, TITLE_MODAL_TEXT_CLASS, INPUT_FIELD_WARN_CLASS, BUTTON_PRIMARY_CLASS, BUTTON_CLEAR_CLASS } from '../../constants'
 
 const props = defineProps({
     open: {
@@ -12,6 +13,10 @@ const props = defineProps({
     title: {
         type: String,
         default: ''
+    },
+    viewOnly: {
+        type: Boolean,
+        default: false
     },
     editMode: {
         type: Boolean,
@@ -53,6 +58,7 @@ const { t } = useI18n()
 const api = useApiStore()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
+// ========================= STATE FOR MODAL =========================
 const isSubmitting = ref(false)
 
 const profile = ref<string | null>(null)
@@ -74,6 +80,7 @@ const errors = ref({
     description: ''
 })
 
+// ========================= ACTION =========================
 const resetForm = () => {
     profile.value = null
     division.value = null
@@ -92,7 +99,6 @@ const resetForm = () => {
         nextPoStatus: '',
         description: ''
     }
-
 }
 
 const closeModal = () => {
@@ -163,9 +169,6 @@ const postSubmitApproalFlow = async () => {
 
     isSubmitting.value = true
     try {
-
-        // console.log(poStatus.value);
-
         const payload = {
             profile: profile.value,
             division: division.value,
@@ -219,9 +222,14 @@ const isOpen = computed({
 </script>
 
 <template>
-    <UModal v-model:open="isOpen" :title="title" :dismissible="false" class="text-[16px] font-semibold" :ui="{ footer: 'justify-end' }">
+    <UModal
+        v-model:open="isOpen"
+        :title="title"
+        :dismissible="false"
+        :class="TITLE_MODAL_TEXT_CLASS"
+        :ui="{ footer: 'justify-end' }"
+    >
         <template #body>
-
             <!-- PROFILE -->
             <UFormField
                 orientation="horizontal"
@@ -231,9 +239,8 @@ const isOpen = computed({
                     error: 'hidden',
                 }"
             >
-
                 <template #label>
-                    <span class="flex items-center gap-1">
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
                         {{ t('text.approval-flow-management-pg.input-new-profile') || 'Profile' }}
                         <span class="text-red-500">*</span>
                     </span>
@@ -249,14 +256,18 @@ const isOpen = computed({
                         :placeholder="t('text.approval-flow-management-pg.input-new-profile-placeholder') || 'Select profile'"
                         class="w-full font-light"
                         :ui="{
-                            base: errors.profile
+                            base: `${TEXT_SIZE_CLASS} ${
+                                errors.profile
                                 ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
                                 : ''
+                            }`,
+                            content: TEXT_SIZE_CLASS,
+                            item: TEXT_SIZE_CLASS,
                         }"
+                        :disabled="viewOnly"
                     />
-                    <p v-if="errors.profile" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.profile }}</p>
+                    <p v-if="errors.profile" :class="INPUT_FIELD_WARN_CLASS">{{ errors.profile }}</p>
                 </div>
-
             </UFormField>
 
             <!-- DIVISION -->
@@ -268,9 +279,8 @@ const isOpen = computed({
                     error: 'hidden',
                 }"
             >
-
                 <template #label>
-                    <span class="flex items-center gap-1">
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
                         {{ t('text.approval-flow-management-pg.input-new-division') || 'Division' }}
                         <span class="text-red-500">*</span>
                     </span>
@@ -286,14 +296,18 @@ const isOpen = computed({
                         :placeholder="t('text.approval-flow-management-pg.input-new-division-placeholder') || 'Select division'"
                         class="w-full font-light"
                         :ui="{
-                            base: errors.division
+                            base: `${TEXT_SIZE_CLASS} ${
+                                errors.division
                                 ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
                                 : ''
+                            }`,
+                            content: TEXT_SIZE_CLASS,
+                            item: TEXT_SIZE_CLASS
                         }"
+                        :disabled="viewOnly"
                     />
-                    <p v-if="errors.division" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.division }}</p>
+                    <p v-if="errors.division" :class="INPUT_FIELD_WARN_CLASS">{{ errors.division }}</p>
                 </div>
-
             </UFormField>
 
             <!-- PO STATUS -->
@@ -305,9 +319,8 @@ const isOpen = computed({
                     error: 'hidden',
                 }"
             >
-
                 <template #label>
-                    <span class="flex items-center gap-1">
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
                         {{ t('text.approval-flow-management-pg.input-new-po-status') || 'PO Status' }}
                         <span class="text-red-500">*</span>
                     </span>
@@ -323,14 +336,18 @@ const isOpen = computed({
                         :placeholder="t('text.approval-flow-management-pg.input-new-po-status-placeholder') || 'Select PO Status'"
                         class="w-full font-light"
                         :ui="{
-                            base: errors.poStatus
+                            base: `${TEXT_SIZE_CLASS} ${
+                                errors.poStatus
                                 ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
                                 : ''
+                            }`,
+                            content: TEXT_SIZE_CLASS,
+                            item: TEXT_SIZE_CLASS
                         }"
+                        :disabled="viewOnly"
                     />
-                    <p v-if="errors.poStatus" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.poStatus }}</p>
+                    <p v-if="errors.poStatus" :class="INPUT_FIELD_WARN_CLASS">{{ errors.poStatus }}</p>
                 </div>
-
             </UFormField>
 
             <!-- REQUEST TO -->
@@ -342,9 +359,8 @@ const isOpen = computed({
                     error: 'hidden',
                 }"
             >
-
                 <template #label>
-                    <span class="flex items-center gap-1">
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
                         {{ t('text.approval-flow-management-pg.input-new-request-to') || 'Request To' }}
                         <span class="text-red-500">*</span>
                     </span>
@@ -360,14 +376,18 @@ const isOpen = computed({
                         :placeholder="t('text.approval-flow-management-pg.input-new-request-to-placeholder') || 'Select request to'"
                         class="w-full font-light"
                         :ui="{
-                            base: errors.request_to
+                            base: `${TEXT_SIZE_CLASS} ${
+                                errors.request_to
                                 ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
                                 : ''
+                            }`,
+                            content: TEXT_SIZE_CLASS,
+                            item: TEXT_SIZE_CLASS
                         }"
+                        :disabled="viewOnly"
                     />
-                    <p v-if="errors.request_to" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.request_to }}</p>
+                    <p v-if="errors.request_to" :class="INPUT_FIELD_WARN_CLASS">{{ errors.request_to }}</p>
                 </div>
-
             </UFormField>
 
             <!-- NEXT PO STATUS -->
@@ -379,9 +399,8 @@ const isOpen = computed({
                     error: 'hidden',
                 }"
             >
-
                 <template #label>
-                    <span class="flex items-center gap-1">
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
                         {{ t('text.approval-flow-management-pg.input-new-next-po-status') || 'Next PO Status' }}
                         <span class="text-red-500">*</span>
                     </span>
@@ -397,14 +416,18 @@ const isOpen = computed({
                         :placeholder="t('text.approval-flow-management-pg.input-new-next-po-status-placeholder') || 'Select Next PO Status'"
                         class="w-full font-light"
                         :ui="{
-                            base: errors.nextPoStatus
+                            base: `${TEXT_SIZE_CLASS} ${
+                                errors.nextPoStatus
                                 ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
                                 : ''
+                            }`,
+                            content: TEXT_SIZE_CLASS,
+                            item: TEXT_SIZE_CLASS
                         }"
+                        :disabled="viewOnly"
                     />
-                    <p v-if="errors.nextPoStatus" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.nextPoStatus }}</p>
+                    <p v-if="errors.nextPoStatus" :class="INPUT_FIELD_WARN_CLASS">{{ errors.nextPoStatus }}</p>
                 </div>
-
             </UFormField>
 
             <!-- DESCRIPTION -->
@@ -416,9 +439,8 @@ const isOpen = computed({
                     error: 'hidden',
                 }"
             >
-
                 <template #label>
-                    <span class="flex items-center gap-1">
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
                         {{ t('text.approval-flow-management-pg.input-new-description') || 'Description' }}
                     </span>
                 </template>
@@ -430,44 +452,55 @@ const isOpen = computed({
                         autoresize
                         class="w-full font-light"
                         :ui="{
-                            base: errors.description
+                            base: `${TEXT_SIZE_CLASS} ${
+                                errors.description
                                 ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
                                 : ''
+                            }`,
                         }"
+                        :disabled="viewOnly"
                     />
                 </div>
-
             </UFormField>
 
             <!-- STATUS -->
             <UFormField orientation="horizontal" class="mb-2" >
                 <template #label>
-                    <span class="flex items-center gap-1">
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
                         {{ t('text.approval-flow-management-pg.input-new-status') || 'Status' }}
                         <span class="text-red-500">*</span>
                     </span>
                 </template>
                 <div class="flex justify-start w-80">
-                    <USwitch v-model="valueSwitch" />
+                    <USwitch v-model="valueSwitch" :disabled="viewOnly" />
                 </div>
             </UFormField>
         </template>
 
         <template #footer>
             <UButton
-                v-if="!editMode"
-                class="bg-[#FEE9D6] text-[#F26524] hover:bg-[#FBD0AD] hover:text-[#E34613] active:bg-[#FBD0AD] active:text-[#E34613] text-[14px] px-5"
+                v-if="!editMode && !viewOnly"
+                :class="`${BUTTON_CLEAR_CLASS} ${TEXT_SIZE_CLASS}`"
                 :disabled="isSubmitting"
                 @click="resetForm"
             >{{ t('text.button.clear') || 'Clear' }}</UButton>
 
             <UButton
-                class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[14px] px-5"
+                v-if="!viewOnly"
+                :class="`${BUTTON_PRIMARY_CLASS} ${TEXT_SIZE_CLASS}`"
                 :loading="isSubmitting"
                 :disabled="isSubmitting"
                 @click="postSubmitApproalFlow"
             >
                 {{ t('text.button.submit') || 'Submit' }}
+            </UButton>
+
+            <UButton
+                v-if="viewOnly"
+                :class="`${BUTTON_PRIMARY_CLASS} ${TEXT_SIZE_CLASS}`"
+                @click="closeModal"
+            >
+                {{ t('text.button.close') || 'Close' }}
             </UButton>
         </template>
     </UModal>
