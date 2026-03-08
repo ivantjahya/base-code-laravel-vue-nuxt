@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { ref, computed, h, resolveComponent, shallowRef, onMounted, watch, getCurrentInstance } from 'vue'
-import type { TableColumn } from '@nuxt/ui'
-import { CalendarDate, DateFormatter, getLocalTimeZone, today } from '@internationalized/date'
+import { ref, computed, shallowRef, watch, getCurrentInstance } from 'vue'
+import { CalendarDate } from '@internationalized/date'
 import { useI18n } from '../../composables/useI18n'
 import { useFormatters } from '../../composables/useFormatters'
 import { useApiStore } from '../../AppState'
 import axios from 'axios'
-import type { TreeItemSelectEvent } from 'reka-ui'
-import type { TreeItem } from '@nuxt/ui'
-import { TEXT_SIZE_CLASS, TEXT_TITLE_SIZE_CLASS, TITLE_MODAL_TEXT_CLASS, INPUT_FIELD_WARN_CLASS, BUTTON_PRIMARY_CLASS, BUTTON_CLEAR_CLASS } from '../../constants'
+import { TEXT_SIZE_CLASS, TITLE_MODAL_TEXT_CLASS, INPUT_FIELD_WARN_CLASS, BUTTON_PRIMARY_CLASS, BUTTON_CLEAR_CLASS } from '../../constants'
+
+type SelectOption = {
+  label: string
+  value: string
+}
 
 const props = defineProps({
     open: {
@@ -18,6 +20,10 @@ const props = defineProps({
     title: {
         type: String,
         default: ''
+    },
+    viewOnly: {
+        type: Boolean,
+        default: false
     },
     editMode: {
         type: Boolean,
@@ -58,16 +64,12 @@ const isSubmitting = ref(false)
 const username = ref<string>('')
 const name = ref<string>('')
 const selectedProfile = ref<string | null>(null)
-const selectedCategoryArr = ref<string[]>([])
-const selectedSiteArr = ref<string[]>([])
+const selectedCategoryArr = ref<SelectOption[]>([])
+const selectedSiteArr = ref<SelectOption[]>([])
 
 const inputValidityDate = ref<any>(null)
 const modelValueValidity = shallowRef<CalendarDate>()
 const isPopoverFormValidityDateOpen = ref(false)
-
-// const profile = ref<string | null>(null)
-// const category = ref<string | null>(null)
-// const site = ref<string | null>(null)
 
 // Validation error states
 const errors = ref({
@@ -106,14 +108,19 @@ const closeModal = () => {
 
 watch(() => props.open, (newVal) => {
     if (newVal) {
-        console.log('Dialog opened with initial data:', props.initialData)
+        if ((props.editMode || props.viewOnly) && props.initialData) {
+            const initCategory = Array.isArray(props.initialData.category) ? props.initialData.category : []
+            const initSite = Array.isArray(props.initialData.site) ? props.initialData.site : []
 
-        if (props.editMode && props.initialData) {
             username.value = props.initialData.username || ''
             name.value = props.initialData.name || ''
             selectedProfile.value = props.initialData.profile?.id || null
-            selectedCategoryArr.value = props.initialData.category?.map((cat: any) => cat.id) || []
-            selectedSiteArr.value = props.initialData.site?.map((site: any) => site.id) || []
+            selectedCategoryArr.value = props.categoryOptions.filter(option =>
+                initCategory.some((item: any) => (item.id ?? item.value ?? item) === option.value)
+            )
+            selectedSiteArr.value = props.siteOptions.filter(option =>
+                initSite.some((item: any) => (item.id ?? item.value ?? item) === option.value)
+            )
             modelValueValidity.value = stringToCalendarDate(props.initialData.valid_date)
         } else {
             resetForm()
@@ -172,30 +179,24 @@ const postSubmitUser = async () => {
 
     isSubmitting.value = true
     try {
-        const categoryPayload = selectedCategoryArr.value.map(categoryId => categoryId)
-        const sitePayload = selectedSiteArr.value.map(siteId => siteId)
+        const categoryPayload = selectedCategoryArr.value.map(category => category.value)
+        const sitePayload = selectedSiteArr.value.map(site => site.value)
         const validityDate = getDateString(modelValueValidity.value)
 
         const payload = {
             username: username.value,
             name: name.value,
-            profile: selectedProfile.value,
+            profile_id: selectedProfile.value,
             category: categoryPayload,
             site: sitePayload,
-            validity_date: validityDate,
+            valid_date: validityDate,
         }
 
         let response
         if (props.editMode && props.editingId) {
-            console.log('Editing user with ID:', props.editingId)
-            console.log('Payload to submit:', JSON.stringify(payload, null, 2))
-            return
-            response = await axios.put(`${api.postProfileUpdate}${props.editingId}`, payload)
+            response = await axios.put(`${api.postUserUpdate}${props.editingId}`, payload)
         } else {
-            console.log('Creating new user')
-            console.log('Payload to submit:', JSON.stringify(payload, null, 2))
-            return
-            response = await axios.post(api.postProfileCreate, payload)
+            response = await axios.post(api.postUserCreate, payload)
         }
 
         Swal?.fire({
@@ -264,7 +265,7 @@ const isOpen = computed({
                                 : ''
                             }`
                         }"
-                        :disabled="props.editMode"
+                        :disabled="props.editMode || props.viewOnly"
                     />
                     <p v-if="errors.username" :class="INPUT_FIELD_WARN_CLASS">{{ errors.username }}</p>
                 </div>
@@ -299,6 +300,7 @@ const isOpen = computed({
                                 : ''
                             }`
                         }"
+                        :disabled="props.viewOnly"
                     />
                     <p v-if="errors.name" :class="INPUT_FIELD_WARN_CLASS">{{ errors.name }}</p>
                 </div>
@@ -338,6 +340,7 @@ const isOpen = computed({
                             content: TEXT_SIZE_CLASS,
                             item: TEXT_SIZE_CLASS
                         }"
+                        :disabled="props.viewOnly"
                     />
                     <p v-if="errors.profile" :class="INPUT_FIELD_WARN_CLASS">{{ errors.profile }}</p>
                 </div>
@@ -364,6 +367,7 @@ const isOpen = computed({
                         v-model="selectedCategoryArr"
                         :items="categoryOptions"
                         multiple
+                        option-attribute="label"
                         :placeholder="t('text.user-management-pg.input-new-category-placeholder') || 'Select category'"
                         class="w-full font-light"
                         :ui="{
@@ -375,6 +379,7 @@ const isOpen = computed({
                             content: TEXT_SIZE_CLASS,
                             item: TEXT_SIZE_CLASS
                         }"
+                        :disabled="props.viewOnly"
                     />
                     <p v-if="errors.category" :class="INPUT_FIELD_WARN_CLASS">{{ errors.category }}</p>
                 </div>
@@ -401,6 +406,7 @@ const isOpen = computed({
                         v-model="selectedSiteArr"
                         :items="siteOptions"
                         multiple
+                        option-attribute="label"
                         :placeholder="t('text.user-management-pg.input-new-site-placeholder') || 'Select site'"
                         class="w-full font-light"
                         :ui="{
@@ -412,6 +418,7 @@ const isOpen = computed({
                             content: TEXT_SIZE_CLASS,
                             item: TEXT_SIZE_CLASS
                         }"
+                        :disabled="props.viewOnly"
                     />
                     <p v-if="errors.site" :class="INPUT_FIELD_WARN_CLASS">{{ errors.site }}</p>
                 </div>
@@ -446,6 +453,7 @@ const isOpen = computed({
                                 ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
                                 : ''
                         }"
+                        :disabled="props.viewOnly"
                     >
                         <template #trailing>
                             <UPopover v-model:open="isPopoverFormValidityDateOpen">
@@ -456,6 +464,7 @@ const isOpen = computed({
                                     icon="i-lucide-calendar"
                                     aria-label="Select a date"
                                     class="px-0"
+                                    :disabled="props.viewOnly"
                                 />
 
                                 <template #content>
@@ -475,19 +484,28 @@ const isOpen = computed({
 
         <template #footer>
             <UButton
-                v-if="!editMode"
+                v-if="!editMode && !viewOnly"
                 :class="`${BUTTON_CLEAR_CLASS} ${TEXT_SIZE_CLASS}`"
                 :disabled="isSubmitting"
                 @click="resetForm"
             >{{ t('text.button.clear') || 'Clear' }}</UButton>
 
             <UButton
+                v-if="!viewOnly"
                 :class="`${BUTTON_PRIMARY_CLASS} ${TEXT_SIZE_CLASS}`"
                 :loading="isSubmitting"
                 :disabled="isSubmitting"
                 @click="postSubmitUser"
             >
                 {{ t('text.button.submit') || 'Submit' }}
+            </UButton>
+
+            <UButton
+                v-if="viewOnly"
+                :class="`${BUTTON_PRIMARY_CLASS} ${TEXT_SIZE_CLASS}`"
+                @click="closeModal"
+            >
+                {{ t('text.button.close') || 'Close' }}
             </UButton>
         </template>
     </UModal>

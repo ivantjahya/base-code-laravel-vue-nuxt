@@ -42,6 +42,7 @@ const api = useApiStore()
 const { profileSourceOptions } = useGlobalOptions()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
+// ========================= STATE FOR MODAL =========================
 const isSubmitting = ref(false)
 const isLoadingTree = ref(false)
 
@@ -49,7 +50,17 @@ const profileName = ref<string>('')
 const description = ref<string>('')
 const profileSource = ref<number | null>(null)
 
-// Tree state
+const valueSwitch = ref(true)
+
+// Validation error states
+const errors = ref({
+    profileName: '',
+    description: '',
+    profileSource: '',
+    accessRight: ''
+})
+
+// ========================= STATE FOR TREE =========================
 const treeValue = ref<TreeItem[]>([])
 const items = ref<TreeItem[]>([])
 const treeNodeByValueMap = ref<Record<string, TreeItem>>({})
@@ -415,16 +426,7 @@ function onSelect(e: TreeItemSelectEvent<TreeItem>, item: any) {
     }
 }
 
-const valueSwitch = ref(true)
-
-// Validation error states
-const errors = ref({
-    profileName: '',
-    description: '',
-    profileSource: '',
-    accessRight: ''
-})
-
+// ========================= ACTION =========================
 const resetForm = () => {
     profileName.value = ''
     description.value = ''
