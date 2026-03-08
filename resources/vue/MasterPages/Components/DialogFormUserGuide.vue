@@ -1,14 +1,11 @@
 <script setup lang="ts">
-import { ref, computed, h, resolveComponent, shallowRef, onMounted, watch, getCurrentInstance } from 'vue'
-import type { TableColumn } from '@nuxt/ui'
-import { CalendarDate, DateFormatter, getLocalTimeZone, today } from '@internationalized/date'
+import { ref, computed, watch, getCurrentInstance } from 'vue'
 import { useI18n } from '../../composables/useI18n'
 import { useFormatters } from '../../composables/useFormatters'
 import { useApiStore } from '../../AppState'
 import axios from 'axios'
-import type { TreeItemSelectEvent } from 'reka-ui'
-import type { TreeItem } from '@nuxt/ui'
 import type { SelectMenuItem } from '@nuxt/ui'
+import { TEXT_SIZE_CLASS, TEXT_TITLE_SIZE_CLASS, TITLE_MODAL_TEXT_CLASS, INPUT_FIELD_WARN_CLASS, BUTTON_PRIMARY_CLASS, BUTTON_CLEAR_CLASS } from '../../constants'
 
 const props = defineProps({
     open: {
@@ -18,6 +15,10 @@ const props = defineProps({
     title: {
         type: String,
         default: ''
+    },
+    viewOnly: {
+        type: Boolean,
+        default: false
     },
     editMode: {
         type: Boolean,
@@ -36,10 +37,10 @@ const props = defineProps({
 const emit = defineEmits(['update:open', 'submitted', 'close'])
 
 const { t } = useI18n()
-const { formatDate, formatCurrency, getDateString, stringToCalendarDate } = useFormatters()
 const api = useApiStore()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
+// ========================= STATE FOR MODAL =========================
 const isSubmitting = ref(false)
 
 const name = ref<string>('')
@@ -189,9 +190,14 @@ const isOpen = computed({
 </script>
 
 <template>
-    <UModal v-model:open="isOpen" :title="title" :dismissible="false" class="text-[16px] font-semibold" :ui="{ footer: 'justify-end' }">
+    <UModal
+        v-model:open="isOpen"
+        :title="title"
+        :dismissible="false"
+        :class="TITLE_MODAL_TEXT_CLASS"
+        :ui="{ footer: 'justify-end' }"
+    >
         <template #body>
-
             <!-- NAME -->
             <UFormField
                 orientation="horizontal"
@@ -201,9 +207,8 @@ const isOpen = computed({
                     error: 'hidden',
                 }"
             >
-
                 <template #label>
-                    <span class="flex items-center gap-1">
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
                         {{ t('text.user-guide-management-pg.input-new-name') || 'Name' }}
                         <span class="text-red-500">*</span>
                     </span>
@@ -216,14 +221,16 @@ const isOpen = computed({
                         :placeholder="t('text.user-guide-management-pg.input-new-name-placeholder') || 'Enter user guide name'"
                         class="w-full"
                         :ui="{
-                            base: errors.name
+                            base: `${TEXT_SIZE_CLASS} ${
+                                errors.name
                                 ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
                                 : ''
+                            }`
                         }"
+                        :disabled="viewOnly"
                     />
-                    <p v-if="errors.name" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.name }}</p>
+                    <p v-if="errors.name" :class="INPUT_FIELD_WARN_CLASS">{{ errors.name }}</p>
                 </div>
-
             </UFormField>
 
             <!-- MENU -->
@@ -235,9 +242,8 @@ const isOpen = computed({
                     error: 'hidden',
                 }"
             >
-
                 <template #label>
-                    <span class="flex items-center gap-1">
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
                         {{ t('text.user-guide-management-pg.input-new-menu') || 'Menu' }}
                         <span class="text-red-500">*</span>
                     </span>
@@ -250,45 +256,58 @@ const isOpen = computed({
                         placeholder="Select menu"
                         class="w-full font-light"
                         :ui="{
-                            base: errors.menu
+                            base: `${TEXT_SIZE_CLASS} ${
+                                errors.menu
                                 ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
                                 : ''
+                            }`,
+                            content: TEXT_SIZE_CLASS,
+                            item: TEXT_SIZE_CLASS
                         }"
+                        :disabled="viewOnly"
                     />
-                    <p v-if="errors.menu" class="text-[#FB2C36] text-xs italic mt-1">{{ errors.menu }}</p>
+                    <p v-if="errors.menu" :class="INPUT_FIELD_WARN_CLASS">{{ errors.menu }}</p>
                 </div>
-
             </UFormField>
 
             <!-- STATUS -->
             <UFormField orientation="horizontal" class="mb-2" >
                 <template #label>
-                    <span class="flex items-center gap-1">
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
                         {{ t('text.profile-management-pg.input-new-status') || 'Status' }}
                     </span>
                 </template>
 
                 <div class="flex justify-start w-80">
-                    <USwitch v-model="valueSwitch" />
+                    <USwitch v-model="valueSwitch" :disabled="viewOnly" />
                 </div>
             </UFormField>
         </template>
 
         <template #footer>
             <UButton
-                v-if="!editMode"
-                class="bg-[#FEE9D6] text-[#F26524] hover:bg-[#FBD0AD] hover:text-[#E34613] active:bg-[#FBD0AD] active:text-[#E34613] text-[14px] px-5"
+                v-if="!editMode && !viewOnly"
+                :class="`${BUTTON_CLEAR_CLASS} ${TEXT_SIZE_CLASS}`"
                 :disabled="isSubmitting"
                 @click="resetForm"
             >{{ t('text.button.clear') || 'Clear' }}</UButton>
 
             <UButton
-                class="bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] text-[14px] px-5"
+                v-if="!viewOnly"
+                :class="`${BUTTON_PRIMARY_CLASS} ${TEXT_SIZE_CLASS}`"
                 :loading="isSubmitting"
                 :disabled="isSubmitting"
                 @click="postSubmitProfile"
             >
                 {{ t('text.button.submit') || 'Submit' }}
+            </UButton>
+
+            <UButton
+                v-if="viewOnly"
+                :class="`${BUTTON_PRIMARY_CLASS} ${TEXT_SIZE_CLASS}`"
+                @click="closeModal"
+            >
+                {{ t('text.button.close') || 'Close' }}
             </UButton>
         </template>
     </UModal>

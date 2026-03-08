@@ -204,7 +204,7 @@ const onFind = () => {
 
                     <UButton
                         class="flex-3 w-full justify-center"
-                        :class="`${BUTTON_PRIMARY} ${TEXT_SIZE_CLASS}`"
+                        :class="`${BUTTON_PRIMARY_CLASS} ${TEXT_SIZE_CLASS}`"
                         :loading="loading"
                         size="md"
                         icon="i-lucide-search"

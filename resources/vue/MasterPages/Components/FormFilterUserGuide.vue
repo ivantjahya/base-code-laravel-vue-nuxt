@@ -2,9 +2,9 @@
 import { ref, shallowRef } from 'vue'
 import type { CalendarDate } from '@internationalized/date'
 import { useI18n } from '../../composables/useI18n'
+import { TEXT_SIZE_CLASS, BUTTON_PRIMARY_CLASS, BUTTON_CLEAR_CLASS } from '../../constants'
 
 const { t } = useI18n()
-
 const profileSourceValueFilter = ref(['Internal', 'External'])
 const statusValueFilter = ref(['Active', 'Not Active'])
 
@@ -48,14 +48,17 @@ const onFind = () => {
 
             <!-- USER GUIDE CODE -->
             <div class="flex w-full">
-                <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.user-guide-code') || 'User Guide Code' }}</div>
+                <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">{{ t('text.input-field.user-guide-code') || 'User Guide Code' }}</div>
                 <div class="flex w-full text-sm">
                     <UInput
                         :model-value="userGuideCode"
                         @update:model-value="$emit('update:userGuideCode', $event)"
                         :placeholder="t('text.input-field.user-guide-code-placeholder') || 'Enter user guide code'"
                         size="md"
-                        class="w-full font-light text-base md:text-sm"
+                        class="w-full font-light"
+                        :ui="{
+                            base: TEXT_SIZE_CLASS
+                        }"
                     />
                 </div>
 
@@ -66,14 +69,22 @@ const onFind = () => {
             <!-- MENU -->
             <div class="flex w-full">
 
-                <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.menu') || 'Menu' }}</div>
+                <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">{{ t('text.input-field.menu') || 'Menu' }}</div>
                 <div class="flex w-full text-sm">
                     <USelectMenu
                         :model-value="menu"
                         @update:model-value="$emit('update:menu', $event)"
                         :items="profileSourceValueFilter"
+                        value-key="id"
+                        value-attribute="id"
+                        option-attribute="label"
                         :placeholder="t('text.input-field.menu-placeholder') || 'Select menu'"
                         class="w-full font-reguler"
+                        :ui="{
+                            base: TEXT_SIZE_CLASS,
+                            content: TEXT_SIZE_CLASS,
+                            item: TEXT_SIZE_CLASS
+                        }"
                     />
                 </div>
 
@@ -86,14 +97,17 @@ const onFind = () => {
             <!-- USER GUIDE NAME -->
             <div class="flex w-full">
 
-                <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.user-guide-name') || 'User Guide Name' }}</div>
+                <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">{{ t('text.input-field.user-guide-name') || 'User Guide Name' }}</div>
                 <div class="flex w-full text-sm">
                     <UInput
                         :model-value="userGuideName"
                         @update:model-value="$emit('update:userGuideName', $event)"
                         :placeholder="t('text.input-field.user-guide-name-placeholder') || 'Enter user guide name'"
                         size="md"
-                        class="w-full font-light text-base md:text-sm"
+                        class="w-full font-light"
+                        :ui="{
+                            base: TEXT_SIZE_CLASS
+                        }"
                     />
                 </div>
 
@@ -104,15 +118,24 @@ const onFind = () => {
             <!-- STATUS -->
             <div class="flex w-full">
 
-                <div class="w-full md:w-50 my-auto text-base md:text-sm font-semibold">{{ t('text.input-field.status') || 'Status' }}</div>
+                <div class="w-full md:w-50 my-auto font-semibold" :class="TEXT_SIZE_CLASS">{{ t('text.input-field.status') || 'Status' }}</div>
                 <div class="flex w-full text-sm">
 
                     <USelectMenu
                         :model-value="status"
                         @update:model-value="$emit('update:status', $event)"
                         :items="statusValueFilter"
+                        value-key="id"
+                        value-attribute="id"
+                        option-attribute="label"
                         :placeholder="t('text.input-field.status-placeholder') || 'Select status'"
-                        class="w-full font-reguler"/>
+                        class="w-full font-reguler"
+                        :ui="{
+                            base: TEXT_SIZE_CLASS,
+                            content: TEXT_SIZE_CLASS,
+                            item: TEXT_SIZE_CLASS
+                        }"
+                    />
 
                 </div>
 
@@ -131,13 +154,15 @@ const onFind = () => {
                 <div class="w-full md:w-50 my-auto text-base md:text-sm"></div>
                 <div class="flex w-full text-sm gap-2">
                     <UButton
-                        class="flex-1 w-full justify-center text-base md:text-sm text-[#F26524] hover:text-[#E34613] bg-[#FEE9D6] hover:bg-[#FBD0AD] active:bg-[#FBD0AD] active:text-[#E34613]"
+                        class="flex-1 w-full justify-center"
+                        :class="`${BUTTON_CLEAR_CLASS} ${TEXT_SIZE_CLASS}`"
                         :disabled="loading"
                         @click="onClear"
                     >{{ t('text.button.clear') || 'Clear' }}</UButton>
 
                     <UButton
-                        class="flex-3 w-full justify-center text-base md:text-sm text-white bg-[#F26524] hover:bg-[#E34613] active:bg-[#E34613]"
+                        class="flex-3 w-full justify-center"
+                        :class="`${BUTTON_PRIMARY_CLASS} ${TEXT_SIZE_CLASS}`"
                         :loading="loading"
                         size="md"
                         icon="i-lucide-search"
