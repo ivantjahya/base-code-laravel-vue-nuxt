@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, h, resolveComponent, onMounted } from 'vue'
 import { useI18n } from '../composables/useI18n'
+import { useMenuPermission } from '../composables/useMenuPermission'
 import { useApiStore } from '../AppState'
 import axios from 'axios'
 import { getCurrentInstance } from 'vue'
@@ -13,11 +14,37 @@ import FormFilterUser from './Components/FormFilterUser.vue'
 import { TEXT_SIZE_CLASS, TEXT_TITLE_SIZE_CLASS, TITLE_TEXT_CLASS, TABLE_TEXT_STATUS_SIZE_CLASS, BUTTON_PRIMARY_CLASS } from '../constants'
 
 const { t } = useI18n()
+const { hasMenuCtrl, MENU_CODE, CTRL_CODE } = useMenuPermission()
 const api = useApiStore()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
 const UButton = resolveComponent('UButton')
 const UBadge = resolveComponent('UBadge')
+
+type MerchStructData = {
+    id: string
+    code: string
+    name: string
+    parent_id: string | null
+}
+
+type SiteData = {
+    id: string
+    code: string
+    initial: string
+    name: string
+    address: string
+    city: string
+    region: string
+    im_auto_flag: number
+    dc_flag: number
+    start_date: string
+    end_date: string
+}
+
+// ========================= PERMISSIONS =========================
+const canCreateUser = computed(() => hasMenuCtrl(MENU_CODE.value.SUBMENU_USERS, CTRL_CODE.value.MENU_CTRL_CREATE))
+const canUpdateUser = computed(() => hasMenuCtrl(MENU_CODE.value.SUBMENU_USERS, CTRL_CODE.value.MENU_CTRL_UPDATE))
 
 // ========================= FILTER =========================
 const usernameFilter = ref('')
@@ -109,9 +136,14 @@ const actions = computed(() => [
     ]
 ])
 
-// ========================= MODAL INPUT =========================
+const columnPinning = ref({
+    right: ['actions']
+})
+
+// ========================= STATE FOR MODAL =========================
 const modalTitle = ref('')
 const modalSubmitOpen = ref(false)
+const viewOnlyMode = ref(false)
 const editMode = ref(false)
 const editingId = ref<string | null>(null)
 const editData = ref({})
@@ -314,12 +346,47 @@ const handleSearch = (query: string) => { // For global search, server-side
     getUserList()
 }
 
-const handleEdit = (data: any) => {
-    modalTitle.value = t('text.user-management-pg.edit-user' as any) || 'Edit User'
-    editMode.value = true
-    editingId.value = data.id
-    editData.value = data
-    modalSubmitOpen.value = true
+const handleEdit = async (data: any) => {
+    const userId = String(data?.id || '')
+    if (!userId) return
+
+    loadingTable.value = true
+    try {
+        const response = await axios.get(`${api.getUserDetail}${userId}`)
+        const detail = response?.data?.data || response?.data || {}
+
+        // Prepare for merch struct
+        const rawMerchStructs: MerchStructData[] = Array.isArray(detail?.merch_structs) ? detail.merch_structs : []
+        const merchStructs = rawMerchStructs.map(data => { return { value: data.id, label: data.name } }) || []
+
+        // Prepare for sites
+        const rawSites: SiteData[] = Array.isArray(detail?.sites) ? detail.sites : []
+        const sites = rawSites.map(data => { return { value: data.id, label: data.name } }) || []
+
+        modalTitle.value = t('text.user-management-pg.edit-user' as any) || 'Edit User'
+        viewOnlyMode.value = !canUpdateUser.value
+        editMode.value = true
+        editingId.value = userId
+        editData.value = {
+            username: detail?.username || data?.username || '',
+            name: detail?.name || data?.name || '',
+            profile: detail?.profile || data?.profile || null,
+            category: merchStructs,
+            site: sites,
+            valid_date: detail?.valid_date || data?.valid_date || null,
+        }
+        modalSubmitOpen.value = true
+    } catch (error: any) {
+        console.error('Error fetching profile detail:', error?.response?.data || error?.message)
+        Swal?.fire({
+            icon: 'error',
+            title: t('text.message.error' as any) || 'Error!',
+            text: t('text.message.failed-to-load-data-msg' as any) || 'Failed to load data.',
+            confirmButtonText: 'OK'
+        })
+    } finally {
+        loadingTable.value = false
+    }
 }
 
 const handleResetPassword = (data: any) => {
@@ -425,7 +492,7 @@ onMounted(async () => {
                     <div class="flex items-center gap-4">
 
                         <!-- BUTTON NEW -->
-                        <UButton type="button" @click="showModal" :class="`${BUTTON_PRIMARY_CLASS} ${TEXT_SIZE_CLASS}`">
+                        <UButton v-if="canCreateUser" type="button" @click="showModal" :class="`${BUTTON_PRIMARY_CLASS} ${TEXT_SIZE_CLASS}`">
                             {{ t('text.button.new').toUpperCase() || 'NEW' }}
                         </UButton>
 
@@ -442,6 +509,7 @@ onMounted(async () => {
             <DialogFormUser
                 :open="modalSubmitOpen"
                 :title="modalTitle"
+                :view-only="viewOnlyMode"
                 :edit-mode="editMode"
                 :editing-id="editingId"
                 :initial-data="editData"
@@ -483,6 +551,7 @@ onMounted(async () => {
                     :page-size="itemPerPage"
                     :current-page="currentPage"
                     :count-total-data="countTotalData"
+                    :column-pinning="columnPinning"
                     @update:currentPage="handlePageChange"
                     @update:pageSize="handlePageSizeChange"
                     @search="handleSearch"

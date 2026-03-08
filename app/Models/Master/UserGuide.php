@@ -16,8 +16,8 @@ class UserGuide extends Model
      * menu_id: uuid
      * name: string(100)
      * description: string
-     * filename: string
-     * filepath: string
+     * file_name: string
+     * file_path: string
      * status: integer
      * created_at: timestamp
      * updated_at: timestamp
@@ -34,8 +34,8 @@ class UserGuide extends Model
         'menu_id',
         'name',
         'description',
-        'filename',
-        'filepath',
+        'file_name',
+        'file_path',
         'status',
         'created_by',
         'updated_by',
