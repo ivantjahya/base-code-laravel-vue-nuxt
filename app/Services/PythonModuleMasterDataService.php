@@ -574,7 +574,7 @@ class PythonModuleMasterDataService
             fn () => Http::acceptJson()
                 ->connectTimeout(3)
                 ->timeout(30)
-                ->put("{$this->baseUrl}/approval_flow/post_update/{$id}", $data)
+                ->post("{$this->baseUrl}/approval_flow/post_update/{$id}", $data)
                 ->throw(),
             "/masterdata/approval_flow/post_update/{$id}",
             'Failed to update approval flow',

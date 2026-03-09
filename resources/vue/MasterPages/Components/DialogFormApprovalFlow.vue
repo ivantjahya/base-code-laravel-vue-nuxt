@@ -112,7 +112,11 @@ watch(() => props.open, (newVal) => {
         if (props.editMode && props.initialData) {
             description.value = props.initialData.description || ''
             profile.value = props.initialData.profile?.id || null
+
             division.value = props.initialData.division?.id || null
+
+            console.log(props.initialData.division);
+
             poStatus.value = props.initialData.poStatus?.id || null
             request_to.value = props.initialData.request_to?.id || null
             nextPoStatus.value = props.initialData.nextPoStatus?.id || null
@@ -178,10 +182,11 @@ const postSubmitApproalFlow = async () => {
             description: description.value,
             status: valueSwitch.value ? 1 : 0
         }
-        // console.log('Payload to submit:', payload);
 
         // let response
         if (props.editMode && props.editingId) {
+            console.log("edit");
+
             await axios.put(`${api.postApprovalFlowUpdate}${props.editingId}`, payload)
         } else {
             await axios.post(api.postApprovalFlowCreate, payload)

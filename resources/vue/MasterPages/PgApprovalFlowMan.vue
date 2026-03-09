@@ -288,7 +288,7 @@ const handleEdit = async (data: any) => {
     try {
         const response = await axios.get(`${api.getApprovalFlowDetail}${profileId}`)
         const detail = response?.data?.data || response?.data || {}
-        console.log(detail);
+        console.log(divisionOptions.value);
 
         modalTitle.value = t('text.approval-flow-management-pg.edit-approval-flow' as any) || 'Edit Approval Flow'
         viewOnlyMode.value = !canUpdateApprovalFlow.value

@@ -169,9 +169,9 @@ class MasterDataApprovalFlowController extends Controller
             'profile' => ['required', 'uuid', 'exists:App\Models\Master\Profile,id'],
             'division' => ['required', 'uuid', 'exists:App\Models\Master\MerchStruct,id'],
             'poStatus' => ['required', 'uuid', 'exists:App\Models\Master\Status,id'],
-            'request_to' => ['required', 'uuid', 'exists:App\Models\Master\MerchStruct,id'],
-            'nextPoStatus' => ['required', 'uuid', 'exists:App\Models\Master\Status,id'],
-            'description' => ['required', 'string'],
+            'request_to' => ['required', 'uuid', 'exists:App\Models\Master\Profile,id'],
+            'nextPoStatus' => ['required', 'uuid', 'exists:App\Models\Master\status,id'],
+            'description' => ['nullable', 'string'],
             'status' => ['required', 'integer', 'in:0,1'],
         ]);
         if ($validate->fails()) {
@@ -185,7 +185,7 @@ class MasterDataApprovalFlowController extends Controller
                 'profile_id' => $validated['profile'],
                 'po_status_id' => $validated['poStatus'],
                 'merch_struct_id' => $validated['division'],
-                'next_profile_id' => $validated['requestTo'],
+                'next_profile_id' => $validated['request_to'],
                 'next_po_status_id' => $validated['nextPoStatus'],
                 'status' => (int) $validated['status'],
                 'user_id' => $user?->id,
