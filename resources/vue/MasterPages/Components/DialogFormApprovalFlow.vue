@@ -111,11 +111,11 @@ watch(() => props.open, (newVal) => {
     if (newVal) {
         if (props.editMode && props.initialData) {
             description.value = props.initialData.description || ''
-            profile.value = props.initialData.profile || null
-            division.value = props.initialData.division || null
-            poStatus.value = props.initialData.poStatus || null
-            request_to.value = props.initialData.request_to || null
-            nextPoStatus.value = props.initialData.nextPoStatus || null
+            profile.value = props.initialData.profile?.id || null
+            division.value = props.initialData.division?.id || null
+            poStatus.value = props.initialData.poStatus?.id || null
+            request_to.value = props.initialData.request_to?.id || null
+            nextPoStatus.value = props.initialData.nextPoStatus?.id || null
             valueSwitch.value = props.initialData.status ?? true
         } else {
             resetForm()
