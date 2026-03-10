@@ -310,6 +310,7 @@ onMounted(async () => {
                         v-model:userGuideName="nameFilter"
                         v-model:menu="menuFilter"
                         v-model:status="statusFilter"
+                        :menu-options="menuOptions"
                         :loading="loadingTable"
                         @clear="resetFilter"
                         @find="onClickFindButton"
