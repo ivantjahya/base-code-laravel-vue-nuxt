@@ -288,8 +288,6 @@ const handleEdit = async (data: any) => {
     try {
         const response = await axios.get(`${api.getApprovalFlowDetail}${profileId}`)
         const detail = response?.data?.data || response?.data || {}
-        console.log(divisionOptions.value);
-
         modalTitle.value = t('text.approval-flow-management-pg.edit-approval-flow' as any) || 'Edit Approval Flow'
         viewOnlyMode.value = !canUpdateApprovalFlow.value
         editMode.value = true
@@ -301,7 +299,7 @@ const handleEdit = async (data: any) => {
             poStatus: detail?.po_status || data?.po_status || null,
             request_to: detail?.next_profile || data?.next_profile || null,
             nextPoStatus: detail?.next_po_status || data?.next_po_status || null,
-            description: detail?.description || data?.description || '',
+            description: detail?.name || data?.name || '',
             status: Boolean(detail?.status ?? data?.status ?? true)
         }
         modalSubmitOpen.value = true

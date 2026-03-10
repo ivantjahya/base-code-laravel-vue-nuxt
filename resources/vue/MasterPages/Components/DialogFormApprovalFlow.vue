@@ -112,11 +112,7 @@ watch(() => props.open, (newVal) => {
         if (props.editMode && props.initialData) {
             description.value = props.initialData.description || ''
             profile.value = props.initialData.profile?.id || null
-
             division.value = props.initialData.division?.id || null
-
-            console.log(props.initialData.division);
-
             poStatus.value = props.initialData.poStatus?.id || null
             request_to.value = props.initialData.request_to?.id || null
             nextPoStatus.value = props.initialData.nextPoStatus?.id || null

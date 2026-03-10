@@ -137,7 +137,7 @@ class MasterDataApprovalFlowController extends Controller
                 'po_status_id' => $validated['poStatus'],
                 'next_profile_id' => $validated['request_to'],
                 'next_po_status_id' => $validated['nextPoStatus'],
-                'name' => 'TES',
+                'name' => $validated['description'] ?? '',
                 'status' => (int) $validated['status'],
                 'user_id' => $user?->id,
             ];
@@ -187,6 +187,7 @@ class MasterDataApprovalFlowController extends Controller
                 'merch_struct_id' => $validated['division'],
                 'next_profile_id' => $validated['request_to'],
                 'next_po_status_id' => $validated['nextPoStatus'],
+                'name' => $validated['description'] ?? '',
                 'status' => (int) $validated['status'],
                 'user_id' => $user?->id,
             ];
