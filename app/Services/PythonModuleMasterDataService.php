@@ -634,6 +634,23 @@ class PythonModuleMasterDataService
         );
     }
 
+    /**
+     * Update user guide in Python API
+     */
+    public function updateUserGuide(string $id, array $data): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(30)
+                ->put("{$this->baseUrl}/user_guide/{$id}", $data)
+                ->throw(),
+            "/masterdata/user_guide/{$id}",
+            'Failed to update user guide',
+            ['user_guide_id' => $id, 'request_data' => $data]
+        );
+    }
+
     /** ------------------------------------- STATUS PO ------------------------------------- */
     /**
      * Get status PO list from Python API

@@ -221,7 +221,6 @@ const handleEdit = async (data: any) => {
     try {
         const response = await axios.get(`${api.getUserGuideDetail}${userGuideId}`)
         const detail = response?.data?.data || response?.data || {}
-        console.log(detail);
 
         modalTitle.value = t('text.user-guide-management-pg.edit-user-guide' as any) || 'Edit User Guide'
         viewOnlyMode.value = !canUpdateUserGuide.value

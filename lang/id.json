@@ -176,7 +176,7 @@
         "input-new-menu": "Menu",
         "input-new-menu-placeholder": "Pilih menu",
         "input-new-status": "Status",
-        "edit-user": "Edit User"
+        "edit-user-guide": "Edit User"
     },
     "button": {
         "new": "Tambah",
@@ -338,7 +338,7 @@
 
         "column-user-guide-name": "Nama Panduan",
         "column-user-guide-file-name": "Nama File Panduan",
-        "column-menu": "Menu",
+        "column-user-guide-menu": "Menu",
 
         "column-status": "Status",
         "column-description": "Deskripsi",

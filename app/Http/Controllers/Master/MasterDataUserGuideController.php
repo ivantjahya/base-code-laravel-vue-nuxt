@@ -140,4 +140,50 @@ class MasterDataUserGuideController extends Controller
             throw new CommonCustomException($e->getMessage(), 500, $e);
         }
     }
+
+    public function postUserGuideUpdate(Request $request, $id): HttpJsonResponse
+    {
+
+        $user = Auth::user() ?? Auth::guard('api')->user();
+        Log::debug('User is requesting update user guide', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'userGuideId' => $id]);
+
+        /** Validate ID parameter */
+        $idValidate = Validator::make(['id' => $id], [
+            'id' => ['required', 'uuid'],
+        ]);
+        if ($idValidate->fails()) {
+            throw new ValidationException($idValidate);
+        }
+        (array) $idValidated = $idValidate->validated();
+
+        /** Validate Input */
+        $validate = Validator::make($request->all(), [
+            'name' => ['nullable', 'string'],
+            'description' => ['nullable', 'string'],
+            'menu' => ['required', 'uuid', 'exists:App\Models\Master\Menu,id'],
+            'status' => ['required', 'integer', 'in:0,1'],
+        ]);
+        if ($validate->fails()) {
+            throw new ValidationException($validate);
+        }
+        (array) $validated = $validate->validated();
+
+        try {
+            $params = [
+                'name' => $validated['name'],
+                'description' => $validated['description'],
+                'menu_id' => $validated['menu'],
+                'file_name' => 'test.pdf',
+                'file_path' => '/path/to/test.pdf',
+                'status' => (int) $validated['status'],
+                'user_id' => $user?->id,
+            ];
+            $data = $this->moduleMasterDataService->updateUserGuide($idValidated['id'], $params);
+
+            return response()->json($data);
+        } catch (\Throwable $e) {
+            throw new CommonCustomException($e->getMessage(), 500, $e);
+        }
+
+    }
 }

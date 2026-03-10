@@ -65,6 +65,7 @@ export const useApiStore = defineStore('api', {
         getUserGuideList: '/api/v1/masterdata/user-guide/list',
         getUserGuideDetail: '/api/v1/masterdata/user-guide/detail/', // + id
         postUserGuideCreate: '/api/v1/masterdata/user-guide/create',
+        postUserGuideUpdate: '/api/v1/masterdata/user-guide/update/', // + id
         getPoStatusList: '/api/v1/masterdata/po-status/list',
         getCompanyList: '/api/v1/masterdata/company/list',
     }),
