@@ -281,17 +281,17 @@ const handleSearch = (query: string) => { // For global search, server-side
 }
 
 const handleEdit = async (data: any) => {
-    const profileId = String(data?.id || '')
-    if (!profileId) return
+    const approvalFlowId = String(data?.id || '')
+    if (!approvalFlowId) return
 
     loadingTable.value = true
     try {
-        const response = await axios.get(`${api.getApprovalFlowDetail}${profileId}`)
+        const response = await axios.get(`${api.getApprovalFlowDetail}${approvalFlowId}`)
         const detail = response?.data?.data || response?.data || {}
         modalTitle.value = t('text.approval-flow-management-pg.edit-approval-flow' as any) || 'Edit Approval Flow'
         viewOnlyMode.value = !canUpdateApprovalFlow.value
         editMode.value = true
-        editingId.value = profileId
+        editingId.value = approvalFlowId
         const rawProfileSource = detail?.is_internal ?? data?.is_internal ?? null
         editData.value = {
             profile: detail?.profile || data?.profile || null,

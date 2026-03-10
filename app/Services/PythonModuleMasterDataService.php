@@ -600,6 +600,40 @@ class PythonModuleMasterDataService
         );
     }
 
+    /**
+     * Get user guide detail by ID from Python API
+     */
+    public function getUserGuideDetail(string $id): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(60)
+                ->get("{$this->baseUrl}/user_guide/{$id}")
+                ->throw(),
+            "/masterdata/user_guide/{$id}",
+            'Failed to get user guide detail',
+            ['user_guide_id' => $id]
+        );
+    }
+
+    /**
+     * Create new user guide in Python API
+     */
+    public function createUserGuide(array $data): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(30)
+                ->post("{$this->baseUrl}/user_guide", $data)
+                ->throw(),
+            '/masterdata/user_guide',
+            'Failed to create user guide',
+            ['request_data' => $data]
+        );
+    }
+
     /** ------------------------------------- STATUS PO ------------------------------------- */
     /**
      * Get status PO list from Python API

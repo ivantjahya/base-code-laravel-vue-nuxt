@@ -78,4 +78,66 @@ class MasterDataUserGuideController extends Controller
             throw new CommonCustomException($e->getMessage(), 500, $e);
         }
     }
+
+    /**
+     * GET request for get user guide detail
+     */
+    public function getUserGuideDetail(Request $request, $id): HttpJsonResponse
+    {
+        $user = Auth::user() ?? Auth::guard('api')->user();
+        Log::debug('User is requesting get user guide detail', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'userGuideId' => $id]);
+
+        /** Validate ID parameter */
+        $validate = Validator::make(['id' => $id], [
+            'id' => ['required', 'uuid'],
+        ]);
+        if ($validate->fails()) {
+            throw new ValidationException($validate);
+        }
+        try {
+            $data = $this->moduleMasterDataService->getUserGuideDetail($id);
+
+            return response()->json($data);
+        } catch (\Throwable $e) {
+            throw new CommonCustomException($e->getMessage(), 500, $e);
+        }
+    }
+
+    /**
+     * POST request for create user guide
+     */
+    public function postUserGuideCreate(Request $request): HttpJsonResponse
+    {
+        $user = Auth::user() ?? Auth::guard('api')->user();
+        Log::debug('User is requesting create user guide', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
+
+        /** Validate Input */
+        $validate = Validator::make($request->all(), [
+            'name' => ['required', 'string'],
+            'description' => ['nullable', 'string'],
+            'menu' => ['required', 'uuid', 'exists:App\Models\Master\Menu,id'],
+            'status' => ['required', 'integer', 'in:0,1'],
+        ]);
+        if ($validate->fails()) {
+            throw new ValidationException($validate);
+        }
+        (array) $validated = $validate->validated();
+
+        try {
+            $params = [
+                'name' => $validated['name'],
+                'description' => $validated['description'] ?? '',
+                'menu_id' => $validated['menu'],
+                'file_name' => 'test.pdf',
+                'file_path' => '/path/to/test.pdf',
+                'status' => (int) $validated['status'],
+                'user_id' => $user?->id,
+            ];
+            $data = $this->moduleMasterDataService->createUserGuide($params);
+
+            return response()->json($data, 201);
+        } catch (\Throwable $e) {
+            throw new CommonCustomException($e->getMessage(), 500, $e);
+        }
+    }
 }

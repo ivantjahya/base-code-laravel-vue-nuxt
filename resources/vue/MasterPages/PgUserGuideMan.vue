@@ -164,15 +164,16 @@ const getMenuOptions = async () => {
         }
 
         const response = await axios.get(api.getMenuList, { params })
+
         const sourceItems = response?.data?.data?.items || response?.data?.data || response?.data || []
         const sourceArray = Array.isArray(sourceItems) ? sourceItems : []
-        const activeData = sourceArray.filter((item: any) => {
-            const rawActive = item?.status
-            return rawActive === true || rawActive === 1 || rawActive === '1'
+        const subMenu = sourceArray.filter((item: any) => {
+            const rawSubMenu = item?.parent_id
+            return rawSubMenu != null
         })
 
         const uniqueOptions = new Map<string, { label: string; value: string }>()
-        activeData.forEach((item: any) => {
+        subMenu.forEach((item: any) => {
             const label = String(item?.name).trim()
             const value = String(item?.id).trim()
 
@@ -212,12 +213,39 @@ const handleSearch = (query: string) => { // For global search, server-side
     getUserGuideList()
 }
 
-const handleEdit = (data: any) => {
-    modalTitle.value = t('text.user-guide-management-pg.edit-user-guide' as any) || 'Edit user guide'
-    editMode.value = true
-    editingId.value = data.id
-    editData.value = data
-    modalSubmitOpen.value = true
+const handleEdit = async (data: any) => {
+    const userGuideId = String(data?.id || '')
+    if (!userGuideId) return
+
+    loadingTable.value = true
+    try {
+        const response = await axios.get(`${api.getUserGuideDetail}${userGuideId}`)
+        const detail = response?.data?.data || response?.data || {}
+        console.log(detail);
+
+        modalTitle.value = t('text.user-guide-management-pg.edit-user-guide' as any) || 'Edit User Guide'
+        viewOnlyMode.value = !canUpdateUserGuide.value
+        editMode.value = true
+        editingId.value = userGuideId
+        const rawProfileSource = detail?.is_internal ?? data?.is_internal ?? null
+        editData.value = {
+            name: detail?.name || data?.name || '',
+            description: detail?.description || data?.description || '',
+            menu: detail?.menu_id || data?.menu_id || null,
+            status: Boolean(detail?.status ?? data?.status ?? true)
+        }
+        modalSubmitOpen.value = true
+    } catch (error: any) {
+        console.error('Error fetching profile detail:', error?.response?.data || error?.message)
+        Swal?.fire({
+            icon: 'error',
+            title: t('text.message.error' as any) || 'Error!',
+            text: t('text.message.failed-to-load-data-msg' as any) || 'Failed to load data.',
+            confirmButtonText: 'OK'
+        })
+    } finally {
+        loadingTable.value = false
+    }
 }
 
 // Fetch initial data on component mount
@@ -269,6 +297,7 @@ onMounted(async () => {
                 :edit-mode="editMode"
                 :editing-id="editingId"
                 :initial-data="editData"
+                :menu-options="menuOptions"
                 @update:open="modalSubmitOpen = $event"
                 @submitted="onSubmitted"
                 @close="closeModal"
