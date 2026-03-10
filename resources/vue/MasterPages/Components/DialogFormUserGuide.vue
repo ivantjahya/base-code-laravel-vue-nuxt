@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch, getCurrentInstance } from 'vue'
 import { useI18n } from '../../composables/useI18n'
-import { useFormatters } from '../../composables/useFormatters'
 import { useApiStore } from '../../AppState'
 import axios from 'axios'
 import type { SelectMenuItem } from '@nuxt/ui'
@@ -31,6 +30,14 @@ const props = defineProps({
     initialData: {
         type: Object,
         default: () => ({})
+    },
+    menuOptions: {
+        type: Array as () => Array<{ label: string; value: string }>,
+        default: () => []
+    },
+    menuLoading: {
+        type: Boolean,
+        default: false
     }
 })
 
@@ -44,41 +51,7 @@ const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 const isSubmitting = ref(false)
 
 const name = ref<string>('')
-
-const menuValue = ref<SelectMenuItem[]>([
-    {
-        type: 'label',
-        label: 'Master Data'
-    },
-    'Limit',
-    'Profile',
-    'Functional Profile',
-    'User',
-    'Approval Flow',
-    'Regional Site',
-    'User Guide',
-    {
-        type: 'separator'
-    },
-    {
-        type: 'label',
-        label: 'New Registration'
-    },
-    'Article',
-    'Supplier',
-    {
-        type: 'separator'
-    },
-    {
-        type: 'label',
-        label: 'Purchase Order'
-    },
-    'PO Status Report',
-    'PO List',
-    'PO Cross Dock',
-    'Return',
-])
-
+const description = ref<string>('')
 const menu = ref<string | null>(null)
 
 const valueSwitch = ref(true)
@@ -86,22 +59,27 @@ const valueSwitch = ref(true)
 // Validation error states
 const errors = ref({
     name: '',
+    description: '',
     menu: ''
 })
 
+// ========================= ACTION =========================
 const resetForm = () => {
     name.value = ''
+    description.value = ''
     menu.value = null
     valueSwitch.value = true
 
     errors.value = {
         name: '',
+        description: '',
         menu: ''
     }
 }
 
 const closeModal = () => {
     resetForm()
+    emit('update:open', false)
     emit('close')
 }
 
@@ -109,6 +87,7 @@ watch(() => props.open, (newVal) => {
     if (newVal) {
         if (props.editMode && props.initialData) {
             name.value = props.initialData.name || ''
+            description.value = props.initialData.description || ''
             menu.value = props.initialData.menu || null
             valueSwitch.value = props.initialData.status ?? true
         } else {
@@ -122,6 +101,7 @@ const postSubmitProfile = async () => {
     // Reset errors
     errors.value = {
         name: '',
+        description: '',
         menu: ''
     }
 
@@ -148,18 +128,19 @@ const postSubmitProfile = async () => {
 
         const payload = {
             name: name.value.trim(),
+            description: description.value.trim(),
             menu: menu.value,
             status: valueSwitch.value ? 1 : 0
         }
 
-        // let response
-        // if (props.editMode && props.editingId) {
-        //     // Update existing user guide
-        //     response = await axios.put(`${api.postUserGuideUpdate}${props.editingId}`, payload)
-        // } else {
-        //     // Create new user guide
-        //     response = await axios.post(api.postUserGuideCreate, payload)
-        // }
+        let response
+        if (props.editMode && props.editingId) {
+            // Update existing user guide
+            response = await axios.put(`${api.postUserGuideUpdate}${props.editingId}`, payload)
+        } else {
+            // Create new user guide
+            response = await axios.post(api.postUserGuideCreate, payload)
+        }
 
         Swal?.fire({
             icon: 'success',
@@ -185,7 +166,13 @@ const postSubmitProfile = async () => {
 
 const isOpen = computed({
     get: () => props.open,
-    set: (value) => emit('update:open', value)
+    set: (value) => {
+        if (!value) {
+            closeModal()
+            return
+        }
+        emit('update:open', value)
+    }
 })
 </script>
 
@@ -233,6 +220,39 @@ const isOpen = computed({
                 </div>
             </UFormField>
 
+            <!-- DESCRIPTION -->
+            <UFormField
+                orientation="horizontal"
+                class="mb-2"
+                :error="!!errors.description"
+                :ui="{
+                    error: 'hidden',
+                }"
+            >
+                <template #label>
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
+                        {{ t('text.approval-flow-management-pg.input-new-description') || 'Description' }}
+                    </span>
+                </template>
+
+                <div class="w-80">
+                    <UTextarea
+                        v-model="description"
+                        :maxrows="5"
+                        autoresize
+                        class="w-full font-light"
+                        :ui="{
+                            base: `${TEXT_SIZE_CLASS} ${
+                                errors.description
+                                ? 'ring-2 ring-[#FB2C36] focus-within:ring-[#FB2C36]'
+                                : ''
+                            }`,
+                        }"
+                        :disabled="viewOnly"
+                    />
+                </div>
+            </UFormField>
+
             <!-- MENU -->
             <UFormField
                 orientation="horizontal"
@@ -252,8 +272,11 @@ const isOpen = computed({
                 <div class="w-80">
                     <USelectMenu
                         v-model="menu"
-                        :items="menuValue"
-                        placeholder="Select menu"
+                        :items="menuOptions"
+                        value-key="value"
+                        value-attribute="value"
+                        option-attribute="label"
+                        :placeholder="t('text.user-guide-management-pg.input-new-menu-placeholder') || 'Select menu'"
                         class="w-full font-light"
                         :ui="{
                             base: `${TEXT_SIZE_CLASS} ${
@@ -274,14 +297,26 @@ const isOpen = computed({
             <UFormField orientation="horizontal" class="mb-2" >
                 <template #label>
                     <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
-                        {{ t('text.profile-management-pg.input-new-status') || 'Status' }}
+                        {{ t('text.approval-flow-management-pg.input-new-status') || 'Status' }}
+                        <span class="text-red-500">*</span>
                     </span>
                 </template>
-
                 <div class="flex justify-start w-80">
                     <USwitch v-model="valueSwitch" :disabled="viewOnly" />
                 </div>
             </UFormField>
+
+            <UFileUpload
+                position="inside"
+                layout="list"
+                multiple
+                label="Drop your files here"
+                description="PDF or DOCX (max. 2MB)"\
+                class="w-full mt-4"
+                :ui="{
+                    base: 'min-h-48'
+                }"
+            />
         </template>
 
         <template #footer>

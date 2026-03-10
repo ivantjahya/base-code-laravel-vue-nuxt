@@ -336,8 +336,8 @@
         "column-ebs-initial": "EBS Initial",
         "column-ebs-name": "EBS Name",
 
-        "column-user-guide-code": "User Guide Code",
         "column-user-guide-name": "User Guide Name",
+        "column-user-guide-file-name": "User Guide File Name",
         "column-user-guide-menu": "Menu",
 
         "column-status": "Status",

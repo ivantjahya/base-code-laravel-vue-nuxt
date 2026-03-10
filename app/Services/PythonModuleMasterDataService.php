@@ -592,9 +592,9 @@ class PythonModuleMasterDataService
             fn () => Http::acceptJson()
                 ->connectTimeout(3)
                 ->timeout(60)
-                ->get("{$this->baseUrl}/user_guide/get_list", $params)
+                ->get("{$this->baseUrl}/user_guide", $params)
                 ->throw(),
-            '/masterdata/user_guide/get_list',
+            '/masterdata/user_guide',
             'Failed to get user guide list',
             ['params' => $params]
         );
