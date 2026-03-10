@@ -62,7 +62,7 @@ class MasterDataUserGuideController extends Controller
         try {
             $params = [
                 'name' => $validated['user_guide_name'] ?? null,
-                // 'menu_id' => $validated['user_guide_menu'] ?? null,
+                'menu_id' => $validated['user_guide_menu'] ?? null,
                 'status' => $validated['status'] ?? null,
                 'search' => $validated['search'] ?? null,
                 'skip' => $validated['skip'] ?? null,
