@@ -26,13 +26,15 @@ const canUpdateUserGuide = computed(() => hasMenuCtrl(MENU_CODE.value.SUBMENU_US
 const canDeleteUserGuide = computed(() => hasMenuCtrl(MENU_CODE.value.SUBMENU_USER_GUIDE, CTRL_CODE.value.MENU_CTRL_DELETE))
 
 // ========================= FILTER =========================
-const codeFilter = ref('')
 const nameFilter = ref('')
 const menuFilter = ref<string | null>(null)
 const statusFilter = ref<string | null>(null)
 
+// For select options
+const menuOptions = ref<{ label: string; value: string }[]>([])
+const menuOptionsLoading = ref(false)
+
 const resetFilter = () => {
-    codeFilter.value = ''
     nameFilter.value = ''
     menuFilter.value = null
     statusFilter.value = null
@@ -49,19 +51,20 @@ const globalSearchQuery = ref('') // For global search, server-side
 
 const columns = computed(() => [
     {
-        key: 'code',
-        label: t('text.table-column.column-user-guide-code'),
-        sortable: true
-    },
-    {
         key: 'name',
         label: t('text.table-column.column-user-guide-name'),
         sortable: true
     },
     {
+        key: 'file_name',
+        label: t('text.table-column.column-user-guide-file-name'),
+        sortable: true
+    },
+    {
         key: 'menu',
         label: t('text.table-column.column-user-guide-menu'),
-        sortable: true
+        sortable: true,
+        cellRenderer: (_value: any, row: any) => row.menu ? row.menu?.name : '-'
     },
     {
         key: 'status',
