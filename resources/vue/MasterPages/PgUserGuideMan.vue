@@ -128,20 +128,17 @@ const getUserGuideList = async () => {
 
     try {
         const params = {
-            user_guide_code: codeFilter.value,
             user_guide_name: nameFilter.value,
             user_guide_menu: menuFilter.value,
             status: statusFilter.value,
             skip: (currentPage.value - 1) * itemPerPage.value,
-            userGuide: itemPerPage.value,
+            limit: itemPerPage.value,
             search: globalSearchQuery.value, // For global search, server-side
+            sort_by: 'name',
         }
         const response = await axios.get(api.getUserGuideList, { params });
 
-        userGuideData.value = response.data.data?.items.map((item: any) => ({
-            ...item,
-            status: item.status === 1 ? 'Active' : 'Inactive'
-        }));
+        userGuideData.value = response.data.data?.data || [];
         countTotalData.value = response.data.data?.total || 0;
     } catch (error) {
         console.error('Error fetching data:', error);
@@ -153,6 +150,44 @@ const getUserGuideList = async () => {
         });
     } finally {
         loadingTable.value = false;
+    }
+}
+
+const getMenuOptions = async () => {
+    menuOptions.value = [] // Clear options before fetching new data
+    try {
+        const params = {
+            skip: 0,
+            limit: 1000,
+            sort_by: 'code',
+            sort_order: 'asc',
+        }
+
+        const response = await axios.get(api.getMenuList, { params })
+
+        const sourceItems = response?.data?.data?.items || response?.data?.data || response?.data || []
+        const sourceArray = Array.isArray(sourceItems) ? sourceItems : []
+        const subMenu = sourceArray.filter((item: any) => {
+            const rawSubMenu = item?.parent_id
+            return rawSubMenu != null
+        })
+
+        const uniqueOptions = new Map<string, { label: string; value: string }>()
+        subMenu.forEach((item: any) => {
+            const label = String(item?.name).trim()
+            const value = String(item?.id).trim()
+
+            if (!value) return
+            uniqueOptions.set(value, {
+                label: label,
+                value: value,
+            })
+        })
+
+        menuOptions.value = Array.from(uniqueOptions.values())
+    } catch (error) {
+        console.error('Error fetching menu options:', error)
+        menuOptions.value = []
     }
 }
 
@@ -178,17 +213,54 @@ const handleSearch = (query: string) => { // For global search, server-side
     getUserGuideList()
 }
 
-const handleEdit = (data: any) => {
-    modalTitle.value = t('text.user-guide-management-pg.edit-user-guide' as any) || 'Edit user guide'
-    editMode.value = true
-    editingId.value = data.id
-    editData.value = data
-    modalSubmitOpen.value = true
+const handleEdit = async (data: any) => {
+    const userGuideId = String(data?.id || '')
+    if (!userGuideId) return
+
+    loadingTable.value = true
+    try {
+        const response = await axios.get(`${api.getUserGuideDetail}${userGuideId}`)
+        const detail = response?.data?.data || response?.data || {}
+
+        modalTitle.value = t('text.user-guide-management-pg.edit-user-guide' as any) || 'Edit User Guide'
+        viewOnlyMode.value = !canUpdateUserGuide.value
+        editMode.value = true
+        editingId.value = userGuideId
+        const rawProfileSource = detail?.is_internal ?? data?.is_internal ?? null
+        editData.value = {
+            name: detail?.name || data?.name || '',
+            description: detail?.description || data?.description || '',
+            menu: detail?.menu_id || data?.menu_id || null,
+            status: Boolean(detail?.status ?? data?.status ?? true)
+        }
+        modalSubmitOpen.value = true
+    } catch (error: any) {
+        console.error('Error fetching profile detail:', error?.response?.data || error?.message)
+        Swal?.fire({
+            icon: 'error',
+            title: t('text.message.error' as any) || 'Error!',
+            text: t('text.message.failed-to-load-data-msg' as any) || 'Failed to load data.',
+            confirmButtonText: 'OK'
+        })
+    } finally {
+        loadingTable.value = false
+    }
 }
 
 // Fetch initial data on component mount
-onMounted(() => {
-    getUserGuideList()
+onMounted(async () => {
+    await Promise.all([
+        getMenuOptions(),
+        getUserGuideList()
+    ]).catch((error) => {
+        console.error('Error during initial data fetch:', error)
+        Swal?.fire({
+            icon: 'error',
+            title: t('text.message.error' as any) || 'Error!',
+            text: t('text.message.failed-to-load-data-msg' as any) || 'Failed to load data.',
+            confirmButtonText: 'OK'
+        });
+    })
 })
 
 </script>
@@ -224,6 +296,7 @@ onMounted(() => {
                 :edit-mode="editMode"
                 :editing-id="editingId"
                 :initial-data="editData"
+                :menu-options="menuOptions"
                 @update:open="modalSubmitOpen = $event"
                 @submitted="onSubmitted"
                 @close="closeModal"
@@ -234,7 +307,6 @@ onMounted(() => {
                 <!-- Filters Section with Accordion -->
                 <CmpAccordionFilter>
                     <FormFilterUserGuide
-                        v-model:userGuideCode="codeFilter"
                         v-model:userGuideName="nameFilter"
                         v-model:menu="menuFilter"
                         v-model:status="statusFilter"

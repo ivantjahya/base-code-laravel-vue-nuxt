@@ -176,7 +176,7 @@
         "input-new-menu": "Menu",
         "input-new-menu-placeholder": "Select menu",
         "input-new-status": "Status",
-        "edit-user": "Edit User"
+        "edit-user-guide": "Edit User"
     },
     "button": {
         "new": "New",
@@ -336,8 +336,8 @@
         "column-ebs-initial": "EBS Initial",
         "column-ebs-name": "EBS Name",
 
-        "column-user-guide-code": "User Guide Code",
         "column-user-guide-name": "User Guide Name",
+        "column-user-guide-file-name": "User Guide File Name",
         "column-user-guide-menu": "Menu",
 
         "column-status": "Status",

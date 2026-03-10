@@ -176,7 +176,7 @@
         "input-new-menu": "Menu",
         "input-new-menu-placeholder": "Pilih menu",
         "input-new-status": "Status",
-        "edit-user": "Edit User"
+        "edit-user-guide": "Edit User"
     },
     "button": {
         "new": "Tambah",
@@ -336,9 +336,9 @@
         "column-ebs-initial": "Inisial EBS",
         "column-ebs-name": "Nama EBS",
 
-        "column-user-guide-code": "Kode Panduan",
         "column-user-guide-name": "Nama Panduan",
-        "column-menu": "Menu",
+        "column-user-guide-file-name": "Nama File Panduan",
+        "column-user-guide-menu": "Menu",
 
         "column-status": "Status",
         "column-description": "Deskripsi",

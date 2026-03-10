@@ -111,11 +111,16 @@ Route::prefix('v1')->middleware([XssProtection::class])->group(function () {
             Route::prefix('site')->group(function () {
                 Route::get('/list', [MasterDataRegionalSiteController::class, 'getSiteList'])->name('get-site-list');
                 Route::get('/detail/{id}', [MasterDataRegionalSiteController::class, 'getSiteDetail'])->name('get-site-detail');
-            });
+                });
 
-            /** User Guide */
+                /** User Guide */
             Route::prefix('user-guide')->group(function () {
                 Route::get('/list', [MasterDataUserGuideController::class, 'getUserGuideList'])->name('get-user-guide-list');
+                Route::get('/detail/{id}', [MasterDataUserGuideController::class, 'getUserGuideDetail'])->name('get-user-guide-detail');
+                Route::post('/create', [MasterDataUserGuideController::class, 'postUserGuideCreate'])->name('post-user-guide-create');
+                Route::middleware(['can:has-user-guide-update-perm'])->group(function () {
+                    Route::put('/update/{id}', [MasterDataUserGuideController::class, 'postUserGuideUpdate'])->name('post-user-guide-update');
+                });
             });
 
             /** PO STATUS */

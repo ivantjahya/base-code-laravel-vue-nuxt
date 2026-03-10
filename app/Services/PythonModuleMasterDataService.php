@@ -592,11 +592,62 @@ class PythonModuleMasterDataService
             fn () => Http::acceptJson()
                 ->connectTimeout(3)
                 ->timeout(60)
-                ->get("{$this->baseUrl}/user_guide/get_list", $params)
+                ->get("{$this->baseUrl}/user_guide", $params)
                 ->throw(),
-            '/masterdata/user_guide/get_list',
+            '/masterdata/user_guide',
             'Failed to get user guide list',
             ['params' => $params]
+        );
+    }
+
+    /**
+     * Get user guide detail by ID from Python API
+     */
+    public function getUserGuideDetail(string $id): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(60)
+                ->get("{$this->baseUrl}/user_guide/{$id}")
+                ->throw(),
+            "/masterdata/user_guide/{$id}",
+            'Failed to get user guide detail',
+            ['user_guide_id' => $id]
+        );
+    }
+
+    /**
+     * Create new user guide in Python API
+     */
+    public function createUserGuide(array $data): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(30)
+                ->post("{$this->baseUrl}/user_guide", $data)
+                ->throw(),
+            '/masterdata/user_guide',
+            'Failed to create user guide',
+            ['request_data' => $data]
+        );
+    }
+
+    /**
+     * Update user guide in Python API
+     */
+    public function updateUserGuide(string $id, array $data): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(30)
+                ->put("{$this->baseUrl}/user_guide/{$id}", $data)
+                ->throw(),
+            "/masterdata/user_guide/{$id}",
+            'Failed to update user guide',
+            ['user_guide_id' => $id, 'request_data' => $data]
         );
     }
 
