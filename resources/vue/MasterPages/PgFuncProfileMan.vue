@@ -176,15 +176,16 @@ const getProfileOptions = async () => {
         }
 
         const response = await axios.get(api.getProfileList, { params })
+
         const sourceItems = response?.data?.data?.items || response?.data?.data || response?.data || []
         const sourceArray = Array.isArray(sourceItems) ? sourceItems : []
-        const activeData = sourceArray.filter((item: any) => {
+        const profileData = sourceArray.filter((item: any) => {
             const rawActive = item?.status
-            return rawActive === true || rawActive === 1 || rawActive === '1'
+            return item.is_internal && (rawActive === true || rawActive === 1 || rawActive === '1')
         })
 
         const uniqueOptions = new Map<string, { label: string; value: string }>()
-        activeData.forEach((item: any) => {
+        profileData.forEach((item: any) => {
             const label = String(item?.name).trim()
             const value = String(item?.id).trim()
 
@@ -285,7 +286,7 @@ const getDivisionOptions = async () => {
         const sourceItems = response?.data?.data?.items || response?.data?.data || response?.data || []
         const sourceArray = Array.isArray(sourceItems) ? sourceItems : []
         const divisionData = sourceArray.filter((item: any) => {
-            return item.parent_id === null
+            return item.parent_id === null && item.code != '0'
         })
 
         const uniqueOptions = new Map<string, { label: string; value: string }>()
