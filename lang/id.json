@@ -169,6 +169,7 @@
     },
     "user-guide-management-pg": {
         "list": "Daftar Panduan Pengguna",
+        "list-user-guide-for": "Daftar Panduan Pengguna untuk",
         "add-new-user-guide": "Tambah Panduan Pengguna Baru",
 
         "input-new-name": "Nama Panduan",
@@ -176,7 +177,10 @@
         "input-new-menu": "Menu",
         "input-new-menu-placeholder": "Pilih menu",
         "input-new-status": "Status",
-        "edit-user-guide": "Edit User"
+        "edit-user-guide": "Edit Panduan Pengguna",
+        "current-file": "File saat ini",
+        "click-to-select-file": "Klik untuk memilih file atau seret dan jatuhkan di sini",
+        "file-description": "PDF atau DOCX (maks. 2MB)"
     },
     "button": {
         "new": "Tambah",
@@ -195,7 +199,9 @@
         "unlock-user": "Buka Kunci Pengguna",
         "yes": "Ya",
         "no": "Tidak",
-        "ok": "OK"
+        "ok": "OK",
+        "delete": "Hapus",
+        "download": "Unduh"
     },
     "input-field": {
         "username": "ID Pengguna",
@@ -336,8 +342,8 @@
         "column-ebs-initial": "Inisial EBS",
         "column-ebs-name": "Nama EBS",
 
-        "column-user-guide-name": "Nama Panduan",
-        "column-user-guide-file-name": "Nama File Panduan",
+        "column-user-guide-name": "Nama",
+        "column-user-guide-file-name": "Nama File",
         "column-user-guide-menu": "Menu",
 
         "column-status": "Status",
@@ -368,7 +374,11 @@
       "active": "Aktif",
       "not-active": "Tidak Aktif",
       "locked": "Terkunci",
-      "expired": "Kedaluarsa"
+      "expired": "Kedaluarsa",
+      "confirmation": "Konfirmasi",
+      "delete-confirmation-msg": "Apakah Anda yakin ingin menghapus data ini?",
+      "delete-success-msg": "Data telah berhasil dihapus!",
+      "delete-failed-msg": "Gagal menghapus data. Terjadi kesalahan."
     }
   },
   "auth": {

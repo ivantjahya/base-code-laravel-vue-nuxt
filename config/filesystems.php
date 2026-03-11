@@ -60,6 +60,12 @@ return [
             'report' => false,
         ],
 
+        'synology_user_guide' => [
+            'driver' => 'local',
+            'root' => env('SYNOLOGY_DIR', storage_path('app')).'/user_guide',
+            'throw' => false,
+        ],
+
     ],
 
     /*

@@ -11,10 +11,15 @@ import CmpCustomTable from '../Components/CmpCustomTable.vue'
 import CmpAccordionFilter from '../Components/CmpAccordionFilter.vue'
 import DialogFormUser from './Components/DialogFormUser.vue'
 import FormFilterUser from './Components/FormFilterUser.vue'
+import CmpDrawer from '../Components/CmpDrawer.vue'
 import { TEXT_SIZE_CLASS, TEXT_TITLE_SIZE_CLASS, TITLE_TEXT_CLASS, TABLE_TEXT_STATUS_SIZE_CLASS, BUTTON_PRIMARY_CLASS } from '../constants'
+import { useStatus } from '../composables/useStatus'
+import { useMenuPath } from '../composables/useMenuPath'
 
 const { t } = useI18n()
 const { hasMenuCtrl, MENU_CODE, CTRL_CODE } = useMenuPermission()
+const { STATUS_CODE } = useStatus()
+const { MENU_PATH } = useMenuPath()
 const api = useApiStore()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
@@ -58,6 +63,22 @@ const profileOptions = ref<{ label: string; value: string }[]>([])
 const siteOptions = ref<{ label: string; value: string }[]>([])
 const categoryOptions = ref<{ label: string; value: string }[]>([])
 const categoryOptionsLoading = ref(false)
+const userStatusOptionsData = ref<any[]>([])
+const userStatusOptions = computed(() => {
+    const uniqueOptions = new Map<string, { label: string; value: string }>()
+    userStatusOptionsData.value.forEach((item: any) => {
+        const label = t(`${String(item?.description).toLocaleLowerCase()}` as any) || String(item?.description).trim() || '-'
+        const value = String(item?.id).trim()
+
+        if (!value) return
+        uniqueOptions.set(value, {
+            label: label,
+            value: value,
+        })
+    })
+    return Array.from(uniqueOptions.values())
+})
+const userStatusOptionsLoading = ref(false)
 
 const resetFilter = () => {
     usernameFilter.value = ''
@@ -103,9 +124,12 @@ const columns = computed(() => [
         key: 'status',
         label: t('text.table-column.column-status'),
         sortable: false,
-        cellRenderer: (value: any, row: any) => {
-            const statusText = value ? t('text.message.active' as any) || 'Active' : t('text.message.not-active' as any) || 'Not Active'
-            const badgeColor = value ? 'success' : 'primary'
+        cellRenderer: (_value: any, row: any) => {
+            const statusCode = row.status?.code
+            const statusDesc = row.status?.description
+
+            const statusText = statusDesc ? t(`${String(statusDesc).toLocaleLowerCase()}` as any) || String(statusDesc) : '-'
+            const badgeColor = statusCode === STATUS_CODE.value.STATUS_USER_ACTIVE ? 'success' : 'primary'
 
             return h(UBadge, {
                 variant: 'subtle',
@@ -183,11 +207,7 @@ const getUserList = async () => {
         }
         const response = await axios.get(api.getUserList, { params });
 
-        userData.value = response.data.data?.items.map((item: any) => ({
-            ...item,
-            // profile: item.profile?.name || '-',
-            status: item.status === 1 ? 'Active' : 'Inactive'
-        }));
+        userData.value = response.data.data?.items || [];
         countTotalData.value = response.data.data?.total || 0;
     } catch (error) {
         console.error('Error fetching data:', error);
@@ -324,6 +344,22 @@ const getCategoryOptions = async () => {
     }
 }
 
+const getUserStatusOptions = async () => {
+    userStatusOptionsData.value = [] // Clear options before fetching new data
+    userStatusOptionsLoading.value = true
+    try {
+        const response = await axios.get(api.getUserStatusList)
+
+        const sourceItems = response?.data?.items || response?.data || response || []
+        userStatusOptionsData.value = Array.isArray(sourceItems) ? sourceItems : []
+    } catch (error) {
+        console.error('Error fetching user status options:', error)
+        userStatusOptionsData.value = []
+    } finally {
+        userStatusOptionsLoading.value = false
+    }
+}
+
 const onClickFindButton = () => {
     currentPage.value = 1
     getUserList()
@@ -358,6 +394,7 @@ const handleEdit = async (data: any) => {
         // Prepare for merch struct
         const rawMerchStructs: MerchStructData[] = Array.isArray(detail?.merch_structs) ? detail.merch_structs : []
         const merchStructs = rawMerchStructs.map(data => { return { value: data.id, label: data.name } }) || []
+        console.log(merchStructs);
 
         // Prepare for sites
         const rawSites: SiteData[] = Array.isArray(detail?.sites) ? detail.sites : []
@@ -421,6 +458,8 @@ const handleResetPassword = (data: any) => {
                     confirmButtonText: t('text.button.ok' as any) || 'OK'
                 })
             }
+        } else {
+            loadingTable.value = false
         }
     })
 }
@@ -457,6 +496,8 @@ const handleUnlockUser = (data: any) => {
                     confirmButtonText: t('text.button.ok' as any) || 'OK'
                 })
             }
+        } else {
+            loadingTable.value = false
         }
     })
 }
@@ -467,6 +508,7 @@ onMounted(async () => {
         getProfileOptions(),
         getSiteOptions(),
         getCategoryOptions(),
+        getUserStatusOptions(),
         getUserList()
     ]).catch((error) => {
         console.error('Error during initial data fetch:', error)
@@ -502,6 +544,14 @@ onMounted(async () => {
                         </h1>
 
                     </div>
+
+                    <div>
+                        <!-- USER GUIDE -->
+                        <CmpDrawer
+                            :page-name="t('page.user-management') || 'User Management'"
+                            :url-path="MENU_PATH.value ? MENU_PATH.value.USER_MANAGEMENT : '/user-management'"
+                        />
+                    </div>
                 </div>
             </UCard>
 
@@ -533,6 +583,7 @@ onMounted(async () => {
                         v-model:status="statusFilter"
                         :profile-options="profileOptions"
                         :category-options="categoryOptions"
+                        :user-status-options="userStatusOptions"
                         :loading="loadingTable"
                         @clear="resetFilter"
                         @find="onClickFindButton"

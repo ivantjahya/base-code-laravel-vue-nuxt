@@ -651,7 +651,24 @@ class PythonModuleMasterDataService
         );
     }
 
-    /** ------------------------------------- STATUS PO ------------------------------------- */
+    /**
+     * Delete user guide in Python API
+     */
+    public function deleteUserGuide(string $id): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(30)
+                ->delete("{$this->baseUrl}/user_guide/{$id}")
+                ->throw(),
+            "/masterdata/user_guide/{$id}",
+            'Failed to delete user guide',
+            ['user_guide_id' => $id]
+        );
+    }
+
+    /** ------------------------------------- STATUS ------------------------------------- */
     /**
      * Get status PO list from Python API
      */
@@ -665,6 +682,23 @@ class PythonModuleMasterDataService
                 ->throw(),
             '/masterdata/status/get_list_po_status',
             'Failed to get status PO list',
+            ['params' => $params]
+        );
+    }
+
+    /**
+     * Get status User list from Python API
+     */
+    public function getUserStatusList(array $params = []): array
+    {
+        return $this->handleApiRequest(
+            fn () => Http::acceptJson()
+                ->connectTimeout(3)
+                ->timeout(60)
+                ->get("{$this->baseUrl}/status/get_list_user_status", $params)
+                ->throw(),
+            '/masterdata/status/get_list_user_status',
+            'Failed to get status User list',
             ['params' => $params]
         );
     }

@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
-class MasterDataPoStatusController extends Controller
+class MasterDataStatusController extends Controller
 {
     private PythonModuleMasterDataService $moduleMasterDataService;
 
@@ -29,6 +29,25 @@ class MasterDataPoStatusController extends Controller
         try {
 
             $data = $this->moduleMasterDataService->getPoStatusList();
+
+            return response()->json($data);
+
+        } catch (\Throwable $e) {
+            throw new CommonCustomException($e->getMessage(), 500, $e);
+        }
+    }
+
+    /**
+     * GET request for get user status list
+     */
+    public function getUserStatusList(Request $request)
+    {
+        $user = Auth::user() ?? Auth::guard('api')->user();
+        Log::debug('User is requesting get user status list', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
+
+        try {
+
+            $data = $this->moduleMasterDataService->getUserStatusList();
 
             return response()->json($data);
 
