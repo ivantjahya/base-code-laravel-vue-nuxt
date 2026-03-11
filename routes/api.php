@@ -8,9 +8,9 @@ use App\Http\Controllers\Master\MasterDataFunctionalProfileController;
 use App\Http\Controllers\Master\MasterDataLimitController;
 use App\Http\Controllers\Master\MasterDataMenuController;
 use App\Http\Controllers\Master\MasterDataMerchStructController;
-use App\Http\Controllers\Master\MasterDataPoStatusController;
 use App\Http\Controllers\Master\MasterDataProfileController;
 use App\Http\Controllers\Master\MasterDataRegionalSiteController;
+use App\Http\Controllers\Master\MasterDataStatusController;
 use App\Http\Controllers\Master\MasterDataUserController;
 use App\Http\Controllers\Master\MasterDataUserGuideController;
 use App\Http\Middleware\XssProtection;
@@ -43,9 +43,11 @@ Route::prefix('v1')->middleware([XssProtection::class])->group(function () {
             Route::prefix('limit')->group(function () {
                 Route::get('/list', [MasterDataLimitController::class, 'getLimitList'])->name('get-limit-list');
                 Route::get('/detail/{id}', [MasterDataLimitController::class, 'getLimitDetail'])->name('get-limit-detail');
+
                 Route::middleware(['can:has-limit-create-perm'])->group(function () {
                     Route::post('/create', [MasterDataLimitController::class, 'postLimitCreate'])->name('post-limit-create');
                 });
+
                 Route::middleware(['can:has-limit-update-perm'])->group(function () {
                     Route::put('/update/{id}', [MasterDataLimitController::class, 'postLimitUpdate'])->name('post-limit-update');
                     Route::put('/extend/{id}', [MasterDataLimitController::class, 'postLimitExtend'])->name('post-limit-extend');
@@ -63,9 +65,11 @@ Route::prefix('v1')->middleware([XssProtection::class])->group(function () {
                 Route::get('/list', [MasterDataProfileController::class, 'getProfileList'])->name('get-profile-list');
                 Route::get('/detail/{id}', [MasterDataProfileController::class, 'getProfileDetail'])->name('get-profile-detail');
                 Route::get('/get-menu-access/{id}', [MasterDataProfileController::class, 'getProfileMenuAccess'])->name('get-profile-menu-access');
+
                 Route::middleware(['can:has-profile-create-perm'])->group(function () {
                     Route::post('/create', [MasterDataProfileController::class, 'postProfileCreate'])->name('post-profile-create');
                 });
+
                 Route::middleware(['can:has-profile-update-perm'])->group(function () {
                     Route::put('/update/{id}', [MasterDataProfileController::class, 'postProfileUpdate'])->name('post-profile-update');
                 });
@@ -75,9 +79,11 @@ Route::prefix('v1')->middleware([XssProtection::class])->group(function () {
             Route::prefix('func-profile')->group(function () {
                 Route::get('/list', [MasterDataFunctionalProfileController::class, 'getFuncProfileList'])->name('get-func-profile-list');
                 Route::get('/detail/{id}', [MasterDataFunctionalProfileController::class, 'getFuncProfileDetail'])->name('get-func-profile-detail');
+
                 Route::middleware(['can:has-func-profile-create-perm'])->group(function () {
                     Route::post('/create', [MasterDataFunctionalProfileController::class, 'postFuncProfileCreate'])->name('post-func-profile-create');
                 });
+
                 Route::middleware(['can:has-func-profile-update-perm'])->group(function () {
                     Route::put('/update/{id}', [MasterDataFunctionalProfileController::class, 'postFuncProfileUpdate'])->name('post-func-profile-update');
                 });
@@ -87,9 +93,11 @@ Route::prefix('v1')->middleware([XssProtection::class])->group(function () {
             Route::prefix('user')->group(function () {
                 Route::get('/list', [MasterDataUserController::class, 'getUserList'])->name('get-user-list');
                 Route::get('/detail/{id}', [MasterDataUserController::class, 'getUserDetail'])->name('get-user-detail');
+
                 Route::middleware(['can:has-user-create-perm'])->group(function () {
                     Route::post('/create', [MasterDataUserController::class, 'postUserCreate'])->name('post-user-create');
                 });
+
                 Route::middleware(['can:has-user-update-perm'])->group(function () {
                     Route::put('/update/{id}', [MasterDataUserController::class, 'postUserUpdate'])->name('post-user-update');
                     Route::put('/reset-password/{id}', [MasterDataUserController::class, 'postResetPassword'])->name('post-reset-password');
@@ -102,6 +110,7 @@ Route::prefix('v1')->middleware([XssProtection::class])->group(function () {
                 Route::get('/list', [MasterDataApprovalFlowController::class, 'getApprovalFlowList'])->name('get-approval-flow-list');
                 Route::get('/detail/{id}', [MasterDataApprovalFlowController::class, 'getApprovalFlowDetail'])->name('get-approval-flow-detail');
                 Route::post('/create', [MasterDataApprovalFlowController::class, 'postApprovalFlowCreate'])->name('post-approval-flow-create');
+
                 Route::middleware(['can:has-approval-flow-update-perm'])->group(function () {
                     Route::put('/update/{id}', [MasterDataApprovalFlowController::class, 'postApprovalFlowUpdate'])->name('post-approval-flow-update');
                 });
@@ -111,21 +120,26 @@ Route::prefix('v1')->middleware([XssProtection::class])->group(function () {
             Route::prefix('site')->group(function () {
                 Route::get('/list', [MasterDataRegionalSiteController::class, 'getSiteList'])->name('get-site-list');
                 Route::get('/detail/{id}', [MasterDataRegionalSiteController::class, 'getSiteDetail'])->name('get-site-detail');
-                });
+            });
 
-                /** User Guide */
+            /** User Guide */
             Route::prefix('user-guide')->group(function () {
                 Route::get('/list', [MasterDataUserGuideController::class, 'getUserGuideList'])->name('get-user-guide-list');
                 Route::get('/detail/{id}', [MasterDataUserGuideController::class, 'getUserGuideDetail'])->name('get-user-guide-detail');
                 Route::post('/create', [MasterDataUserGuideController::class, 'postUserGuideCreate'])->name('post-user-guide-create');
+
                 Route::middleware(['can:has-user-guide-update-perm'])->group(function () {
                     Route::put('/update/{id}', [MasterDataUserGuideController::class, 'postUserGuideUpdate'])->name('post-user-guide-update');
+                    Route::delete('/delete/{id}', [MasterDataUserGuideController::class, 'postUserGuideDelete'])->name('post-user-guide-delete');
                 });
+
+                Route::get('/download/{id}', [MasterDataUserGuideController::class, 'getUserGuideDownload'])->name('get-user-guide-download');
             });
 
-            /** PO STATUS */
-            Route::prefix('po-status')->group(function () {
-                Route::get('/list', [MasterDataPoStatusController::class, 'getPoStatusList'])->name('get-po-status-list');
+            /** STATUS */
+            Route::prefix('status')->group(function () {
+                Route::get('/po-status-list', [MasterDataStatusController::class, 'getPoStatusList'])->name('get-po-status-list');
+                Route::get('/user-status-list', [MasterDataStatusController::class, 'getUserStatusList'])->name('get-user-status-list');
             });
         });
     });

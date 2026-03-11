@@ -4,7 +4,6 @@ import { useGlobalOptions } from '../../composables/useGlobalOptions'
 import { TEXT_SIZE_CLASS, BUTTON_PRIMARY_CLASS, BUTTON_CLEAR_CLASS } from '../../constants'
 
 const { t } = useI18n()
-const { statusOptions } = useGlobalOptions()
 
 const props = defineProps({
     username: {
@@ -24,7 +23,7 @@ const props = defineProps({
         default: null
     },
     status: {
-        type: Number as () => number | null,
+        type: String as () => string | null,
         default: null
     },
     loading: {
@@ -36,6 +35,10 @@ const props = defineProps({
         default: () => []
     },
     categoryOptions: {
+        type: Array as () => Array<{ label: string; value: string }>,
+        default: () => []
+    },
+    userStatusOptions: {
         type: Array as () => Array<{ label: string; value: string }>,
         default: () => []
     }
@@ -130,9 +133,9 @@ const onFind = () => {
                     <USelectMenu
                         :model-value="status"
                         @update:model-value="$emit('update:status', $event)"
-                        :items="statusOptions"
-                        value-key="id"
-                        value-attribute="id"
+                        :items="userStatusOptions"
+                        value-key="value"
+                        value-attribute="value"
                         option-attribute="label"
                         :placeholder="t('text.input-field.status-placeholder') || 'Select status'"
                         class="w-full font-reguler"

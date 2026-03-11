@@ -11,7 +11,7 @@ export const TITLE_MODAL_TEXT_CLASS = 'font-semibold text-base sm:text-sm md:tex
 
 export const TABLE_TEXT_SIZE_CLASS = 'text-sm sm:text-xs md:text-sm lg:text-sm';
 
-export const TABLE_TEXT_STATUS_SIZE_CLASS = 'text-xs sm:text-xs md:text-xs lg:text-xs';
+export const TABLE_TEXT_STATUS_SIZE_CLASS = 'text-xs sm:text-[10px] md:text-xs lg:text-xs';
 
 /** Class for button */
 export const BUTTON_PRIMARY_CLASS = 'bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] px-5';

@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
@@ -128,7 +129,13 @@ class AuthController extends Controller
         /** This means profile changes don't affect currently logged-in users until they re-login. */
         $accessMenuList = [];
         try {
-            $accessMenuList = Cache::tags([InterfaceClass::TAG_MENUPERM])->remember(InterfaceClass::KEY_MENUPERM.'-'.$user?->profile_id, Carbon::now()->addYear(), function () use ($user) {
+            if (App::environment('production') || App::environment('staging')) {
+                $cacheKey = InterfaceClass::KEY_MENUPERM.'-'.$user?->profile_id;
+            } else {
+                $cacheKey = InterfaceClass::KEY_MENUPERM.'-'.$user?->profile_id.'_'.$user?->id;
+            }
+
+            $accessMenuList = Cache::tags([InterfaceClass::TAG_MENUPERM])->remember($cacheKey, Carbon::now()->addYear(), function () use ($user) {
                 $data = $this->moduleMasterDataService->getProfileMenuAccess($user?->profile_id);
 
                 return $data['data']['menu_access'] ?? [];

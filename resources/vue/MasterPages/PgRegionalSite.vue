@@ -11,12 +11,15 @@ import CmpCustomTable from '../Components/CmpCustomTable.vue'
 import CmpAccordionFilter from '../Components/CmpAccordionFilter.vue'
 import DialogFormRegionalSite from './Components/DialogFormRegionalSite.vue'
 import FormFilterRegionalSite from './Components/FormFilterRegionalSite.vue'
+import CmpDrawer from '../Components/CmpDrawer.vue'
 import { TEXT_TITLE_SIZE_CLASS, TITLE_TEXT_CLASS, TABLE_TEXT_STATUS_SIZE_CLASS } from '../constants'
+import { useMenuPath } from '../composables/useMenuPath'
 
 const { t } = useI18n()
 const { statusOptions } = useGlobalOptions()
 const { formatDate } = useFormatters()
 const { hasMenuCtrl, MENU_CODE, CTRL_CODE } = useMenuPermission()
+const { MENU_PATH } = useMenuPath()
 const api = useApiStore()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
@@ -180,6 +183,7 @@ const getSiteList = async () => {
             sort_by: 'code',
             sort_order: 'asc'
         }
+        console.log('Fetching data with params:', params);
         const response = await axios.get(api.getSiteList, { params });
 
         regionalSiteData.value = response.data?.items;
@@ -250,6 +254,14 @@ onMounted(() => {
                             {{ t('text.regional-site-pg.list') || 'List of Regional Sites' }}
                         </h1>
 
+                    </div>
+
+                    <div>
+                        <!-- USER GUIDE -->
+                        <CmpDrawer
+                            :page-name="t('page.regional-site') || 'Regional Site'"
+                            :url-path="MENU_PATH.value ? MENU_PATH.value.REGIONAL_SITE : '/regional-site'"
+                        />
                     </div>
                 </div>
             </UCard>

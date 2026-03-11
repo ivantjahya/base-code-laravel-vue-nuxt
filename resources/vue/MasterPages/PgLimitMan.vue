@@ -11,11 +11,14 @@ import CmpCustomTable from '../Components/CmpCustomTable.vue'
 import CmpAccordionFilter from '../Components/CmpAccordionFilter.vue'
 import DialogFormLimit from './Components/DialogFormLimit.vue'
 import FormFilterLimit from './Components/FormFilterLimit.vue'
+import CmpDrawer from '../Components/CmpDrawer.vue'
 import { TEXT_SIZE_CLASS, TEXT_TITLE_SIZE_CLASS, TITLE_TEXT_CLASS, TABLE_TEXT_STATUS_SIZE_CLASS, BUTTON_PRIMARY_CLASS } from '../constants'
+import { useMenuPath } from '../composables/useMenuPath'
 
 const { t } = useI18n()
 const { formatDate, formatCurrency, getDateString } = useFormatters()
 const { hasMenuCtrl, MENU_CODE, CTRL_CODE } = useMenuPermission()
+const { MENU_PATH } = useMenuPath()
 const api = useApiStore()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
@@ -257,7 +260,14 @@ onMounted(() => {
                         <h1 :class="`${TITLE_TEXT_CLASS} ${TEXT_TITLE_SIZE_CLASS}`">
                             {{ t('text.limit-management-pg.list') || 'List of Limits' }}
                         </h1>
+                    </div>
 
+                    <div>
+                        <!-- USER GUIDE -->
+                        <CmpDrawer
+                            :page-name="t('page.limit-management') || 'Limits'"
+                            :url-path="MENU_PATH.value ? MENU_PATH.value.LIMIT_MANAGEMENT : '/limit-management'"
+                        />
                     </div>
                 </div>
             </UCard>

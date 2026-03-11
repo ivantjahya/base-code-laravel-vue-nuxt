@@ -11,11 +11,14 @@ import CmpCustomTable from '../Components/CmpCustomTable.vue'
 import CmpAccordionFilter from '../Components/CmpAccordionFilter.vue'
 import DialogFormApprovalFlow from './Components/DialogFormApprovalFlow.vue'
 import FormFilterApprovalFlow from './Components/FormFilterApprovalFlow.vue'
+import CmpDrawer from '../Components/CmpDrawer.vue'
 import { TEXT_SIZE_CLASS, TEXT_TITLE_SIZE_CLASS, TITLE_TEXT_CLASS, TABLE_TEXT_STATUS_SIZE_CLASS, BUTTON_PRIMARY_CLASS } from '../constants'
+import { useMenuPath } from '../composables/useMenuPath'
 
 const { t } = useI18n()
 const { hasMenuCtrl, MENU_CODE, CTRL_CODE } = useMenuPermission()
 const { statusOptions } = useGlobalOptions()
+const { MENU_PATH } = useMenuPath()
 const api = useApiStore()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
@@ -169,15 +172,16 @@ const getProfileOptions = async () => {
         }
 
         const response = await axios.get(api.getProfileList, { params })
+
         const sourceItems = response?.data?.data?.items || response?.data?.data || response?.data || []
         const sourceArray = Array.isArray(sourceItems) ? sourceItems : []
-        const activeData = sourceArray.filter((item: any) => {
+        const profileData = sourceArray.filter((item: any) => {
             const rawActive = item?.status
-            return rawActive === true || rawActive === 1 || rawActive === '1'
+            return item.is_internal && (rawActive === true || rawActive === 1 || rawActive === '1')
         })
 
         const uniqueOptions = new Map<string, { label: string; value: string }>()
-        activeData.forEach((item: any) => {
+        profileData.forEach((item: any) => {
             const label = String(item?.name).trim()
             const value = String(item?.id).trim()
 
@@ -356,6 +360,14 @@ onMounted(async () => {
                         <h1 :class="`${TITLE_TEXT_CLASS} ${TEXT_TITLE_SIZE_CLASS}`">
                             {{ t('text.approval-flow-management-pg.list') || 'List of Approval Flows' }}
                         </h1>
+                    </div>
+
+                    <div>
+                        <!-- USER GUIDE -->
+                        <CmpDrawer
+                            :page-name="t('page.approval-flow-management') || 'Approval Flow Management'"
+                            :url-path="MENU_PATH.value ? MENU_PATH.value.APPROVAL_FLOW_MANAGEMENT : '/approval-flow-management'"
+                        />
                     </div>
                 </div>
             </UCard>

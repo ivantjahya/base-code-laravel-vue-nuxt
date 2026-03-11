@@ -10,10 +10,13 @@ import CmpCustomTable from '../Components/CmpCustomTable.vue'
 import CmpAccordionFilter from '../Components/CmpAccordionFilter.vue'
 import DialogFormUserGuide from './Components/DialogFormUserGuide.vue'
 import FormFilterUserGuide from './Components/FormFilterUserGuide.vue'
+import CmpDrawer from '../Components/CmpDrawer.vue'
 import { TEXT_SIZE_CLASS, TEXT_TITLE_SIZE_CLASS, TITLE_TEXT_CLASS, TABLE_TEXT_STATUS_SIZE_CLASS, BUTTON_PRIMARY_CLASS } from '../constants'
+import { useMenuPath } from '../composables/useMenuPath'
 
 const { t } = useI18n()
 const { hasMenuCtrl, MENU_CODE, CTRL_CODE } = useMenuPermission()
+const { MENU_PATH } = useMenuPath()
 const api = useApiStore()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
@@ -89,6 +92,16 @@ const actions = computed(() => [
             label: t('text.button.edit' as any) || 'Edit',
             icon: 'i-lucide-pencil',
             onSelect: (row: any) => handleEdit(row)
+        },
+        {
+            label: t('text.button.delete' as any) || 'Delete',
+            icon: 'i-lucide-trash',
+            onSelect: (row: any) => handleDelete(row)
+        },
+        {
+            label: t('text.button.download' as any) || 'Download',
+            icon: 'i-lucide-download',
+            onSelect: (row: any) => handleDownload(row)
         }
     ]
 ])
@@ -226,12 +239,13 @@ const handleEdit = async (data: any) => {
         viewOnlyMode.value = !canUpdateUserGuide.value
         editMode.value = true
         editingId.value = userGuideId
-        const rawProfileSource = detail?.is_internal ?? data?.is_internal ?? null
         editData.value = {
             name: detail?.name || data?.name || '',
             description: detail?.description || data?.description || '',
             menu: detail?.menu_id || data?.menu_id || null,
-            status: Boolean(detail?.status ?? data?.status ?? true)
+            status: Boolean(detail?.status ?? data?.status ?? true),
+            file_name: detail?.file_name || data?.file_name || '',
+            file_path: detail?.file_path || data?.file_path || '',
         }
         modalSubmitOpen.value = true
     } catch (error: any) {
@@ -240,6 +254,83 @@ const handleEdit = async (data: any) => {
             icon: 'error',
             title: t('text.message.error' as any) || 'Error!',
             text: t('text.message.failed-to-load-data-msg' as any) || 'Failed to load data.',
+            confirmButtonText: 'OK'
+        })
+    } finally {
+        loadingTable.value = false
+    }
+}
+
+const handleDelete = async (data: any) => {
+    const userGuideId = String(data?.id || '')
+    if (!userGuideId) return
+
+    const confirmResult = await Swal?.fire({
+        icon: 'warning',
+        title: t('text.message.confirmation' as any) || 'Confirmation',
+        text: t('text.message.delete-confirmation-msg' as any) || 'Are you sure you want to delete this data?',
+        showCancelButton: true,
+        confirmButtonText: t('text.button.yes' as any) || 'Yes',
+        cancelButtonText: t('text.button.no' as any) || 'No'
+    })
+
+    if (confirmResult?.isConfirmed) {
+        loadingTable.value = true
+
+        try {
+            await axios.delete(`${api.postUserGuideDelete}${userGuideId}`)
+
+            Swal?.fire({
+                icon: 'success',
+                title: t('text.message.success' as any) || 'Success!',
+                text: t('text.message.delete-success-msg' as any) || 'User guide deleted successfully.',
+                confirmButtonText: 'OK'
+            })
+            getUserGuideList()
+        } catch (error: any) {
+            console.error('Error deleting user guide:', error?.response?.data || error?.message)
+            Swal?.fire({
+                icon: 'error',
+                title: t('text.message.error' as any) || 'Error!',
+                text: t('text.message.delete-failed-msg' as any) || 'Failed to delete user guide.',
+                confirmButtonText: 'OK'
+            })
+        } finally {
+            loadingTable.value = false
+        }
+    }
+}
+
+const handleDownload = async (data: any) => {
+    const userGuideId = String(data?.id || '')
+    if (!userGuideId) return
+
+    loadingTable.value = true
+    try {
+        const response = await axios.get(`${api.getUserGuideDownload}${userGuideId}`, {
+            responseType: 'blob'
+        })
+
+        const url = window.URL.createObjectURL(new Blob([response.data]))
+        const link = document.createElement('a')
+        link.href = url
+
+        const contentDisposition = response.headers['content-disposition']
+        const fileName = contentDisposition
+            ? contentDisposition.split('filename=')[1]?.replace(/['"]/g, '').trim()
+            : (data?.file_name || 'download')
+
+        link.setAttribute('download', fileName)
+        document.body.appendChild(link)
+        link.click()
+        link.remove()
+        window.URL.revokeObjectURL(url)
+    } catch (error: any) {
+        console.error('Error downloading user guide:', error?.response?.data || error?.message)
+        Swal?.fire({
+            icon: 'error',
+            title: t('text.message.error' as any) || 'Error!',
+            text: t('text.message.failed-to-load-data-msg' as any) || 'Failed to download file.',
             confirmButtonText: 'OK'
         })
     } finally {
@@ -284,6 +375,14 @@ onMounted(async () => {
                         <h1 :class="`${TITLE_TEXT_CLASS} ${TEXT_TITLE_SIZE_CLASS}`">
                             {{ t('text.user-guide-management-pg.list') || 'List of User Guides' }}
                         </h1>
+                    </div>
+
+                    <div>
+                        <!-- USER GUIDE -->
+                        <CmpDrawer
+                            :page-name="t('page.user-guide-management') || 'User Guide Management'"
+                            :url-path="MENU_PATH.value ? MENU_PATH.value.USER_GUIDE_MANAGEMENT : '/user-guide-management'"
+                        />
                     </div>
                 </div>
             </UCard>

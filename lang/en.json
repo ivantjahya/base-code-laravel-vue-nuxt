@@ -169,6 +169,7 @@
     },
     "user-guide-management-pg": {
         "list": "List of User Guides",
+        "list-user-guide-for": "List of User Guide for",
         "add-new-user-guide": "Add New User Guide",
 
         "input-new-name": "User Guide Name",
@@ -176,7 +177,10 @@
         "input-new-menu": "Menu",
         "input-new-menu-placeholder": "Select menu",
         "input-new-status": "Status",
-        "edit-user-guide": "Edit User"
+        "edit-user-guide": "Edit User Guide",
+        "current-file": "Current file",
+        "click-to-select-file": "Click to select a file or drag and drop it here",
+        "file-requirements": "PDF or DOCX (max. 2MB)"
     },
     "button": {
         "new": "New",
@@ -195,7 +199,9 @@
         "unlock-user": "Unlock User",
         "yes": "Yes",
         "no": "No",
-        "ok": "OK"
+        "ok": "OK",
+        "delete": "Delete",
+        "download": "Download"
     },
     "input-field": {
         "username": "Username",
@@ -336,8 +342,8 @@
         "column-ebs-initial": "EBS Initial",
         "column-ebs-name": "EBS Name",
 
-        "column-user-guide-name": "User Guide Name",
-        "column-user-guide-file-name": "User Guide File Name",
+        "column-user-guide-name": "Name",
+        "column-user-guide-file-name": "File Name",
         "column-user-guide-menu": "Menu",
 
         "column-status": "Status",
@@ -368,7 +374,11 @@
       "active": "Active",
       "not-active": "Not Active",
       "locked": "Locked",
-      "expired": "Expired"
+      "expired": "Expired",
+      "confirmation": "Confirmation",
+      "delete-confirmation-msg": "Are you sure you want to delete this data?",
+      "delete-success-msg": "Data has been deleted successfully!",
+      "delete-failed-msg": "Failed to delete the data. An error occurred."
     }
   },
   "auth": {

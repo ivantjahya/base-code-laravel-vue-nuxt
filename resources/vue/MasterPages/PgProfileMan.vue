@@ -12,9 +12,11 @@ import DialogFormFuncProfile from './Components/DialogFormFuncProfile.vue'
 import FormFilterProfile from './Components/FormFilterProfile.vue'
 import CmpDrawer from '../Components/CmpDrawer.vue'
 import { TEXT_SIZE_CLASS, TEXT_TITLE_SIZE_CLASS, TITLE_TEXT_CLASS, TABLE_TEXT_STATUS_SIZE_CLASS, BUTTON_PRIMARY_CLASS } from '../constants'
+import { useMenuPath } from '../composables/useMenuPath'
 
 const { t } = useI18n()
 const { hasMenuCtrl, MENU_CODE, CTRL_CODE } = useMenuPermission()
+const { MENU_PATH } = useMenuPath()
 const api = useApiStore()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
@@ -417,6 +419,11 @@ onMounted(async () => {
 
                     <div>
                         <!-- USER GUIDE -->
+                        <CmpDrawer
+                            :page-name="t('page.profile-management') || 'Profiles'"
+                            :url-path="MENU_PATH.value ? MENU_PATH.value.PROFILE_MANAGEMENT : '/profile-management'"
+                        />
+
                         <!-- <UDrawer handle-only>
                             <UButton label="User Guide" color="neutral" variant="subtle" icon="i-lucide-info" size="sm"/>
 
@@ -448,7 +455,6 @@ onMounted(async () => {
                                 </div>
                             </template>
                         </UDrawer> -->
-                        <CmpDrawer />
                     </div>
                 </div>
             </UCard>

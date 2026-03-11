@@ -53,14 +53,17 @@ const isSubmitting = ref(false)
 const name = ref<string>('')
 const description = ref<string>('')
 const menu = ref<string | null>(null)
-
 const valueSwitch = ref(true)
+
+const selectedFile = ref<File | null>(null)
+const currentFileName = ref<string>('')
 
 // Validation error states
 const errors = ref({
     name: '',
     description: '',
-    menu: ''
+    menu: '',
+    file: ''
 })
 
 // ========================= ACTION =========================
@@ -69,11 +72,14 @@ const resetForm = () => {
     description.value = ''
     menu.value = null
     valueSwitch.value = true
+    selectedFile.value = null
+    currentFileName.value = ''
 
     errors.value = {
         name: '',
         description: '',
-        menu: ''
+        menu: '',
+        file: ''
     }
 }
 
@@ -90,11 +96,50 @@ watch(() => props.open, (newVal) => {
             description.value = props.initialData.description || ''
             menu.value = props.initialData.menu || null
             valueSwitch.value = props.initialData.status ?? true
+            currentFileName.value = props.initialData.file_name || ''
+            selectedFile.value = null
         } else {
             resetForm()
         }
     }
 })
+
+const handleDownload = async (data: any) => {
+    const userGuideId = String(data?.id || '')
+    if (!userGuideId) return
+
+    isSubmitting.value = true
+    try {
+        const response = await axios.get(`${api.getUserGuideDownload}${userGuideId}`, {
+            responseType: 'blob'
+        })
+
+        const url = window.URL.createObjectURL(new Blob([response.data]))
+        const link = document.createElement('a')
+        link.href = url
+
+        const contentDisposition = response.headers['content-disposition']
+        const fileName = contentDisposition
+            ? contentDisposition.split('filename=')[1]?.replace(/['"]/g, '').trim()
+            : (data?.file_name || 'download')
+
+        link.setAttribute('download', fileName)
+        document.body.appendChild(link)
+        link.click()
+        link.remove()
+        window.URL.revokeObjectURL(url)
+    } catch (error: any) {
+        console.error('Error downloading user guide:', error?.response?.data || error?.message)
+        Swal?.fire({
+            icon: 'error',
+            title: t('text.message.error' as any) || 'Error!',
+            text: t('text.message.failed-to-load-data-msg' as any) || 'Failed to download file.',
+            confirmButtonText: 'OK'
+        })
+    } finally {
+        isSubmitting.value = false
+    }
+}
 
 // Submit create/update profile
 const postSubmitProfile = async () => {
@@ -102,20 +147,25 @@ const postSubmitProfile = async () => {
     errors.value = {
         name: '',
         description: '',
-        menu: ''
+        menu: '',
+        file: ''
     }
 
     // Validation
     let hasError = false
 
-
     if (!name.value.trim()) {
-        errors.value.name = t('text.validation.required-field' as any) || 'This field is required.'
+        errors.value.name = t('auth.validation.required' as any) || 'This field is required.'
         hasError = true
     }
 
     if (!menu.value) {
-        errors.value.menu = t('text.validation.required-field' as any) || 'This field is required.'
+        errors.value.menu = t('auth.validation.required' as any) || 'This field is required.'
+        hasError = true
+    }
+
+    if (!props.editMode && !selectedFile.value) {
+        errors.value.file = t('auth.validation.required' as any) || 'This field is required.'
         hasError = true
     }
 
@@ -125,21 +175,23 @@ const postSubmitProfile = async () => {
 
     isSubmitting.value = true
     try {
-
-        const payload = {
-            name: name.value.trim(),
-            description: description.value.trim(),
-            menu: menu.value,
-            status: valueSwitch.value ? 1 : 0
+        const formData = new FormData()
+        formData.append('name', name.value.trim())
+        formData.append('description', description.value.trim())
+        formData.append('menu', menu.value as string)
+        formData.append('status', valueSwitch.value ? '1' : '0')
+        if (selectedFile.value) {
+            formData.append('file', selectedFile.value)
         }
 
         let response
         if (props.editMode && props.editingId) {
-            // Update existing user guide
-            response = await axios.put(`${api.postUserGuideUpdate}${props.editingId}`, payload)
+            // PUT via POST with _method override — PHP only populates $_FILES on POST
+            formData.append('_method', 'PUT')
+            response = await axios.post(`${api.postUserGuideUpdate}${props.editingId}`, formData)
         } else {
             // Create new user guide
-            response = await axios.post(api.postUserGuideCreate, payload)
+            response = await axios.post(api.postUserGuideCreate, formData)
         }
 
         Swal?.fire({
@@ -306,17 +358,40 @@ const isOpen = computed({
                 </div>
             </UFormField>
 
-            <UFileUpload
-                position="inside"
-                layout="list"
-                multiple
-                label="Drop your files here"
-                description="PDF or DOCX (max. 2MB)"\
-                class="w-full mt-4"
-                :ui="{
-                    base: 'min-h-48'
-                }"
-            />
+            <!-- FILE UPLOAD -->
+            <UFormField v-if="editMode && currentFileName" orientation="horizontal" class="mb-2" >
+                <template #label>
+                    <span class="flex items-center gap-1" :class="TEXT_SIZE_CLASS">
+                        {{ t('text.user-guide-management-pg.current-file') || 'Current File' }}
+                    </span>
+                </template>
+                <div class="flex justify-start w-80">
+                    <!-- <span :class="TEXT_SIZE_CLASS">{{ currentFileName }}</span> -->
+                     <button
+                        type="button"
+                        @click="handleDownload({ id: editingId, file_name: currentFileName })"
+                        class="text-blue-600 hover:underline"
+                        :class="TEXT_SIZE_CLASS"
+                    >
+                        {{ currentFileName }}
+                    </button>
+                </div>
+            </UFormField>
+            <div>
+                <UFileUpload
+                    v-model="selectedFile"
+                    accept=".pdf,.doc,.docx"
+                    position="inside"
+                    layout="list"
+                    :label="t('text.user-guide-management-pg.click-to-select-file') || 'Click to select a file or drag and drop it here'"
+                    :description="t('text.user-guide-management-pg.file-requirements') || 'PDF or DOCX (max. 2MB)'"
+                    class="w-full mt-4"
+                    :ui="{
+                        base: 'min-h-40 border-2 border-dashed rounded-lg'
+                    }"
+                />
+                <p v-if="errors.file" :class="INPUT_FIELD_WARN_CLASS">{{ errors.file }}</p>
+            </div>
         </template>
 
         <template #footer>

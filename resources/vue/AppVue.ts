@@ -10,7 +10,7 @@ import Swal from 'sweetalert2';
 const CustomSwal = Swal.mixin({
     customClass: {
         confirmButton: 'swal-orange-button',
-        // cancelButton: 'swal-orange-button'
+        cancelButton: 'swal-cancel-button'
     },
     buttonsStyling: false
 });

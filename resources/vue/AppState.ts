@@ -66,8 +66,11 @@ export const useApiStore = defineStore('api', {
         getUserGuideDetail: '/api/v1/masterdata/user-guide/detail/', // + id
         postUserGuideCreate: '/api/v1/masterdata/user-guide/create',
         postUserGuideUpdate: '/api/v1/masterdata/user-guide/update/', // + id
-        getPoStatusList: '/api/v1/masterdata/po-status/list',
+        getPoStatusList: '/api/v1/masterdata/status/po-status-list',
         getCompanyList: '/api/v1/masterdata/company/list',
+        getUserStatusList: '/api/v1/masterdata/status/user-status-list',
+        postUserGuideDelete: '/api/v1/masterdata/user-guide/delete/', // + id
+        getUserGuideDownload: '/api/v1/masterdata/user-guide/download/', // + id
     }),
 });
 
@@ -95,6 +98,8 @@ export const useMainStore = defineStore('main', {
             accessMenuList: (JSON.parse(localStorage.getItem('accessMenuList') || '[]')) as AccessMenuItem[],
             menuCodes: (JSON.parse(localStorage.getItem('menuCodes') || '{}')) as Record<string, number>,
             ctrlCodes: (JSON.parse(localStorage.getItem('ctrlCodes') || '{}')) as Record<string, string>,
+            statusCodes: (JSON.parse(localStorage.getItem('statusCodes') || '{}')) as Record<string, string>,
+            menuPaths: (JSON.parse(localStorage.getItem('menuPaths') || '{}')) as Record<string, string>,
         };
     },
 
@@ -233,6 +238,12 @@ export const useMainStore = defineStore('main', {
                     if (response.data.ctrlCodes) {
                         localStorage.setItem('ctrlCodes', JSON.stringify(response.data.ctrlCodes));
                     }
+                    if (response.data.statusCodes) {
+                        localStorage.setItem('statusCodes', JSON.stringify(response.data.statusCodes));
+                    }
+                    if (response.data.menuPaths) {
+                        localStorage.setItem('menuPaths', JSON.stringify(response.data.menuPaths));
+                    }
 
                     this.$patch({
                         appName: response.data.appName,
@@ -244,6 +255,8 @@ export const useMainStore = defineStore('main', {
                         accessMenuList: accessMenuList,
                         menuCodes: response.data.menuCodes ?? this.menuCodes,
                         ctrlCodes: response.data.ctrlCodes ?? this.ctrlCodes,
+                        statusCodes: response.data.statusCodes ?? this.statusCodes,
+                        menuPaths: response.data.menuPaths ?? this.menuPaths,
                     });
                 })
                 .catch((error) => {

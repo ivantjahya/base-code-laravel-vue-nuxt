@@ -8,6 +8,7 @@ use App\Interfaces\InterfaceClass;
 use App\Services\PythonModuleMasterDataService;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -30,7 +31,13 @@ class MasterDataMenuController extends Controller
         Log::debug('User is requesting get menu list', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
         try {
-            $data = Cache::tags([InterfaceClass::TAG_MASTERDATA])->remember(InterfaceClass::KEY_MASTER_MENU, InterfaceClass::CACHE_MST_TIME, function () {
+            if (App::environment('production') || App::environment('staging')) {
+                $cacheKey = InterfaceClass::KEY_MASTER_MENU;
+            } else {
+                $cacheKey = InterfaceClass::KEY_MASTER_MENU.'_'.$user?->id;
+            }
+
+            $data = Cache::tags([InterfaceClass::TAG_MASTERDATA])->remember($cacheKey, InterfaceClass::CACHE_MST_TIME, function () {
                 $temp = $this->moduleMasterDataService->getMenuList();
 
                 return $temp;
@@ -51,7 +58,13 @@ class MasterDataMenuController extends Controller
         Log::debug('User is requesting get menu access control list', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
         try {
-            $data = Cache::tags([InterfaceClass::TAG_MASTERDATA])->remember(InterfaceClass::KEY_MASTER_MENU_ACC_CTRL, InterfaceClass::CACHE_MST_TIME, function () {
+            if (App::environment('production') || App::environment('staging')) {
+                $cacheKey = InterfaceClass::KEY_MASTER_MENU_ACC_CTRL;
+            } else {
+                $cacheKey = InterfaceClass::KEY_MASTER_MENU_ACC_CTRL.'_'.$user?->id;
+            }
+
+            $data = Cache::tags([InterfaceClass::TAG_MASTERDATA])->remember($cacheKey, InterfaceClass::CACHE_MST_TIME, function () {
                 $temp = $this->moduleMasterDataService->getMenuAccControlList();
 
                 return $temp;

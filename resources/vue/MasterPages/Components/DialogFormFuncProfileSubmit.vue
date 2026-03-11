@@ -420,6 +420,7 @@ const isOpen = computed({
                         <UCheckbox
                             v-for="division in divisionOptions"
                             :key="division.value"
+                            :id="`division-checkbox-${division.value}`"
                             :model-value="selectedDivisionArr.includes(division.value)"
                             :label="division.label"
                             :ui="{

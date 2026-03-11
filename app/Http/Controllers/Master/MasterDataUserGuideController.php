@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Master;
 
 use App\Exceptions\CommonCustomException;
 use App\Http\Controllers\Controller;
+use App\Models\Master\Menu;
+use App\Models\Master\UserGuide;
 use App\Services\PythonModuleMasterDataService;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -48,6 +51,7 @@ class MasterDataUserGuideController extends Controller
             'user_guide_name' => ['nullable', 'string'],
             'user_guide_menu' => ['nullable', 'uuid'],
             'status' => ['nullable', 'integer', 'in:0,1'],
+            'menu_url_path' => ['nullable', 'string'],
             'skip' => ['nullable', 'integer', 'min:0'],
             'limit' => ['nullable', 'integer', 'min:1'],
             'search' => ['nullable', 'string'],
@@ -60,6 +64,13 @@ class MasterDataUserGuideController extends Controller
         (array) $validated = $validate->validated();
 
         try {
+            if ($validated['menu_url_path'] ?? null) {
+                $menu = Menu::where('url', $validated['menu_url_path'])->first();
+                if ($menu) {
+                    $validated['user_guide_menu'] = $menu->id;
+                }
+            }
+
             $params = [
                 'name' => $validated['user_guide_name'] ?? null,
                 'menu_id' => $validated['user_guide_menu'] ?? null,
@@ -117,6 +128,7 @@ class MasterDataUserGuideController extends Controller
             'description' => ['nullable', 'string'],
             'menu' => ['required', 'uuid', 'exists:App\Models\Master\Menu,id'],
             'status' => ['required', 'integer', 'in:0,1'],
+            'file' => ['required', 'file', 'mimes:pdf,doc,docx', 'max:2048'],
         ]);
         if ($validate->fails()) {
             throw new ValidationException($validate);
@@ -124,12 +136,17 @@ class MasterDataUserGuideController extends Controller
         (array) $validated = $validate->validated();
 
         try {
+            $file = $request->file('file');
+            $fileName = $file->getClientOriginalName();
+            Storage::disk('synology_user_guide')->put($fileName, $file->getContent());
+            $filePath = Storage::disk('synology_user_guide')->path($fileName);
+
             $params = [
                 'name' => $validated['name'],
                 'description' => $validated['description'] ?? '',
                 'menu_id' => $validated['menu'],
-                'file_name' => 'test.pdf',
-                'file_path' => '/path/to/test.pdf',
+                'file_name' => $fileName,
+                'file_path' => $filePath,
                 'status' => (int) $validated['status'],
                 'user_id' => $user?->id,
             ];
@@ -141,6 +158,9 @@ class MasterDataUserGuideController extends Controller
         }
     }
 
+    /**
+     * POST request for update user guide
+     */
     public function postUserGuideUpdate(Request $request, $id): HttpJsonResponse
     {
 
@@ -162,6 +182,7 @@ class MasterDataUserGuideController extends Controller
             'description' => ['nullable', 'string'],
             'menu' => ['required', 'uuid', 'exists:App\Models\Master\Menu,id'],
             'status' => ['required', 'integer', 'in:0,1'],
+            'file' => ['nullable', 'file', 'mimes:pdf,doc,docx', 'max:2048'],
         ]);
         if ($validate->fails()) {
             throw new ValidationException($validate);
@@ -169,12 +190,30 @@ class MasterDataUserGuideController extends Controller
         (array) $validated = $validate->validated();
 
         try {
+            $existingData = UserGuide::find($idValidated['id']);
+            $fileName = $existingData?->file_name;
+            $filePath = $existingData?->file_path;
+
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                $newFileName = $file->getClientOriginalName();
+
+                // Delete old file only when the name differs (avoids orphan files)
+                if ($existingData && $existingData->file_name && $existingData->file_name !== $newFileName) {
+                    Storage::disk('synology_user_guide')->delete($existingData->file_name);
+                }
+
+                Storage::disk('synology_user_guide')->put($newFileName, $file->getContent());
+                $fileName = $newFileName;
+                $filePath = Storage::disk('synology_user_guide')->path($newFileName);
+            }
+
             $params = [
                 'name' => $validated['name'],
                 'description' => $validated['description'],
                 'menu_id' => $validated['menu'],
-                'file_name' => 'test.pdf',
-                'file_path' => '/path/to/test.pdf',
+                'file_name' => $fileName,
+                'file_path' => $filePath,
                 'status' => (int) $validated['status'],
                 'user_id' => $user?->id,
             ];
@@ -184,6 +223,71 @@ class MasterDataUserGuideController extends Controller
         } catch (\Throwable $e) {
             throw new CommonCustomException($e->getMessage(), 500, $e);
         }
+    }
 
+    /**
+     * DELETE request for delete user guide
+     */
+    public function postUserGuideDelete(Request $request, $id): HttpJsonResponse
+    {
+        $user = Auth::user() ?? Auth::guard('api')->user();
+        Log::debug('User is requesting delete user guide', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'userGuideId' => $id]);
+
+        /** Validate ID parameter */
+        $validate = Validator::make(['id' => $id], [
+            'id' => ['required', 'uuid'],
+        ]);
+        if ($validate->fails()) {
+            throw new ValidationException($validate);
+        }
+        (array) $validated = $validate->validated();
+
+        try {
+            $existingData = UserGuide::find($validated['id']);
+            if ($existingData && $existingData->file_name) {
+                Storage::disk('synology_user_guide')->delete($existingData->file_name);
+            }
+
+            $data = $this->moduleMasterDataService->deleteUserGuide($validated['id']);
+
+            return response()->json($data);
+        } catch (\Throwable $e) {
+            throw new CommonCustomException($e->getMessage(), 500, $e);
+        }
+    }
+
+    /**
+     * GET request for download user guide file
+     */
+    public function getUserGuideDownload(Request $request, $id)
+    {
+        $user = Auth::user() ?? Auth::guard('api')->user();
+        Log::debug('User is requesting download user guide file', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'userGuideId' => $id]);
+
+        /** Validate ID parameter */
+        $validate = Validator::make(['id' => $id], [
+            'id' => ['required', 'uuid'],
+        ]);
+        if ($validate->fails()) {
+            throw new ValidationException($validate);
+        }
+        (array) $validated = $validate->validated();
+
+        try {
+            $existingData = UserGuide::find($validated['id']);
+            if (! $existingData || ! $existingData->file_name) {
+                throw new CommonCustomException('File not found', 404);
+            }
+
+            $path = Storage::disk('synology_user_guide')->path($existingData->file_name);
+            Log::debug('File path for download', ['filePath' => $path]);
+            if (! file_exists($path)) {
+                throw new CommonCustomException('File not found', 404);
+            }
+
+            return response()->download($path, $existingData->file_name);
+        } catch (\Throwable $e) {
+            throw new CommonCustomException($e->getMessage(), 500, $e);
+        }
     }
 }

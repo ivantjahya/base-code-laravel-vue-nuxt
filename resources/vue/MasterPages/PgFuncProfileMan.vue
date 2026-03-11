@@ -10,11 +10,14 @@ import CmpLayout from '../Components/CmpLayout.vue'
 import CmpCustomTable from '../Components/CmpCustomTable.vue'
 import CmpAccordionFilter from '../Components/CmpAccordionFilter.vue'
 import FormFilterFuncProfile from './Components/FormFilterFuncProfile.vue'
+import CmpDrawer from '../Components/CmpDrawer.vue'
 import { TEXT_TITLE_SIZE_CLASS, TITLE_TEXT_CLASS, TABLE_TEXT_STATUS_SIZE_CLASS } from '../constants'
+import { useMenuPath } from '../composables/useMenuPath'
 
 const { t } = useI18n()
 const { statusOptions } = useGlobalOptions()
 const { formatDate } = useFormatters()
+const { MENU_PATH } = useMenuPath()
 const api = useApiStore()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
@@ -105,7 +108,8 @@ const columns = computed(() => [
                 badgeColor = 'success'
             } else {
                 if (endDate && endDate < today) {
-                    statusText = t('text.message.expired' as any) || 'Expired'
+                    // statusText = t('text.message.expired' as any) || 'Expired'
+                    statusText = t('text.message.not-active' as any) || 'Not Active'
                     badgeColor = 'error'
                 } else {
                     statusText = t('text.message.not-active' as any) || 'Not Active'
@@ -363,6 +367,14 @@ onMounted(async () => {
                             {{ t('text.functional-profile-management-pg.list') || 'List of Functional Profiles' }}
                         </h1>
 
+                    </div>
+
+                    <div>
+                        <!-- USER GUIDE -->
+                        <CmpDrawer
+                            :page-name="t('page.functional-profile-management') || 'Functional Profiles'"
+                            :url-path="MENU_PATH.value ? MENU_PATH.value.FUNC_PROFILE_MANAGEMENT : '/functional-profile-management'"
+                        />
                     </div>
                 </div>
             </UCard>

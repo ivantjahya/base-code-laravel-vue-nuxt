@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Interfaces\InterfaceClass;
 use App\Interfaces\MenuConst;
 use App\Interfaces\MenuCtrlConst;
+use App\Interfaces\MenuPathConst;
+use App\Interfaces\StatusConst;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -34,6 +36,8 @@ class AppConstController extends Controller
                 'accessMenuList' => [],
                 'menuCodes' => (new ReflectionClass(MenuConst::class))->getConstants(),
                 'ctrlCodes' => (new ReflectionClass(MenuCtrlConst::class))->getConstants(),
+                'statusCodes' => (new ReflectionClass(StatusConst::class))->getConstants(),
+                'menuPaths' => (new ReflectionClass(MenuPathConst::class))->getConstants(),
             ], 200);
         }
 
@@ -55,6 +59,8 @@ class AppConstController extends Controller
             'accessMenuList' => $accessMenuList,
             'menuCodes' => (new ReflectionClass(MenuConst::class))->getConstants(),
             'ctrlCodes' => (new ReflectionClass(MenuCtrlConst::class))->getConstants(),
+            'statusCodes' => (new ReflectionClass(StatusConst::class))->getConstants(),
+            'menuPaths' => (new ReflectionClass(MenuPathConst::class))->getConstants(),
         ], 200);
     }
 }
