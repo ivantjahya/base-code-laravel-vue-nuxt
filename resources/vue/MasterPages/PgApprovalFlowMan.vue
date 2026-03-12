@@ -103,6 +103,10 @@ const actions = computed(() => [
     ]
 ])
 
+const columnPinning = ref({
+    right: ['actions']
+})
+
 // ========================= STATE FOR MODAL =========================
 const modalTitle = ref('')
 const modalSubmitOpen = ref(false)
@@ -420,6 +424,7 @@ onMounted(async () => {
                     :page-size="itemPerPage"
                     :current-page="currentPage"
                     :count-total-data="countTotalData"
+                    :column-pinning="columnPinning"
                     @update:currentPage="handlePageChange"
                     @update:pageSize="handlePageSizeChange"
                     @search="handleSearch"

@@ -370,7 +370,7 @@ const isOpen = computed({
                      <button
                         type="button"
                         @click="handleDownload({ id: editingId, file_name: currentFileName })"
-                        class="text-blue-600 hover:underline"
+                        class="text-left text-blue-600 hover:underline"
                         :class="TEXT_SIZE_CLASS"
                     >
                         {{ currentFileName }}
