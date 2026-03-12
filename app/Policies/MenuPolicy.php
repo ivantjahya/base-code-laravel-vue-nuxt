@@ -3,6 +3,8 @@
 namespace App\Policies;
 
 use App\Interfaces\InterfaceClass;
+use App\Services\PythonModuleMasterDataService;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 
@@ -18,7 +20,15 @@ class MenuPolicy
      */
     private function hasMenuCode(mixed $user, int $menuCode): bool
     {
-        $menuList = Cache::tags([InterfaceClass::TAG_MENUPERM])->get(InterfaceClass::KEY_MENUPERM.'-'.$user?->id, []);
+        $menuList = Cache::tags([InterfaceClass::TAG_MENUPERM])->remember(
+            InterfaceClass::KEY_MENUPERM.'-'.$user?->id,
+            Carbon::now()->addYear(),
+            function () use ($user) {
+                $data = app(PythonModuleMasterDataService::class)->getProfileMenuAccess($user?->profile_id);
+
+                return $data['data']['menu_access'] ?? [];
+            }
+        );
 
         foreach ($menuList as $item) {
             // Check the top-level item (e.g. MENU_MASTER_DATA = 1000)

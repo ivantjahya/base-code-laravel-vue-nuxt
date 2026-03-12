@@ -4,7 +4,7 @@ import { CalendarDate } from '@internationalized/date'
 import { useI18n } from '../../composables/useI18n'
 import { useFormatters } from '../../composables/useFormatters'
 import { useApiStore } from '../../AppState'
-import axios from 'axios'
+import axios, { all } from 'axios'
 import { TEXT_SIZE_CLASS, TITLE_MODAL_TEXT_CLASS, INPUT_FIELD_WARN_CLASS, BUTTON_PRIMARY_CLASS, BUTTON_CLEAR_CLASS } from '../../constants'
 
 type SelectOption = {
@@ -43,6 +43,10 @@ const props = defineProps({
     },
     categoryOptions: {
         type: Array as () => Array<{ label: string; value: string }>,
+        default: () => []
+    },
+    allCategoryOptions: {
+        type: Array as () => Array<any>,
         default: () => []
     },
     siteOptions: {

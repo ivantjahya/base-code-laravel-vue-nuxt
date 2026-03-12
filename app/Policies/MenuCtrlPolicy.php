@@ -3,6 +3,8 @@
 namespace App\Policies;
 
 use App\Interfaces\InterfaceClass;
+use App\Services\PythonModuleMasterDataService;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 
@@ -16,7 +18,15 @@ class MenuCtrlPolicy
     private function findMenuItem(mixed $user, int $menuCode): ?array
     {
         $menuList = Cache::tags([InterfaceClass::TAG_MENUPERM])
-            ->get(InterfaceClass::KEY_MENUPERM.'-'.$user?->id, []);
+            ->remember(
+                InterfaceClass::KEY_MENUPERM.'-'.$user?->id,
+                Carbon::now()->addYear(),
+                function () use ($user) {
+                    $data = app(PythonModuleMasterDataService::class)->getProfileMenuAccess($user?->profile_id);
+
+                    return $data['data']['menu_access'] ?? [];
+                }
+            );
 
         foreach ($menuList as $item) {
             if (($item['code'] ?? null) === $menuCode) {

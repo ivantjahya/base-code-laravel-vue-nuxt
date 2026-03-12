@@ -9,6 +9,8 @@ use App\Interfaces\MenuPathConst;
 use App\Interfaces\StatusConst;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
+use App\Services\PythonModuleMasterDataService;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -45,7 +47,15 @@ class AppConstController extends Controller
         if ($user) {
             // Keyed by user_id: each user keeps their own menu snapshot set at login.
             // This ensures profile changes only take effect after the user re-logs in.
-            $accessMenuList = Cache::tags([InterfaceClass::TAG_MENUPERM])->get(InterfaceClass::KEY_MENUPERM.'-'.$user?->id, []);
+            $accessMenuList = Cache::tags([InterfaceClass::TAG_MENUPERM])->remember(
+                InterfaceClass::KEY_MENUPERM.'-'.$user?->id,
+                Carbon::now()->addYear(),
+                function () use ($user) {
+                    $data = app(PythonModuleMasterDataService::class)->getProfileMenuAccess($user?->profile_id);
+
+                    return $data['data']['menu_access'] ?? [];
+                }
+            );
         }
 
         return response()->json([

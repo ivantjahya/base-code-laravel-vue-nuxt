@@ -6,6 +6,7 @@ import { useApiStore } from '../AppState'
 import axios from 'axios'
 import { getCurrentInstance } from 'vue'
 import { useGlobalOptions } from '../composables/useGlobalOptions'
+import { useFormatters } from '../composables/useFormatters'
 import CmpLayout from '../Components/CmpLayout.vue'
 import CmpCustomTable from '../Components/CmpCustomTable.vue'
 import CmpAccordionFilter from '../Components/CmpAccordionFilter.vue'
@@ -20,6 +21,7 @@ const { t } = useI18n()
 const { hasMenuCtrl, MENU_CODE, CTRL_CODE } = useMenuPermission()
 const { STATUS_CODE } = useStatus()
 const { MENU_PATH } = useMenuPath()
+const { formatDate } = useFormatters()
 const api = useApiStore()
 const Swal = getCurrentInstance()?.appContext.config.globalProperties.$swal
 
@@ -63,6 +65,7 @@ const profileOptions = ref<{ label: string; value: string }[]>([])
 const siteOptions = ref<{ label: string; value: string }[]>([])
 const categoryOptions = ref<{ label: string; value: string }[]>([])
 const categoryOptionsLoading = ref(false)
+const allCategoryOptions = ref<any[]>([])
 const userStatusOptionsData = ref<any[]>([])
 const userStatusOptions = computed(() => {
     const uniqueOptions = new Map<string, { label: string; value: string }>()
@@ -115,10 +118,10 @@ const columns = computed(() => [
         cellRenderer: (_value: any, row: any) => row.profile ? row.profile?.name : '-'
     },
     {
-        key: 'category',
-        label: t('text.table-column.column-category'),
+        key: 'valid_date',
+        label: t('text.table-column.column-validity-date'),
         sortable: true,
-        cellRenderer: (_value: any, row: any) => row.merch_struct ? row.merch_struct?.code + ' - ' + row.merch_struct?.name : '-'
+        formatter: (value: string) => formatDate(value)
     },
     {
         key: 'status',
@@ -301,17 +304,12 @@ const getSiteOptions = async () => {
 
 const getCategoryOptions = async () => {
     categoryOptions.value = []
+    allCategoryOptions.value = []
     categoryOptionsLoading.value = true
 
     try {
         const response = await axios.get(api.getMerchStructDivCatList)
-
-        const sourceItems =
-            response?.data?.data?.items ||
-            response?.data?.data ||
-            response?.data ||
-            []
-
+        const sourceItems = response?.data?.data?.items || response?.data?.data || response?.data || []
         const sourceArray = Array.isArray(sourceItems) ? sourceItems : []
 
         // 🔹 Ambil parent
@@ -322,13 +320,11 @@ const getCategoryOptions = async () => {
 
         // 🔹 Mapping ke options
         const uniqueOptions = new Map<string, { label: string; value: string }>()
-
         allCategories.forEach((cat: any) => {
             const label = `${cat.code} - ${cat.name}`
             const value = cat.id
 
             if (!value) return
-
             uniqueOptions.set(value, {
                 label,
                 value,
@@ -336,9 +332,11 @@ const getCategoryOptions = async () => {
         })
 
         categoryOptions.value = Array.from(uniqueOptions.values())
+        allCategoryOptions.value = sourceArray
     } catch (error) {
         console.error('Error fetching category options:', error)
         categoryOptions.value = []
+        allCategoryOptions.value = []
     } finally {
         categoryOptionsLoading.value = false
     }
@@ -565,6 +563,7 @@ onMounted(async () => {
                 :initial-data="editData"
                 :profile-options="profileOptions"
                 :category-options="categoryOptions"
+                :all-category-options="allCategoryOptions"
                 :site-options="siteOptions"
                 @update:open="modalSubmitOpen = $event"
                 @submitted="onSubmitted"

@@ -180,7 +180,7 @@
         "edit-user-guide": "Edit Panduan Pengguna",
         "current-file": "File saat ini",
         "click-to-select-file": "Klik untuk memilih file atau seret dan jatuhkan di sini",
-        "file-description": "PDF atau DOCX (maks. 2MB)"
+        "file-requirements": "PDF atau DOCX (maks. 2MB)"
     },
     "button": {
         "new": "Tambah",
