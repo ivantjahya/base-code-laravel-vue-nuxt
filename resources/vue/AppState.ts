@@ -74,6 +74,11 @@ export const useApiStore = defineStore('api', {
     }),
 });
 
+export interface CompanyOption {
+    label: string;
+    value: string;
+}
+
 export const useMainStore = defineStore('main', {
     state: () => {
         // Detect if user is on mobile device
@@ -100,6 +105,8 @@ export const useMainStore = defineStore('main', {
             ctrlCodes: (JSON.parse(localStorage.getItem('ctrlCodes') || '{}')) as Record<string, string>,
             statusCodes: (JSON.parse(localStorage.getItem('statusCodes') || '{}')) as Record<string, string>,
             menuPaths: (JSON.parse(localStorage.getItem('menuPaths') || '{}')) as Record<string, string>,
+            companyOptions: (JSON.parse(localStorage.getItem('companyOptions') || '[]')) as CompanyOption[],
+            selectedCompanyId: (localStorage.getItem('selectedCompanyId') || '') as string,
         };
     },
 
@@ -123,6 +130,50 @@ export const useMainStore = defineStore('main', {
         setLocale(newLocale: 'en' | 'id') {
             this.locale = newLocale;
             localStorage.setItem('locale', newLocale);
+        },
+
+        setSelectedCompany(companyId: string) {
+            this.selectedCompanyId = companyId;
+            localStorage.setItem('selectedCompanyId', companyId);
+        },
+
+        async getUserCompanies(userId: string) {
+            if (!userId) return;
+
+            const api = useApiStore();
+            try {
+                const response = await axios.get(api.getUserDetail + userId);
+                const detail = response?.data?.data || response?.data || {};
+
+                // Support direct `companies` array or extracted from `func_profiles[].company`
+                const rawCompanies: any[] = Array.isArray(detail?.company)
+                    ? detail.company
+                    : Array.isArray(detail?.func_profiles)
+                        ? detail.func_profiles.map((fp: any) => fp?.company).filter(Boolean)
+                        : [];
+                console.log('Raw companies data:', rawCompanies);
+
+                const uniqueMap = new Map<string, CompanyOption>();
+                rawCompanies.forEach((c: any) => {
+                    const id = String(c?.id || '').trim();
+                    if (!id) return;
+                    const label = (c?.code ? c.code + ' - ' : '') + String(c?.name || '').trim();
+                    uniqueMap.set(id, { label, value: id });
+                });
+
+                const options = Array.from(uniqueMap.values());
+                this.companyOptions = options;
+                localStorage.setItem('companyOptions', JSON.stringify(options));
+
+                // Auto-select first option if stored value is missing or no longer in list
+                if (!this.selectedCompanyId || !options.some(o => o.value === this.selectedCompanyId)) {
+                    const firstId = options[0]?.value || '';
+                    this.selectedCompanyId = firstId;
+                    localStorage.setItem('selectedCompanyId', firstId);
+                }
+            } catch (error) {
+                console.error('Failed to fetch user companies:', error);
+            }
         },
 
         setMode(newMode: ColorMode) {
@@ -258,6 +309,10 @@ export const useMainStore = defineStore('main', {
                         statusCodes: response.data.statusCodes ?? this.statusCodes,
                         menuPaths: response.data.menuPaths ?? this.menuPaths,
                     });
+
+                    if (response.data.userId) {
+                        this.getUserCompanies(response.data.userId);
+                    }
                 })
                 .catch((error) => {
                     console.error(error);

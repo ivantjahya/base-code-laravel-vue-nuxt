@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useI18n } from '../composables/useI18n'
 import { localeOptions } from '../composables/useLocale'
 import { useWebStore } from '../AppRouter'
 import { useMainStore } from '../AppState'
+import { TEXT_SIZE_CLASS } from '../constants'
 
 const { t, locale, setLocale } = useI18n()
 const web = useWebStore()
@@ -22,6 +23,15 @@ const onChangeLocale = (value: any) => {
     selectedLocale.value = newLocale
   }
 }
+
+const selectedCompany = computed({
+  get: () => mainStore.selectedCompanyId,
+  set: (value: string) => mainStore.setSelectedCompany(value),
+})
+
+const selectedCompanyLabel = computed(() =>
+  mainStore.companyOptions.find(o => o.value === selectedCompany.value)?.label || selectedCompany.value
+)
 
 const toggleMenu = () => {
   mainStore.toggleSidebar()
@@ -50,6 +60,28 @@ const toggleMenu = () => {
 
     <!-- Right Section -->
     <div class="flex items-center gap-3 flex-1 justify-end">
+
+      <!-- Company Selector -->
+      <USelectMenu
+        v-model="selectedCompany"
+        :items="mainStore.companyOptions"
+        value-key="value"
+        value-attribute="value"
+        option-attribute="label"
+        :placeholder="t('text.functional-profile-management-pg.input-company-placeholder') || 'Select company'"
+        icon="i-lucide-building"
+        class="font-reguler"
+        :ui="{
+            base: `truncate ${TEXT_SIZE_CLASS}`,
+            content: TEXT_SIZE_CLASS,
+            item: TEXT_SIZE_CLASS
+        }"
+        :popper="{
+          placement: 'bottom-end',
+          modifiers: [{ name: 'flip', enabled: false }]
+        }"
+      />
+
       <!-- Language Selector -->
       <USelectMenu
         v-model="selectedLocale"
@@ -62,6 +94,11 @@ const toggleMenu = () => {
         :popper="{
           placement: 'bottom-start',
           modifiers: [{ name: 'flip', enabled: false }]
+        }"
+        :ui="{
+            base: `truncate ${TEXT_SIZE_CLASS}`,
+            content: TEXT_SIZE_CLASS,
+            item: TEXT_SIZE_CLASS
         }"
       >
         <template #default="{ open }">
@@ -79,6 +116,7 @@ const toggleMenu = () => {
           </UButton>
         </template>
       </USelectMenu>
+
     </div>
   </header>
 </template>
