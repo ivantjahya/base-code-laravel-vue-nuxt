@@ -39,6 +39,7 @@ const onChangeLocale = (value: any) => {
 // Handle login
 const postLoginData = async () => {
   loading.value = true
+  localStorage.removeItem('profileIsInternal');
 
   axios
     .post(webapi.postLogin, {

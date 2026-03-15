@@ -61,7 +61,7 @@ const categoryFilter = ref<string | null>(null)
 const statusFilter = ref<string | null>(null)
 
 // For select options
-const profileOptions = ref<{ label: string; value: string }[]>([])
+const profileOptions = ref<{ label: string; value: string, is_internal: number }[]>([])
 const siteOptions = ref<{ label: string; value: string }[]>([])
 const categoryOptions = ref<{ label: string; value: string }[]>([])
 const categoryOptionsLoading = ref(false)
@@ -177,6 +177,7 @@ const editData = ref({})
 
 const showModal = () => {
     modalTitle.value = t('text.user-management-pg.add-new-user' as any) || 'Create New User'
+    viewOnlyMode.value = false
     editMode.value = false
     editingId.value = null
     editData.value = {}
@@ -244,15 +245,17 @@ const getProfileOptions = async () => {
             return rawActive === true || rawActive === 1 || rawActive === '1'
         })
 
-        const uniqueOptions = new Map<string, { label: string; value: string }>()
+        const uniqueOptions = new Map<string, { label: string; value: string, is_internal: number }>()
         activeData.forEach((item: any) => {
             const label = String(item?.name).trim()
             const value = String(item?.id).trim()
+            const isInternal = item?.is_internal || 0
 
             if (!value) return
             uniqueOptions.set(value, {
                 label: label,
                 value: value,
+                is_internal: isInternal
             })
         })
 
@@ -276,12 +279,6 @@ const getSiteOptions = async () => {
         const response = await axios.get(api.getSiteList, { params })
         const sourceItems = response?.data?.items || response?.data || response?.data || []
         const sourceArray = Array.isArray(sourceItems) ? sourceItems : []
-
-        // const activeData = sourceArray.filter((item: any) => {
-        //     const rawActive = item?.status
-        //     console.log(rawActive);
-        //     return rawActive === true || rawActive === 1 || rawActive === '1'
-        // })
 
         const uniqueOptions = new Map<string, { label: string; value: string }>()
         sourceArray.forEach((item: any) => {
@@ -332,7 +329,9 @@ const getCategoryOptions = async () => {
         })
 
         categoryOptions.value = Array.from(uniqueOptions.values())
-        allCategoryOptions.value = sourceArray
+        allCategoryOptions.value = sourceArray.filter((item: any) => {
+            return item.code != '0'
+        })
     } catch (error) {
         console.error('Error fetching category options:', error)
         categoryOptions.value = []
@@ -392,7 +391,6 @@ const handleEdit = async (data: any) => {
         // Prepare for merch struct
         const rawMerchStructs: MerchStructData[] = Array.isArray(detail?.merch_structs) ? detail.merch_structs : []
         const merchStructs = rawMerchStructs.map(data => { return { value: data.id, label: data.name } }) || []
-        console.log(merchStructs);
 
         // Prepare for sites
         const rawSites: SiteData[] = Array.isArray(detail?.sites) ? detail.sites : []
@@ -400,6 +398,7 @@ const handleEdit = async (data: any) => {
 
         modalTitle.value = t('text.user-management-pg.edit-user' as any) || 'Edit User'
         viewOnlyMode.value = !canUpdateUser.value
+        // viewOnlyMode.value = true
         editMode.value = true
         editingId.value = userId
         editData.value = {

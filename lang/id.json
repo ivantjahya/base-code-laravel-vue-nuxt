@@ -138,7 +138,10 @@
         "reset-password-failed-msg": "Gagal mereset kata sandi.",
         "unlock-user-confirm-msg": "Apakah Anda yakin ingin membuka kunci pengguna ini?",
         "unlock-user-success-msg": "Pengguna telah berhasil dibuka kuncinya.",
-        "unlock-user-failed-msg": "Gagal membuka kunci pengguna."
+        "unlock-user-failed-msg": "Gagal membuka kunci pengguna.",
+        "tab-general": "Umum",
+        "tab-site": "Lokasi",
+        "tab-category": "Kategori"
     },
     "approval-flow-management-pg": {
         "list": "Daftar Data Alur Persetujuan",

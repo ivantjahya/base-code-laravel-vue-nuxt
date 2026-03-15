@@ -96,6 +96,7 @@ export const useMainStore = defineStore('main', {
             userName: '',
             userId: '',
             profileId: '',
+            profileIsInternal: (localStorage.getItem('profileIsInternal') || false),
             notificationList: [],
             locale: (localStorage.getItem('locale') || 'en') as 'en' | 'id',
             mode: (localStorage.getItem('colorMode') || 'system') as ColorMode,
@@ -145,13 +146,16 @@ export const useMainStore = defineStore('main', {
                 const response = await axios.get(api.getUserDetail + userId);
                 const detail = response?.data?.data || response?.data || {};
 
+                // Set profileIsInternal based on user detail
+                this.profileIsInternal = !!detail?.profile?.is_internal;
+                localStorage.setItem('profileIsInternal', String(this.profileIsInternal));
+
                 // Support direct `companies` array or extracted from `func_profiles[].company`
                 const rawCompanies: any[] = Array.isArray(detail?.company)
                     ? detail.company
                     : Array.isArray(detail?.func_profiles)
                         ? detail.func_profiles.map((fp: any) => fp?.company).filter(Boolean)
                         : [];
-                console.log('Raw companies data:', rawCompanies);
 
                 const uniqueMap = new Map<string, CompanyOption>();
                 rawCompanies.forEach((c: any) => {

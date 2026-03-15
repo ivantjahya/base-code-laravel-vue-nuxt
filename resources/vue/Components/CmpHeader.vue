@@ -63,6 +63,7 @@ const toggleMenu = () => {
 
       <!-- Company Selector -->
       <USelectMenu
+        v-if="mainStore.profileIsInternal"
         v-model="selectedCompany"
         :items="mainStore.companyOptions"
         value-key="value"
