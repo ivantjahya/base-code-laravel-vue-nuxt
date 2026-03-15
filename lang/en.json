@@ -138,7 +138,10 @@
         "reset-password-failed-msg": "Failed to reset password.",
         "unlock-user-confirm-msg": "Are you sure you want to unlock this user?",
         "unlock-user-success-msg": "User has been unlocked successfully.",
-        "unlock-user-failed-msg": "Failed to unlock user."
+        "unlock-user-failed-msg": "Failed to unlock user.",
+        "tab-general": "General",
+        "tab-site": "Site",
+        "tab-category": "Category"
     },
     "approval-flow-management-pg": {
         "list": "List of Approval Flows",

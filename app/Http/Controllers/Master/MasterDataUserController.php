@@ -114,13 +114,21 @@ class MasterDataUserController extends Controller
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User is requesting create user', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
+        /** Check profile is_internal to apply conditional validation */
+        $profileId = $request->input('profile_id');
+        $isInternal = false;
+        if ($profileId && \Illuminate\Support\Str::isUuid($profileId)) {
+            $profile = \App\Models\Master\Profile::find($profileId);
+            $isInternal = $profile && $profile->is_internal == 1;
+        }
+
         /** Validate Input */
         $validate = Validator::make($request->all(), [
             'username' => ['required', 'string', 'max:50'],
             'name' => ['required', 'string'],
             'profile_id' => ['required', 'uuid', 'exists:App\Models\Master\Profile,id'],
-            'category' => ['required', 'array'],
-            'site' => ['required', 'array'],
+            'category' => [$isInternal ? 'required' : 'nullable', 'array'],
+            'site' => [$isInternal ? 'required' : 'nullable', 'array'],
             'valid_date' => ['required', 'date'],
         ]);
         if ($validate->fails()) {
@@ -134,8 +142,8 @@ class MasterDataUserController extends Controller
                 'name' => $validated['name'],
                 'password' => config('user.default_password_user'),
                 'profile_id' => $validated['profile_id'],
-                'merch_struct_ids' => $validated['category'],
-                'site_ids' => $validated['site'],
+                'merch_struct_ids' => $isInternal ? ($validated['category'] ?? []) : [],
+                'site_ids' => $isInternal ? ($validated['site'] ?? []) : [],
                 'valid_date' => $validated['valid_date'],
                 'user_id' => $user?->id,
             ];
@@ -164,12 +172,20 @@ class MasterDataUserController extends Controller
         }
         (array) $idValidated = $idValidate->validated();
 
+        /** Check profile is_internal to apply conditional validation */
+        $profileId = $request->input('profile_id');
+        $isInternal = false;
+        if ($profileId && \Illuminate\Support\Str::isUuid($profileId)) {
+            $profile = \App\Models\Master\Profile::find($profileId);
+            $isInternal = $profile && $profile->is_internal == 1;
+        }
+
         /** Validate Input */
         $validate = Validator::make($request->all(), [
             'name' => ['required', 'string'],
             'profile_id' => ['required', 'uuid', 'exists:App\Models\Master\Profile,id'],
-            'category' => ['required', 'array'],
-            'site' => ['required', 'array'],
+            'category' => [$isInternal ? 'required' : 'nullable', 'array'],
+            'site' => [$isInternal ? 'required' : 'nullable', 'array'],
             'valid_date' => ['required', 'date'],
         ]);
         if ($validate->fails()) {
@@ -181,8 +197,8 @@ class MasterDataUserController extends Controller
             $params = [
                 'name' => $validated['name'],
                 'profile_id' => $validated['profile_id'],
-                'merch_struct_ids' => $validated['category'],
-                'site_ids' => $validated['site'],
+                'merch_struct_ids' => $isInternal ? ($validated['category'] ?? []) : [],
+                'site_ids' => $isInternal ? ($validated['site'] ?? []) : [],
                 'valid_date' => $validated['valid_date'],
                 'user_id' => $user?->id,
             ];
