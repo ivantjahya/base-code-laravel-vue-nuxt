@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rules\In;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use ReflectionClass;
 
@@ -60,9 +61,10 @@ class AppConstController extends Controller
 
         return response()->json([
             'appName' => config('app.name'),
-            'appVersion' => '-',
+            'appVersion' => InterfaceClass::readApplicationVersion(),
             'appDebug' => config('app.debug'),
             'userName' => $user?->name ?? '',
+            'userUsername' => $user?->username ?? '',
             'userId' => $user?->id ?? '',
             'profileId' => $user?->profile_id ?? '',
             'isAuth' => $authCheck,

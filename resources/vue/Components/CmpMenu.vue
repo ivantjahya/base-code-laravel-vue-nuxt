@@ -5,6 +5,7 @@ import { useI18n } from '../composables/useI18n'
 import { useMainStore } from '../AppState'
 import Swal from 'sweetalert2'
 import CmpDialogMenuSearch from './CmpDialogMenuSearch.vue'
+import { TEXT_APP_VERSION_CLASS } from '../constants'
 
 const { t } = useI18n()
 const mainStore = useMainStore()
@@ -14,6 +15,10 @@ const route = useRoute()  // Change reloads page
 const venditorePlusLogoHorizontal = new URL('@/images/logo-venditore-plus-horizontal.webp', import.meta.url).href
 const venditorePlusLogoHorizontalWhite = new URL('@/images/logo-venditore-plus-horizontal-white.webp', import.meta.url).href
 const venditorePlusLogo = new URL('@/images/icon-venditore-plus.webp', import.meta.url).href
+
+const appVersion = computed(() => mainStore.appVersion)
+const userName = computed(() => mainStore.userName)
+const userUsername = computed(() => mainStore.userUsername)
 
 // Detect if user is on Mac or Windows
 const isMac = computed(() => {
@@ -26,7 +31,6 @@ const modifierKey = computed(() => {
 
 // Menu structure
 const menuItems = computed(() => mainStore.accessMenuList)
-
 
 const expandedMenus = ref<number[]>([]) // Will be set based on active menu
 const searchQuery = ref('')
@@ -427,28 +431,28 @@ const showChangePassword = () => {
           :items="[
             [
               {
-                label: 'Profile',
+                label: t('text.side-menu.profile'),
                 icon: 'i-lucide-circle-user-round',
                 onClick: () => { showProfile() }
               },
               {
-                label: 'Change Password',
+                label: t('text.side-menu.change-password'),
                 icon: 'i-lucide-lock',
                 onClick: () => { showChangePassword() }
               },
               {
-                label: 'Appearance',
+                label: t('text.side-menu.appearance'),
                 icon: 'i-lucide-sun-moon',
                 children: [
                   [
                     {
-                      label: 'Light',
+                      label: t('text.side-menu.light-mode'),
                       icon: 'i-lucide-sun',
                       active: mainStore.mode === 'light',
                       onClick: () => { mainStore.setLight() }
                     },
                     {
-                      label: 'Dark',
+                      label: t('text.side-menu.dark-mode'),
                       icon: 'i-lucide-moon',
                       active: mainStore.mode === 'dark',
                       onClick: () => { mainStore.setDark() }
@@ -459,7 +463,7 @@ const showChangePassword = () => {
             ],
             [
               {
-                label: 'Logout',
+                label: t('text.side-menu.logout'),
                 icon: 'i-lucide-log-out',
                 color: 'error',
                 onClick: () => {postLogout()}
@@ -472,11 +476,13 @@ const showChangePassword = () => {
           <template #default="{ }">
             <button class="w-full flex items-center gap-2.5 px-2.5 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
               <UAvatar 
-                :src="`https://ui-avatars.com/api/?name=${mainStore.userName}&background=f97316&color=fff`" 
+                :src="`https://ui-avatars.com/api/?name=${userName}&background=f97316&color=fff`" 
                 size="sm"
               />
               <div class="flex-1 min-w-0 text-left">
-                <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{{ mainStore.userName }}</p>
+                <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{{ userName }}</p>
+                <p class="truncate" :class="TEXT_APP_VERSION_CLASS">{{ userUsername }}</p>
+                <p class="truncate" :class="TEXT_APP_VERSION_CLASS">{{ appVersion }}</p>
               </div>
               <UIcon name="i-lucide-chevrons-up-down" class="w-4 h-4 text-gray-400 dark:text-gray-500" />
             </button>
@@ -491,7 +497,7 @@ const showChangePassword = () => {
           :content="{ side: 'right', align: 'end', sideOffset: 8 }"
         >
           <UAvatar 
-            :src="`https://ui-avatars.com/api/?name=${mainStore.userName}&background=f97316&color=fff`"
+            :src="`https://ui-avatars.com/api/?name=${userName}&background=f97316&color=fff`"
             size="sm"
             class="cursor-pointer"
           />
@@ -499,8 +505,9 @@ const showChangePassword = () => {
           <template #content>
             <div class="min-w-[180px] p-2">
               <div class="px-3 py-2 border-b border-gray-200 dark:border-gray-700 mb-2">
-                <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ mainStore.userName }}</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400"></p>
+                <p class="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">{{ userName }}</p>
+                <p class="truncate" :class="TEXT_APP_VERSION_CLASS">{{ userUsername }}</p>
+                <p class="truncate" :class="TEXT_APP_VERSION_CLASS">{{ appVersion }}</p>
               </div>
               
               <div class="space-y-0.5">
@@ -509,7 +516,7 @@ const showChangePassword = () => {
                   class="w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-all duration-150 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100"
                 >
                   <UIcon name="i-lucide-circle-user-round" class="w-4 h-4" />
-                  <span>Profile</span>
+                  <span>{{ t('text.side-menu.profile') || 'Profile' }}</span>
                 </button>
                 
                 <button
@@ -517,7 +524,7 @@ const showChangePassword = () => {
                   class="w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-all duration-150 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100"
                 >
                   <UIcon name="i-lucide-lock" class="w-4 h-4" />
-                  <span>Change Password</span>
+                  <span>{{ t('text.side-menu.change-password') || 'Change Password' }}</span>
                 </button>
                 
                 <div class="border-t border-gray-200 dark:border-gray-700 my-2"></div>
@@ -527,7 +534,7 @@ const showChangePassword = () => {
                   class="w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-all duration-150 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100"
                 >
                   <UIcon :name="mainStore.mode === 'light' ? 'i-lucide-moon' : 'i-lucide-sun'" class="w-4 h-4" />
-                  <span>{{ mainStore.mode === 'light' ? 'Dark' : 'Light' }} Mode</span>
+                  <span>{{ mainStore.mode === 'light' ? t('text.side-menu.dark-mode') || 'Dark Mode' : t('text.side-menu.light-mode') || 'Light Mode' }}</span>
                 </button>
                 
                 <div class="border-t border-gray-200 dark:border-gray-700 my-2"></div>
@@ -537,7 +544,7 @@ const showChangePassword = () => {
                   class="w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-all duration-150 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50"
                 >
                   <UIcon name="i-lucide-log-out" class="w-4 h-4" />
-                  <span>Logout</span>
+                  <span>{{ t('text.side-menu.logout') || 'Logout' }}</span>
                 </button>
               </div>
             </div>

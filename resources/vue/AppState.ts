@@ -94,6 +94,7 @@ export const useMainStore = defineStore('main', {
             appVersion: '',
             appDebug: false,
             userName: '',
+            userUsername: '',
             userId: '',
             profileId: '',
             profileIsInternal: (localStorage.getItem('profileIsInternal') || false),
@@ -302,9 +303,10 @@ export const useMainStore = defineStore('main', {
 
                     this.$patch({
                         appName: response.data.appName,
-                        appVersion: response.data.appVersion,
+                        appVersion: 'version ' + response.data.appVersion,
                         appDebug: response.data.appDebug,
                         userName: response.data.userName,
+                        userUsername: response.data.userUsername,
                         userId: response.data.userId,
                         profileId: profileId,
                         accessMenuList: accessMenuList,
