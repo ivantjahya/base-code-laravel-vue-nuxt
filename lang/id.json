@@ -72,6 +72,15 @@
       "welcome": "Selamat datang di ",
       "welcome-msg": "Gerbang Anda untuk menjadi mitra Yogya. Daftarkan produk Anda, kelola kemitraan Anda, dan kembangkan bisnis Anda dengan Yogya Supermarket."
     },
+    "side-menu": {
+      "profile": "Profil",
+      "change-password": "Ganti Kata Sandi",
+      "logout": "Keluar",
+      "appearance": "Tampilan",
+      "light-mode": "Mode Terang",
+      "dark-mode": "Mode Gelap",
+      "language": "Bahasa"
+    },
     "limit-management-pg": {
         "list": "Daftar Data Limit",
         "add-new-limit": "Tambah Limit Baru",

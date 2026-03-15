@@ -13,6 +13,8 @@ export const TABLE_TEXT_SIZE_CLASS = 'text-sm sm:text-xs md:text-sm lg:text-sm';
 
 export const TABLE_TEXT_STATUS_SIZE_CLASS = 'text-xs sm:text-[10px] md:text-xs lg:text-xs';
 
+export const TEXT_APP_VERSION_CLASS = 'text-gray-500 dark:text-gray-400 sm:text-[8px] md:text-[10px] lg:text-[10px]';
+
 /** Class for button */
 export const BUTTON_PRIMARY_CLASS = 'bg-[#F26524] text-white hover:bg-[#E34613] active:bg-[#E34613] px-5';
 

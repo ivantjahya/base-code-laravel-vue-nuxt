@@ -72,6 +72,15 @@
       "welcome": "Welcome to ",
       "welcome-msg": "Your gateway to becoming a Yogya supplier. Register your products, manage your partnership, and grow your business with Yogya Supermarket."
     },
+    "side-menu": {
+      "profile": "Profile",
+      "change-password": "Change Password",
+      "logout": "Logout",
+      "appearance": "Appearance",
+      "light-mode": "Light Mode",
+      "dark-mode": "Dark Mode",
+      "language": "Language"
+    },
     "limit-management-pg": {
         "list": "List of Limits",
         "add-new-limit": "Add New Limit",
